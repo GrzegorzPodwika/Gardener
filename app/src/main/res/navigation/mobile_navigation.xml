@@ -3,42 +3,49 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@id/nav_planned_gardens">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="pl.podwikagrzegorz.gardener.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home">
+        android:id="@+id/nav_planned_gardens"
+        android:name="pl.podwikagrzegorz.gardener.ui.planned_gardens.PlannedGardensFragment"
+        android:label="@string/menu_planned_gardens"
+        tools:layout="@layout/fragment_planned_gardens">
 
-        <action
-            android:id="@+id/action_HomeFragment_to_HomeSecondFragment"
-            app:destination="@id/nav_home_second" />
-
-    </fragment>
-    <fragment
-        android:id="@+id/nav_home_second"
-        android:name="pl.podwikagrzegorz.gardener.ui.home.HomeSecondFragment"
-        android:label="@string/home_second"
-        tools:layout="@layout/fragment_home_second">
-        <action
-            android:id="@+id/action_HomeSecondFragment_to_HomeFragment"
-            app:destination="@id/nav_home" />
-
-        <argument
-            android:name="myArg"
-            app:argType="string" />
     </fragment>
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="pl.podwikagrzegorz.gardener.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_my_tools"
+        android:name="pl.podwikagrzegorz.gardener.ui.tools.ToolsFragment"
+        android:label="@string/menu_my_tools"
+        tools:layout="@layout/fragment_tools" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="pl.podwikagrzegorz.gardener.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_calendar"
+        android:name="pl.podwikagrzegorz.gardener.ui.calendar.CalendarFragment"
+        android:label="@string/menu_calendar"
+        tools:layout="@layout/fragment_calendar" />
+
+    <fragment
+        android:id="@+id/nav_garden_price_list"
+        android:name="pl.podwikagrzegorz.gardener.ui.price_list.PriceListFragment"
+        android:label="@string/menu_price_list"
+        tools:layout="@layout/fragment_price_list" />
+
+    <fragment
+        android:id="@+id/nav_completed_gardens"
+        android:name="pl.podwikagrzegorz.gardener.ui.completed_gardens.CompletedGardensFragment"
+        android:label="@string/menu_completed_gardens"
+        tools:layout="@layout/fragment_completed_gardens" />
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="pl.podwikagrzegorz.gardener.ui.application_settings.SettingsFragment"
+        android:label="@string/menu_settings"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/nav_info"
+        android:name="pl.podwikagrzegorz.gardener.ui.info_about_app.InfoFragment"
+        android:label="@string/menu_info_about_app"
+        tools:layout="@layout/fragment_info" />
 </navigation>

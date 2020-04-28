@@ -1,10 +1,10 @@
-package pl.podwikagrzegorz.gardener.ui.gallery
+package pl.podwikagrzegorz.gardener.ui.tools
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class GalleryViewModel : ViewModel() {
+class ToolsViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
         value = "This is gallery Fragment"
