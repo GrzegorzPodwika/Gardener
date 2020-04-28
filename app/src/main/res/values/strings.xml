@@ -2,14 +2,19 @@
     <string name="app_name">Gardener</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">Grzegorz Podwika</string>
+    <string name="nav_header_subtitle">podwikagrzegorz@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_planned_gardens">Zaplanowane ogrody</string>
+    <string name="menu_calendar">Kalendarz</string>
+    <string name="menu_completed_gardens">Wykonane ogrody</string>
+    <string name="menu_my_tools">Moje narzędzia</string>
+    <string name="menu_price_list">Cennik usług</string>
+    <string name="menu_settings">Ustawienia aplikacji</string>
+    <string name="menu_info_about_app">O aplikacji</string>
+    <string name="communicate">Komunikacja</string>
 
     <string name="home_second">Home Second</string>
 </resources>

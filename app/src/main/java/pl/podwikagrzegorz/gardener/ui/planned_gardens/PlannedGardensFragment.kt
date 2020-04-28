@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.home
+package pl.podwikagrzegorz.gardener.ui.planned_gardens
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,23 +7,23 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import pl.podwikagrzegorz.gardener.R
 
-class HomeFragment : Fragment() {
+class PlannedGardensFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var plannedGardensViewModel: PlannedGardensViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        homeViewModel =
-                ViewModelProviders.of(this).get(HomeViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
+        plannedGardensViewModel =
+                ViewModelProvider(this).get(PlannedGardensViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_planned_gardens, container, false)
         val textView: TextView = root.findViewById(R.id.text_home)
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
+        plannedGardensViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
         return root

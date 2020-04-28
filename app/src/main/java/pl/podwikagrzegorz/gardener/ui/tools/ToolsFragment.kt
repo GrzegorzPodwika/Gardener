@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.gallery
+package pl.podwikagrzegorz.gardener.ui.tools
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,23 +7,23 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import pl.podwikagrzegorz.gardener.R
 
-class GalleryFragment : Fragment() {
+class ToolsFragment : Fragment() {
 
-    private lateinit var galleryViewModel: GalleryViewModel
+    private lateinit var toolsViewModel: ToolsViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        galleryViewModel =
-                ViewModelProviders.of(this).get(GalleryViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_gallery, container, false)
+        toolsViewModel =
+                ViewModelProvider(this).get(ToolsViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_tools, container, false)
         val textView: TextView = root.findViewById(R.id.text_gallery)
-        galleryViewModel.text.observe(viewLifecycleOwner, Observer {
+        toolsViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
         return root
