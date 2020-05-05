@@ -2,23 +2,16 @@ package pl.podwikagrzegorz.gardener.ui.price_list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.Observable
 import androidx.recyclerview.widget.RecyclerView
 import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.data.daos.NoteDAO
-import pl.podwikagrzegorz.gardener.data.pojo.Note
 import pl.podwikagrzegorz.gardener.data.realm.NoteRealm
 import pl.podwikagrzegorz.gardener.databinding.ListMaterialcardviewBinding
-import pl.podwikagrzegorz.gardener.ui.AbstractAdapter
 
 class NoteAdapter(
     private val noteRealmResults: RealmResults<NoteRealm>,
-    private val listener: OnDeleteNoteListener
+    private val listener: OnDeleteItemListener
 ) : RecyclerView.Adapter<NoteAdapter.NoteHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteHolder {

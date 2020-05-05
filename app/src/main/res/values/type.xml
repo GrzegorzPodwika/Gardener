@@ -83,7 +83,7 @@
 
     <style name="TextAppearance.MyTheme.Subtitle2" parent="TextAppearance.MaterialComponents.Subtitle2">
         <!--Your custom type style here-->
-        <item name="fontFamily">@font/roboto_medium</item>
+        <item name="fontFamily">@font/roboto_bolditalic</item>
         <item name="lineHeight">22sp</item>
     </style>
 

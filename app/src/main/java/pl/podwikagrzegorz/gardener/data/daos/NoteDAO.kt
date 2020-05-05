@@ -14,34 +14,35 @@ import pl.podwikagrzegorz.gardener.data.realm.asLiveData
 class NoteDAO(override val realm: Realm) : AbstractRealmDAO<Note, NoteRealm>(realm) {
 
     override fun insertItem(item: Note) {
-        realm.executeTransaction{
+        realm.executeTransaction {
             val noteRealm = NoteRealm(generateId(), item.service, item.priceOfService)
             it.insert(noteRealm)
         }
     }
 
     override fun getItemById(id: Long): Note? {
-        val noteRealm =  realm.where<NoteRealm>().equalTo(ID, id).findFirst()
+        val noteRealm = realm.where<NoteRealm>().equalTo(ID, id).findFirst()
 
         return noteRealm?.let { NoteMapper().fromRealm(it) }
     }
 
     override fun updateItem(item: Note) {
-        realm.executeTransactionAsync{bgRealm ->
-            val noteRealm  = bgRealm.where<NoteRealm>().equalTo(ID, item.id).findFirst()
+        realm.executeTransactionAsync { bgRealm ->
+            val noteRealm = bgRealm.where<NoteRealm>().equalTo(ID, item.id).findFirst()
             noteRealm?.service = item.service
             noteRealm?.priceOfService = item.priceOfService
         }
     }
 
     override fun deleteItem(id: Long) {
-        realm.executeTransactionAsync{realm ->
+        realm.executeTransactionAsync { realm ->
             val result = realm.where<NoteRealm>().equalTo(ID, id).findFirst()
             result?.deleteFromRealm()
         }
     }
 
-    override fun getRealmResults(): RealmResults<NoteRealm> = realm.where<NoteRealm>().findAll()
+    override fun getRealmResults(): RealmResults<NoteRealm>
+            = realm.where<NoteRealm>().findAll()
 
     override fun getLiveRealmResults(): MutableLiveData<RealmResults<NoteRealm>> =
         realm.where<NoteRealm>().findAllAsync().asLiveData()
@@ -52,15 +53,15 @@ class NoteDAO(override val realm: Realm) : AbstractRealmDAO<Note, NoteRealm>(rea
 
         val realmResults = getRealmResults()
 
-        for (note in realmResults){
+        for (note in realmResults) {
             notes.add(noteMapper.fromRealm(note))
         }
         return notes
     }
 
     override fun deleteAllItems() {
-        realm.executeTransactionAsync{realm ->
-            realm.where<NoteRealm>().findAll().deleteAllFromRealm()
+        realm.executeTransactionAsync { bgRealm ->
+            bgRealm.where<NoteRealm>().findAll().deleteAllFromRealm()
         }
     }
 
@@ -68,14 +69,11 @@ class NoteDAO(override val realm: Realm) : AbstractRealmDAO<Note, NoteRealm>(rea
         val maxValue = realm.where<NoteRealm>().max(ID)
         var nextId: Long = 0
 
-        if (maxValue != null){
+        if (maxValue != null) {
             nextId = maxValue.toLong() + 1
         }
 
         return nextId
     }
 
-    companion object{
-        const val PRIMARY_KEY_FIELD = "primaryKeyField"
-    }
 }

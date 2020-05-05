@@ -3,10 +3,12 @@ package pl.podwikagrzegorz.gardener.data.daos
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.realm.Realm
+import io.realm.kotlin.where
 import io.realm.RealmConfiguration
+import io.realm.RealmModel
 import io.realm.RealmResults
 
-abstract class AbstractRealmDAO<T, K> (open val realm: Realm) {
+abstract class AbstractRealmDAO<T, K : RealmModel> (open val realm: Realm) {
 
     abstract fun insertItem(item: T)
     abstract fun getItemById(id: Long): T?
@@ -19,7 +21,7 @@ abstract class AbstractRealmDAO<T, K> (open val realm: Realm) {
     abstract fun deleteAllItems()
     abstract fun generateId() : Long
 
-    fun close() = realm.close()
+    //fun close() = realm.close()
 
     companion object{
         const val ID = "id"

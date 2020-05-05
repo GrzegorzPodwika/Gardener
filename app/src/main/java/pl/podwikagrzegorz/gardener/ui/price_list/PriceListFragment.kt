@@ -1,6 +1,5 @@
 package pl.podwikagrzegorz.gardener.ui.price_list
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,18 +9,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import io.realm.RealmResults
-import kotlinx.android.synthetic.main.fragment_price_list.*
 
 import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.data.daos.NoteDAO
 import pl.podwikagrzegorz.gardener.data.pojo.Note
-import pl.podwikagrzegorz.gardener.data.realm.NoteRealm
 import pl.podwikagrzegorz.gardener.databinding.FragmentPriceListBinding
-import pl.podwikagrzegorz.gardener.databinding.ListMaterialcardviewBinding
 
-class PriceListFragment : Fragment(), OnDeleteNoteListener {
+class PriceListFragment : Fragment(), OnDeleteItemListener {
 
     private lateinit var viewModel: PriceListViewModel
     private lateinit var binding : FragmentPriceListBinding

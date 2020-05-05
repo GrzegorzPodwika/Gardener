@@ -15,8 +15,8 @@ open class PriceListViewModel : ViewModel() {
     private val realm: Realm
     private val noteDAO :NoteDAO
 
-    fun getNoteData() : MutableLiveData<RealmResults<NoteRealm>> =
-        noteDAO.getLiveRealmResults()
+    fun getNoteData() : MutableLiveData<RealmResults<NoteRealm>>
+            = noteDAO.getLiveRealmResults()
 
     fun addNote(note: Note) {
         noteDAO.insertItem(note)

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_menu_tools"
+        android:icon="@drawable/ic_tools_state"
+        android:title="@string/tools"/>
+
+    <item
+        android:id="@+id/nav_menu_equipment"
+        android:icon="@drawable/ic_equipment_state"
+        android:title="@string/equipment"/>
+
+    <item
+        android:id="@+id/nav_menu_canister"
+        android:icon="@drawable/ic_canister_state"
+        android:title="@string/others"/>
+</menu>

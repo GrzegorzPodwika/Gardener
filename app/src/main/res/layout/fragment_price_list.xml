@@ -16,7 +16,7 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/mdc_price_list"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/mcv_height"
         android:layout_alignParentBottom="true">
 
         <LinearLayout

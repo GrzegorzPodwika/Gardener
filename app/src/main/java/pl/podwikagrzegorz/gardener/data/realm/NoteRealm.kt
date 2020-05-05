@@ -5,5 +5,6 @@ import io.realm.annotations.PrimaryKey
 
 open class NoteRealm(
     @PrimaryKey var id: Long = 0,
-    var service : String = "",
-    var priceOfService: String = "") : RealmObject()
+    var service: String = "",
+    var priceOfService: String = ""
+) : RealmObject()

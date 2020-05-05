@@ -1,5 +1,5 @@
 package pl.podwikagrzegorz.gardener.ui.price_list
 
-interface OnDeleteNoteListener {
+interface OnDeleteItemListener {
     fun onDeleteNoteClick(id: Long?)
 }
