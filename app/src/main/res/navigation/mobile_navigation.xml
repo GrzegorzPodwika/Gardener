@@ -10,9 +10,46 @@
         android:name="pl.podwikagrzegorz.gardener.ui.planned_gardens.PlannedGardensFragment"
         android:label="@string/menu_planned_gardens"
         tools:layout="@layout/fragment_planned_gardens">
+
+        <argument
+            android:name="flowGardenTitle"
+            app:argType="string"
+            android:defaultValue="Brak tytułu" />
+
+        <argument
+            android:name="flowPhoneNumber"
+            app:argType="integer"
+            android:defaultValue="123456789"/>
+
+        <argument
+            android:name="flowPeriod"
+            app:nullable="true"
+            app:argType="pl.podwikagrzegorz.gardener.data.pojo.Period"
+            android:defaultValue="@null"/>
+        <argument
+            android:name="flowIsGarden"
+            app:argType="boolean"
+            android:defaultValue="true"/>
+        <argument
+            android:name="flowSnapshotPath"
+            app:argType="string"
+            android:defaultValue="none"/>
+        <argument
+            android:name="flowLatitude"
+            app:argType="float"
+            android:defaultValue="0.0"/>
+        <argument
+            android:name="flowLongitude"
+            app:argType="float"
+            android:defaultValue="0.0"/>
+
         <action
-            android:id="@+id/action_nav_planned_gardens_to_nav_add_garden"
-            app:destination="@id/nav_add_garden" />
+            android:id="@+id/action_planned_gardens_to_add_garden"
+            app:destination="@id/nav_add_garden"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -21,6 +58,9 @@
         android:label="Dodaj ogród"
         tools:layout="@layout/fragment_add_garden" >
 
+        <action
+            android:id="@+id/action_add_garden_to_planned_gardens"
+            app:destination="@id/nav_planned_gardens" />
     </fragment>
 
 <!--    <fragment

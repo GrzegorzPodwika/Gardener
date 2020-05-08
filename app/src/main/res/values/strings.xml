@@ -29,4 +29,11 @@
     <string name="hint_phone_number">123456789</string>
     <string name="title_activity_maps">Map</string>
     <string name="confirm">Zatwierdź</string>
+    <string name="cancel">Odrzuć</string>
+    <string name="delete_basic_garden">Usunąć zaplanowany ogród?</string>
+
+    <!--Location strings-->
+    <string name="location_permission_denied">Aplikacja wymaga dostępu do twojej lokalizacji, udziel dostępu.</string>
+    <string name="permission_required_toast">Ta aplikacja wymaga dostępu do lokalizacji</string>
+    <string name="permission_rationale_location">Access to the location service is required to demonstrate the \\\'my location\\\' feature, which shows your current location on the map.</string>
 </resources>

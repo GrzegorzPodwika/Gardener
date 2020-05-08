@@ -1,13 +1,16 @@
 package pl.podwikagrzegorz.gardener.maps
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener
@@ -19,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.button.MaterialButton
 import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.permissions.PermissionUtils
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -34,6 +38,7 @@ class MapsActivity : AppCompatActivity(),
     private lateinit var takeSnapshotButton: MaterialButton
     private var currentCameraPosition: CameraPosition? = null
     private var snapshotFilePath: String = ""
+    private var mPermissionDenied = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +47,28 @@ class MapsActivity : AppCompatActivity(),
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        goToDefaultCoordinates()
+
+        mMap.setOnMyLocationButtonClickListener(this)
+        mMap.setOnCameraIdleListener(this)
+
+        setOnMyMapClickListener()
+
+        enableMyLocation()
 
         takeSnapshotButton = findViewById(R.id.materialButton_take_snapshot)
         takeSnapshotButton.setOnClickListener {
@@ -49,12 +76,27 @@ class MapsActivity : AppCompatActivity(),
         }
     }
 
+    private fun enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Permission to access the location is missing.
+            PermissionUtils.requestPermission(
+                this, MapsActivity.LOCATION_PERMISSION_REQUEST_CODE,
+                Manifest.permission.ACCESS_FINE_LOCATION, true
+            )
+        } else
+            mMap.isMyLocationEnabled = true
+    }
+
     private fun takeSnapshot() {
         mMap.snapshot { bitmap ->
             val b = bitmap
 
             snapshotFilePath = "${System.currentTimeMillis()}.png"
-            var outputStream: OutputStream? = null
+            val outputStream: OutputStream?
 
             try {
                 outputStream = openFileOutput(snapshotFilePath, Context.MODE_PRIVATE)
@@ -97,6 +139,21 @@ class MapsActivity : AppCompatActivity(),
         finish()
     }
 
+    override fun onResumeFragments() {
+        super.onResumeFragments()
+        if (mPermissionDenied) {
+
+            // Permission was not granted, display error dialog.
+            showMissingPermissionError()
+            mPermissionDenied = false
+        }
+    }
+
+    private fun showMissingPermissionError() {
+        PermissionUtils.PermissionDeniedDialog
+            .newInstance(true).show(supportFragmentManager, "dialog")
+    }
+
     private fun deleteCaptionedSnapshot(filePath: String) {
 
         val fileToDelete = File(filePath)
@@ -116,27 +173,6 @@ class MapsActivity : AppCompatActivity(),
             }
         }
 
-    }
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-
-        goToDefaultCoordinates()
-
-        mMap.setOnMyLocationButtonClickListener { true }
-        mMap.setOnMyLocationClickListener { true }
-
-
-        setOnMyMapClickListener()
     }
 
     private fun setOnMyMapClickListener() {
@@ -182,6 +218,7 @@ class MapsActivity : AppCompatActivity(),
     }
 
     companion object {
+        const val LOCATION_PERMISSION_REQUEST_CODE = 1
         val defaultCoordinates = LatLng(50.064651, 19.944981)
         const val CAPTIONED_SNAPSHOT_PATH = "CAPTIONED_SNAPSHOT_PATH"
         const val CAPTIONED_SNAPSHOT_LATITUDE = "CAPTIONED_SNAPSHOT_LATITUDE"

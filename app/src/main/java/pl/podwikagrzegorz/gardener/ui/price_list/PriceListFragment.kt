@@ -47,12 +47,12 @@ class PriceListFragment : Fragment(), OnDeleteItemListener {
         viewModel.addNote(note)
     }
 
-    companion object {
-        fun newInstance() = PriceListFragment()
+    override fun onDeleteItemClick(id: Long?) {
+        viewModel.deleteNote(id)
     }
 
-    override fun onDeleteNoteClick(id: Long?) {
-        viewModel.deleteNote(id)
+    companion object {
+        fun newInstance() = PriceListFragment()
     }
 
 }

@@ -18,4 +18,6 @@
     <dimen name="cardView_height">40dp</dimen>
     <dimen name="mcv_height">50dp</dimen>
     <dimen name="textField_height">58dp</dimen>
+    <dimen name="image_size">132dp</dimen>
+    <dimen name="image_size_small">100dp</dimen>
 </resources>

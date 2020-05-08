@@ -61,7 +61,7 @@ class ToolDAO(override val realm: Realm) : AbstractRealmDAO<Tool, ToolRealm>(rea
 
     override fun deleteAllItems() {
         realm.executeTransactionAsync { bgRealm ->
-            realm.where<ToolRealm>().findAll().deleteAllFromRealm()
+            bgRealm.where<ToolRealm>().findAll().deleteAllFromRealm()
         }
     }
 

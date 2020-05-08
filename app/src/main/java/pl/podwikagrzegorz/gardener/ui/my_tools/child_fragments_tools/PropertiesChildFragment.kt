@@ -1,6 +1,5 @@
 package pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -58,7 +57,7 @@ class PropertiesChildFragment private constructor() : Fragment(), OnDeleteItemLi
         fun newInstance() = PropertiesChildFragment()
     }
 
-    override fun onDeleteNoteClick(id: Long?) {
+    override fun onDeleteItemClick(id: Long?) {
         viewModel.deleteProperty(id)
     }
 

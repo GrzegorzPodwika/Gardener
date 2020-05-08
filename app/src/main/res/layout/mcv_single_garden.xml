@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:layout_margin="@dimen/keyline_2">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/keyline_1">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView_garden_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Krakow, ul. Meiera 14/4 - Krzysztof Skowronek"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/shapeableImageView_planned_garden"
+                android:layout_width="@dimen/image_size_small"
+                android:layout_height="@dimen/image_size_small"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/ic_farm" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/keyline_4"
+                android:text="Tel:"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialTextView_garden_title" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView_planned_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/keyline_4"
+                android:layout_marginTop="@dimen/keyline_4"
+                android:text="999999999"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="@color/colorAccent"
+                app:layout_constraintStart_toEndOf="@+id/materialTextView6"
+                app:layout_constraintTop_toBottomOf="@+id/materialTextView_garden_title" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/keyline_4"
+                android:text="Data rozp.   Data zak."
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialTextView6" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView_planned_period"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="27.08.2018  -  31.08.2019"
+                android:textAppearance="?attr/textAppearanceSubtitle2"
+                android:layout_marginTop="@dimen/keyline_4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialTextView7" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

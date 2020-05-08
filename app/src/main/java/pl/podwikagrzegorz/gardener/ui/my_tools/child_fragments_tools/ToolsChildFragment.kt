@@ -53,7 +53,7 @@ class ToolsChildFragment private constructor() : Fragment(), OnDeleteItemListene
         viewModel.addTool(tool)
     }
 
-    override fun onDeleteNoteClick(id: Long?) {
+    override fun onDeleteItemClick(id: Long?) {
         viewModel.deleteTool(id)
     }
 

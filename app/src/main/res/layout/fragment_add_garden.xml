@@ -114,6 +114,7 @@
         android:layout_marginTop="@dimen/keyline_4"
         android:gravity="center_vertical"
         android:text="Ogród"
+        android:checked="true"
         android:textAppearance="?attr/textAppearanceBody1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/materialTextView3" />
@@ -125,15 +126,15 @@
             android:layout_marginTop="@dimen/keyline_4"
             android:gravity="center_vertical"
             android:minEms="10"
-            android:text="10.04.20 - 10.05.20"
+            android:hint="10.04.20 - 10.05.20"
             android:textAppearance="?attr/textAppearanceSubtitle2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/switchMaterial_garden_or_service" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/shapeableImageView_garden_or_service"
-            android:layout_width="132dp"
-            android:layout_height="132dp"
+            android:layout_width="@dimen/image_size"
+            android:layout_height="@dimen/image_size"
             android:layout_marginTop="@dimen/keyline_4"
             android:src="@drawable/ic_farm"
             android:elevation="@dimen/keyline_tight"
@@ -142,11 +143,10 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/materialTextView5"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="@dimen/textField_height"
             android:layout_marginTop="@dimen/keyline_4"
             android:gravity="center_vertical"
-            android:minEms="10"
             android:text="Wybierz miejsce pracy:"
             android:textAppearance="?attr/textAppearanceSubtitle1"
             app:layout_constraintStart_toStartOf="parent"
@@ -169,6 +169,7 @@
         android:layout_height="150dp"
         android:layout_marginTop="@dimen/keyline_tight"
         app:layout_constraintEnd_toEndOf="parent"
+        android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/materialButton_locate_garden"
         app:srcCompat="@drawable/ic_street_map" />

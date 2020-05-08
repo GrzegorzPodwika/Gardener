@@ -53,7 +53,7 @@ class MachinesChildFragment private constructor() : Fragment(), OnDeleteItemList
         viewModel.addMachine(machine)
     }
 
-    override fun onDeleteNoteClick(id: Long?) {
+    override fun onDeleteItemClick(id: Long?) {
         viewModel.deleteMachine(id)
     }
 

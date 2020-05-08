@@ -35,7 +35,7 @@ class ToolAdapter(
             binding.textViewService.text = data.toolName
             binding.textViewPriceOfService.text = data.numberOfTools.toString()
             noteToDeletionIB.setOnClickListener {
-                listener.onDeleteNoteClick(data.id)
+                listener.onDeleteItemClick(data.id)
             }
         }
     }
@@ -65,7 +65,7 @@ class MachineAdapter(
             binding.textViewService.text = data.machineName
             binding.textViewPriceOfService.text = data.numberOfMachines.toString()
             noteToDeletionIB.setOnClickListener {
-                listener.onDeleteNoteClick(data.id)
+                listener.onDeleteItemClick(data.id)
             }
         }
     }
@@ -96,7 +96,7 @@ class PropertyAdapter(
             binding.textViewService.text = data.propertyName
             binding.textViewPriceOfService.text = data.numberOfProperties.toString()
             noteToDeletionIB.setOnClickListener {
-                listener.onDeleteNoteClick(data.id)
+                listener.onDeleteItemClick(data.id)
             }
         }
     }

@@ -13,3 +13,6 @@ class MachineModule
 
 @RealmModule(classes = [PropertyRealm::class])
 class PropertyModule
+
+@RealmModule(classes = [BasicGardenRealm::class, PeriodRealm::class])
+class BasicGardenModule
