@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import pl.podwikagrzegorz.gardener.R
 
 sealed class ComponentFragmentHolder {
 
@@ -15,8 +16,8 @@ sealed class ComponentFragmentHolder {
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View? {
-            //todo
-            return super.onCreateView(inflater, container, savedInstanceState)
+
+            return inflater.inflate(R.layout.fragment_add_garden, container, false)
         }
 
         companion object{
@@ -35,7 +36,7 @@ sealed class ComponentFragmentHolder {
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View? {
-            return super.onCreateView(inflater, container, savedInstanceState)
+            return inflater.inflate(R.layout.rec_view_and_mcv, container, false)
         }
 
         companion object{
