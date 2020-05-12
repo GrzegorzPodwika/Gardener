@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.planned_gardens.chosen_garden.GardenFragment">
+    tools:context=".ui.planned_gardens.chosen_garden.GardenFragmentActivity">
 
 
 </androidx.viewpager2.widget.ViewPager2>

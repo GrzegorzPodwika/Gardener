@@ -1,5 +1,6 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,6 +21,7 @@ import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.pojo.BasicGarden
 import pl.podwikagrzegorz.gardener.data.pojo.Period
 import pl.podwikagrzegorz.gardener.databinding.FragmentPlannedGardensBinding
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.GardenFragmentActivity
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.garden_to_add.AddGardenFragment
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
@@ -41,9 +43,12 @@ class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_planned_gardens, container, false)
         binding.fabAddGarden.setOnClickListener {
-            val navController = findNavController()
+            //tmp suspended
+/*            val navController = findNavController()
             val action = PlannedGardensFragmentDirections.actionPlannedGardensToAddGarden()
-            navController.navigate(action)
+            navController.navigate(action)*/
+            val intent = Intent(requireContext(), GardenFragmentActivity::class.java)
+            startActivity(intent)
         }
         return binding.root
 
