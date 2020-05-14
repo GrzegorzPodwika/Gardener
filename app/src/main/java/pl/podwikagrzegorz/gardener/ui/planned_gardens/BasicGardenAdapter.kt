@@ -40,7 +40,7 @@ class BasicGardenAdapter(
             holder.bind(this)
             holder.binding.root.setOnLongClickListener {
                 val id = basicGardenRealmResults[position]?.id
-                listener.onDeleteItemClick(id)
+                listener.onDeleteItemLongClick(id)
                 true
             }
         }
@@ -58,19 +58,7 @@ class BasicGardenAdapter(
         }
 
         private fun formatPeriodToString(period: PeriodRealm?) : String{
-            return if (period != null){
-                val result = String.format(
-                    "%02d.%02d.%s  -  %02d.%02d.%s",
-                    period.startDay,
-                    period.startMonth,
-                    period.startYear,
-                    period.endDay,
-                    period.endMonth,
-                    period.endYear)
-
-                result
-            }else
-                "Error"
+            return period?.getPeriodAsString() ?: "Error"
         }
     }
 }

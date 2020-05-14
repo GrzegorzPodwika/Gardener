@@ -7,6 +7,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import pl.podwikagrzegorz.gardener.R
 
+//TODO polaczyc fragmenty z Modelem REalm
+//Zastanowic sie nad struktura GardenRealm
 class GardenFragmentActivity : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager2

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
+<layout>
     <com.google.android.material.card.MaterialCardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="@dimen/cardView_height"
         android:layout_margin="3dp">
@@ -31,7 +31,7 @@
                 android:gravity="center_vertical" />
 
             <ImageButton
-                android:id="@+id/imageButton_item_to_delete"
+                android:id="@+id/imageButton_service_to_delete"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginStart="15dp"
@@ -42,9 +42,3 @@
 
 
 </layout>
-
-    <!--    <data>
-            <variable
-                name="viewModel"
-                type="pl.podwikagrzegorz.gardener.ui.price_list.PriceListViewModel" />
-        </data>-->

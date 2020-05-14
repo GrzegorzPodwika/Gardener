@@ -4,20 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.databinding.FragmentAddGardenBinding
 
 sealed class ComponentFragmentHolder {
 
     //Class No1 - BasicGarden
     class BasicGardenFragment : Fragment(){
+
+        private lateinit var gardenBinding : FragmentAddGardenBinding
+
         override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View? {
-
-            return inflater.inflate(R.layout.fragment_add_garden, container, false)
+            gardenBinding =
+                DataBindingUtil.inflate(inflater, R.layout.fragment_add_garden, container, false)
+            return gardenBinding.root
         }
 
         companion object{
@@ -36,7 +42,9 @@ sealed class ComponentFragmentHolder {
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View? {
-            return inflater.inflate(R.layout.rec_view_and_mcv, container, false)
+
+
+            return inflater.inflate(R.layout.fragment_rec_view_with_bottom_view, container, false)
         }
 
         companion object{

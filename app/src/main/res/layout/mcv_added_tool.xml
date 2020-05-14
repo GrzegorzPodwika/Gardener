@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/half_width_mcv"
+    android:layout_height="@dimen/cardView_height"
+    android:layout_margin="3dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/textView_added_tool"
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/custom_margin_10"
+            android:paddingEnd="@dimen/custom_margin_10"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/imageButton_increase_numb_of_tools"
+            android:layout_width="@dimen/custom_wh_imageButton"
+            android:layout_height="@dimen/custom_wh_imageButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="10dp"
+            app:layout_constraintStart_toEndOf="@+id/textView_added_tool"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_top_arrow" />
+
+        <ImageButton
+            android:id="@+id/imageButton_decrease_numb_of_tools"
+            android:layout_width="@dimen/custom_wh_imageButton"
+            android:layout_height="@dimen/custom_wh_imageButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="5dp"
+            app:layout_constraintStart_toEndOf="@+id/imageButton_increase_numb_of_tools"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_bottom_arrow" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -40,7 +40,7 @@ class NoteAdapter(
 
 
     class NoteHolder(private val binding: ListMaterialcardviewBinding) : RecyclerView.ViewHolder(binding.root) {
-        val noteToDeletionIB = binding.imageButtonItemToDelete
+        val noteToDeletionIB = binding.imageButtonServiceToDelete
 
         fun bind(note: NoteRealm){
             binding.textViewService.text = note.service

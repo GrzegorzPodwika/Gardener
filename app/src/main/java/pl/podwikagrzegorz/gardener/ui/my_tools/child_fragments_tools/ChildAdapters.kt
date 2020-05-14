@@ -29,7 +29,7 @@ class ToolAdapter(
 
     class ToolHolder(private val binding: ListMaterialcardviewBinding) :
         RecyclerView.ViewHolder(binding.root), Binder<ToolRealm> {
-        private val noteToDeletionIB = binding.imageButtonItemToDelete
+        private val noteToDeletionIB = binding.imageButtonServiceToDelete
 
         override fun bind(data: ToolRealm, listener: OnDeleteItemListener) {
             binding.textViewService.text = data.toolName
@@ -60,7 +60,7 @@ class MachineAdapter(
     class MachineHolder(private val binding: ListMaterialcardviewBinding) :
         RecyclerView.ViewHolder(binding.root), Binder<MachineRealm> {
 
-        private val noteToDeletionIB = binding.imageButtonItemToDelete
+        private val noteToDeletionIB = binding.imageButtonServiceToDelete
         override fun bind(data: MachineRealm, listener: OnDeleteItemListener) {
             binding.textViewService.text = data.machineName
             binding.textViewPriceOfService.text = data.numberOfMachines.toString()
@@ -90,7 +90,7 @@ class PropertyAdapter(
 
     class ToolHolder(private val binding: ListMaterialcardviewBinding) :
         RecyclerView.ViewHolder(binding.root), Binder<PropertyRealm> {
-        private val noteToDeletionIB = binding.imageButtonItemToDelete
+        private val noteToDeletionIB = binding.imageButtonServiceToDelete
 
         override fun bind(data: PropertyRealm, listener: OnDeleteItemListener) {
             binding.textViewService.text = data.propertyName

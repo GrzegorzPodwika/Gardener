@@ -9,4 +9,16 @@ class Period (
     var endDay: Int = 0,
     var endMonth: Int = 0,
     var endYear: Int = 0
-) : Serializable
+) : Serializable{
+
+    fun getPeriodAsString(): String =
+        String.format(
+            "%02d.%02d.%s  -  %02d.%02d.%s",
+            startDay,
+            startMonth,
+            startYear,
+            endDay,
+            endMonth,
+            endYear
+        )
+}

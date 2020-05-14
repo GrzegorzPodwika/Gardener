@@ -109,11 +109,15 @@ class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
         const val LOG = "LOG"
     }
 
-    override fun onDeleteItemClick(id: Long?){
+    override fun onDeleteItemClick(id: Long?) {
+        //TODO(Zaimplementowac przechodzenie intencja)
+    }
+
+    override fun onDeleteItemLongClick(id: Long?) {
         val fragmentDialog = DeleteBasicGardenDialog(requireContext(), object : DeleteBasicGardenDialog.NoticeDialogListener{
             override fun onDialogClick(isClickedPositive: Boolean) {
-               if (isClickedPositive)
-                   plannedGardensViewModel.deleteBasicGarden(id)
+                if (isClickedPositive)
+                    plannedGardensViewModel.deleteBasicGarden(id)   //TODO(zajac sie  zeby usuwalo z glownej)
             }
         })
         fragmentDialog.show(childFragmentManager, null)
