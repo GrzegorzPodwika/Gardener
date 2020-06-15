@@ -33,7 +33,6 @@ class NoteAdapter(
             holder.noteToDeletionIB.setOnClickListener {
                 val id = noteRealmResults[position]?.id
                 listener.onDeleteItemClick(id)
-                //notifyItemRemoved(position)
             }
         }
     }

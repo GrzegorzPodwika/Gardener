@@ -17,7 +17,9 @@ import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
 class MachinesChildFragment private constructor() : Fragment(), OnDeleteItemListener {
 
-    private lateinit var viewModel: MachinesChildViewModel
+    private val viewModel: MachinesChildViewModel by lazy {
+        ViewModelProvider(this).get(MachinesChildViewModel::class.java)
+    }
     private lateinit var binding: RecViewAndMcvBinding
 
     override fun onCreateView(
@@ -25,32 +27,54 @@ class MachinesChildFragment private constructor() : Fragment(), OnDeleteItemList
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.rec_view_and_mcv, container, false)
-        binding.imageButtonAddTool.setOnClickListener { insertNewUserMachine() }
-
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MachinesChildViewModel::class.java)
+
+        setOnAddMachineListener()
+        observeMachineData()
+    }
+
+    private fun setOnAddMachineListener() {
+        binding.imageButtonAddTool.setOnClickListener { insertNewUserMachine() }
+    }
+
+    private fun observeMachineData() {
         val recViewMachines = binding.recyclerViewMyTools
+        recViewMachines.layoutManager = LinearLayoutManager(requireContext())
 
         viewModel.getMachineData().observe(viewLifecycleOwner,
             Observer { machines ->
                 recViewMachines.also {
-                    it.layoutManager = LinearLayoutManager(requireContext())
                     it.adapter = MachineAdapter(machines, this)
                 }
             })
     }
 
     private fun insertNewUserMachine() {
+        addMachine()
+        clearViews()
+        setFocusOnFirstEditText()
+    }
+
+    private fun addMachine() {
         val machine = Machine(
             0,
             binding.editTextMyToolsNameAdd.text.toString(),
             binding.editTextPriceOfTool.text.toString().toInt()
         )
         viewModel.addMachine(machine)
+    }
+
+    private fun clearViews() {
+        binding.editTextMyToolsNameAdd.text = null
+        binding.editTextPriceOfTool.text = null
+    }
+
+    private fun setFocusOnFirstEditText() {
+        binding.editTextMyToolsNameAdd.requestFocus()
     }
 
     override fun onDeleteItemClick(id: Long?) {

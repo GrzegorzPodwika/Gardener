@@ -9,8 +9,6 @@ import pl.podwikagrzegorz.gardener.data.realm.NoteMapper
 import pl.podwikagrzegorz.gardener.data.realm.NoteRealm
 import pl.podwikagrzegorz.gardener.data.realm.asLiveData
 
-
-//TODO testowanie tego DAO
 class NoteDAO(override val realm: Realm) : AbstractRealmDAO<Note, NoteRealm>(realm) {
 
     override fun insertItem(item: Note) {

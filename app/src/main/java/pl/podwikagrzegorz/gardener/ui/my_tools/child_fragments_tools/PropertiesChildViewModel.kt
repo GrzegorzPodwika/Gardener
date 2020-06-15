@@ -31,6 +31,8 @@ class PropertiesChildViewModel : ViewModel() {
         super.onCleared()
     }
 
+    fun getSingleProperty(id: Long?): Property? = id?.let { propertyDAO.getItemById(id) }
+
     init {
         val realmConfig = RealmConfiguration.Builder()
             .name(REALM_PROPERTY_NAME)

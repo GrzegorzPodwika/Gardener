@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.viewpager2.widget.ViewPager2
-    android:id="@+id/pager_single_garden"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.planned_gardens.chosen_garden.GardenFragmentActivity">
 
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout_component_garden"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabMode="scrollable" />
 
-</androidx.viewpager2.widget.ViewPager2>
+    <androidx.viewpager2.widget.ViewPager2
+        android:layout_below="@id/tabLayout_component_garden"
+        android:id="@+id/pager_single_garden"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+</RelativeLayout>

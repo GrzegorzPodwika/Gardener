@@ -6,23 +6,18 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.app_bar_main.*
 import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.data.pojo.BasicGarden
-import pl.podwikagrzegorz.gardener.data.pojo.Period
+import pl.podwikagrzegorz.gardener.data.realm.BasicGardenRealm
 import pl.podwikagrzegorz.gardener.databinding.FragmentPlannedGardensBinding
+import pl.podwikagrzegorz.gardener.extensions.mapIntoPeriodRealm
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.GardenFragmentActivity
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.garden_to_add.AddGardenFragment
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
 class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
@@ -43,12 +38,9 @@ class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_planned_gardens, container, false)
         binding.fabAddGarden.setOnClickListener {
-            //tmp suspended
-/*            val navController = findNavController()
+            val navController = findNavController()
             val action = PlannedGardensFragmentDirections.actionPlannedGardensToAddGarden()
-            navController.navigate(action)*/
-            val intent = Intent(requireContext(), GardenFragmentActivity::class.java)
-            startActivity(intent)
+            navController.navigate(action)
         }
         return binding.root
 
@@ -72,21 +64,23 @@ class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
 
     private fun getArgumentsFromAddedFragment() {
         // if args.flowPeriod == null means that we don't get any arguments
-        var isAddedGarden: Boolean = false
+        var isAddedGarden = false
         if (args.flowPeriod != null)
             isAddedGarden = true
 
-        if (isAddedGarden) {
-            val basicGardenToAdd = BasicGarden()
-            basicGardenToAdd.gardenTitle = args.flowGardenTitle
-            basicGardenToAdd.phoneNumber = args.flowPhoneNumber
-            basicGardenToAdd.period = args.flowPeriod
-            basicGardenToAdd.isGarden = args.flowIsGarden
-            basicGardenToAdd.snapshotPath = args.flowSnapshotPath
-            basicGardenToAdd.latitude = args.flowLatitude.toDouble()
-            basicGardenToAdd.longitude = args.flowLongitude.toDouble()
+        //TODO("Dodawac now GardenRealm a nie BasicGardenRealm")
 
-            plannedGardensViewModel.addBasicGarden(basicGardenToAdd)
+        if (isAddedGarden) {
+            val basicGardenRealm = BasicGardenRealm()
+            basicGardenRealm.gardenTitle = args.flowGardenTitle
+            basicGardenRealm.phoneNumber = args.flowPhoneNumber
+            basicGardenRealm.period = args.flowPeriod?.mapIntoPeriodRealm()
+            basicGardenRealm.isGarden = args.flowIsGarden
+            basicGardenRealm.snapshotPath = args.flowSnapshotPath
+            basicGardenRealm.latitude = args.flowLatitude.toDouble()
+            basicGardenRealm.longitude = args.flowLongitude.toDouble()
+
+            plannedGardensViewModel.addBasicGarden(basicGardenRealm)
         }
     }
 
@@ -105,22 +99,29 @@ class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
         Log.i(LOG, "onDestroyView\n")
     }
 
-    companion object {
-        const val LOG = "LOG"
+    override fun onDeleteItemClick(id: Long?) {
+        startGardenFragmentActivity(id)
     }
 
-    override fun onDeleteItemClick(id: Long?) {
-        //TODO(Zaimplementowac przechodzenie intencja)
+    private fun startGardenFragmentActivity(id: Long?) {
+        val intent = Intent(requireContext(), GardenFragmentActivity::class.java)
+        intent.putExtra(GARDEN_ID, id ?: 0)
+        startActivity(intent)
     }
 
     override fun onDeleteItemLongClick(id: Long?) {
         val fragmentDialog = DeleteBasicGardenDialog(requireContext(), object : DeleteBasicGardenDialog.NoticeDialogListener{
             override fun onDialogClick(isClickedPositive: Boolean) {
                 if (isClickedPositive)
-                    plannedGardensViewModel.deleteBasicGarden(id)   //TODO(zajac sie  zeby usuwalo z glownej)
+                    plannedGardensViewModel.deleteGarden(id)
             }
         })
         fragmentDialog.show(childFragmentManager, null)
+    }
+
+    companion object {
+        const val LOG = "LOG"
+        const val GARDEN_ID = "GARDEN_ID"
     }
 
 }

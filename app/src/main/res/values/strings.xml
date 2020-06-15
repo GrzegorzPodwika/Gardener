@@ -21,7 +21,6 @@
     <string name="equipment">Sprzęt</string>
     <string name="others">Inne</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="garden_title">Tytuł ogrodu:</string>
     <string name="hint_garden_title">Miejscowosc - Imie i nazwisko zleceniodawcy</string>
@@ -31,9 +30,26 @@
     <string name="confirm">Zatwierdź</string>
     <string name="cancel">Odrzuć</string>
     <string name="delete_basic_garden">Usunąć zaplanowany ogród?</string>
+    <string name="garden">Ogród</string>
+    <string name="service">Usługa</string>
+
+    <!--Toolbar strings-->
+
+    <string-array name="component_garden_names">
+        <item>Podstawowe informacje</item>
+        <item>Opis</item>
+        <item>Notatki</item>
+        <item>Narzędzia</item>
+        <item>Sprzęty</item>
+        <item>Inne</item>
+        <item>Zakupy</item>
+        <item>Roboczogodziny</item>
+        <item>Zdjęcia</item>
+    </string-array>
 
     <!--Location strings-->
     <string name="location_permission_denied">Aplikacja wymaga dostępu do twojej lokalizacji, udziel dostępu.</string>
     <string name="permission_required_toast">Ta aplikacja wymaga dostępu do lokalizacji</string>
     <string name="permission_rationale_location">Access to the location service is required to demonstrate the \\\'my location\\\' feature, which shows your current location on the map.</string>
+    <string name="call">Zadzwoń</string>
 </resources>

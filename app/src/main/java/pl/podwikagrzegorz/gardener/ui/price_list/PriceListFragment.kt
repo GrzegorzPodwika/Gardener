@@ -16,39 +16,69 @@ import pl.podwikagrzegorz.gardener.databinding.FragmentPriceListBinding
 
 class PriceListFragment : Fragment(), OnDeleteItemListener {
 
-    private lateinit var viewModel: PriceListViewModel
-    private lateinit var binding : FragmentPriceListBinding
+    private val priceListVM: PriceListViewModel by lazy {
+        ViewModelProvider(this).get(
+            PriceListViewModel::class.java
+        )
+    }
+    private lateinit var priceListBinding: FragmentPriceListBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_price_list, container, false)
-        binding.imageButtonAddService.setOnClickListener{ insertUserData() }
-
-        return binding.root
+        priceListBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_price_list, container, false)
+        return priceListBinding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(PriceListViewModel::class.java)
 
-        viewModel.getNoteData().observe(viewLifecycleOwner,
-            Observer{notes ->
-                binding.recyclerViewPriceList.also {
+        setOnAddServiceListener()
+        observeNoteData()
+    }
+
+    private fun setOnAddServiceListener() {
+        priceListBinding.imageButtonAddService.setOnClickListener { insertServiceWithPrice() }
+    }
+
+    private fun observeNoteData() {
+        priceListVM.getNoteData().observe(viewLifecycleOwner,
+            Observer { notes ->
+                priceListBinding.recyclerViewPriceList.also {
                     it.layoutManager = LinearLayoutManager(requireContext())
                     it.adapter = NoteAdapter(notes, this)
                 }
             })
     }
 
-    private fun insertUserData() {
-        val note = Note(0 , binding.editTextService.text.toString(), binding.editTextPriceOfService.text.toString())
-        viewModel.addNote(note)
+    private fun insertServiceWithPrice() {
+        addNote()
+        clearViews()
+        setFocusOnFirstEditText()
+    }
+
+    private fun addNote() {
+        val note = Note(
+            0,
+            priceListBinding.editTextService.text.toString(),
+            priceListBinding.editTextPriceOfService.text.toString()
+        )
+        priceListVM.addNote(note)
+    }
+
+    private fun clearViews() {
+        priceListBinding.editTextService.text = null
+        priceListBinding.editTextPriceOfService.text = null
+
+    }
+
+    private fun setFocusOnFirstEditText() {
+        priceListBinding.editTextService.requestFocus()
     }
 
     override fun onDeleteItemClick(id: Long?) {
-        viewModel.deleteNote(id)
+        priceListVM.deleteNote(id)
     }
 
     companion object {

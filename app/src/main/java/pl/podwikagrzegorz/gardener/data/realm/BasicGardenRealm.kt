@@ -4,7 +4,7 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 open class BasicGardenRealm(
-    @PrimaryKey var id: Long = 0,
+    var id: Long = 0,
     var gardenTitle: String = "",
     var phoneNumber: Int = 0,
     var period: PeriodRealm? = PeriodRealm(),
@@ -12,4 +12,8 @@ open class BasicGardenRealm(
     var snapshotPath: String = "",
     var latitude: Double = 0.0,
     var longitude: Double = 0.0
-) : RealmObject()
+) : RealmObject() {
+    fun cascadeDelete() {
+        deleteFromRealm()
+    }
+}

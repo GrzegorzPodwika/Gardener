@@ -20,7 +20,6 @@ class BasicGardenAdapter(
 
     private lateinit var ctx : Context
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)
             : BasicGardenHolder {
         ctx = parent.context
@@ -38,9 +37,14 @@ class BasicGardenAdapter(
 
         realmBasicGarden?.apply {
             holder.bind(this)
+            val gardenId = basicGardenRealmResults[position]?.id
+
+            holder.binding.root.setOnClickListener {
+                listener.onDeleteItemClick(gardenId)
+            }
+
             holder.binding.root.setOnLongClickListener {
-                val id = basicGardenRealmResults[position]?.id
-                listener.onDeleteItemLongClick(id)
+                listener.onDeleteItemLongClick(gardenId)
                 true
             }
         }
@@ -56,6 +60,7 @@ class BasicGardenAdapter(
             if (!garden.isGarden)
                 binding.shapeableImageViewPlannedGarden.setImageResource(R.drawable.ic_lawn_mower)
         }
+
 
         private fun formatPeriodToString(period: PeriodRealm?) : String{
             return period?.getPeriodAsString() ?: "Error"

@@ -7,6 +7,8 @@
 
     <color name="green_600">#00574B</color> <!--Color primary variant (light)-->
     <color name="purple_600">#4b01d0</color> <!--Color primary variant (dark)-->
+    <color name="purple_400">#FF6200EA</color>
+    <color name="purple_300">#690CEA</color>
 
     <color name="yellow_300">#FFC107</color> <!--Color secondary-->
     <color name="yellow_500">#C79100</color> <!--Color secondary variant-->

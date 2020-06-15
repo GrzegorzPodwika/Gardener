@@ -18,6 +18,8 @@ class ToolsChildViewModel : ViewModel() {
     fun getToolData() : MutableLiveData<RealmResults<ToolRealm>>
             = toolDAO.getLiveRealmResults()
 
+    fun getSingleTool(id: Long?) : Tool? = id?.let { toolDAO.getItemById(it) }
+
     fun addTool(tool : Tool){
         toolDAO.insertItem(tool)
     }

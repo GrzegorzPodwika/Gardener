@@ -31,6 +31,8 @@ open class MachinesChildViewModel : ViewModel() {
         super.onCleared()
     }
 
+    fun getSingleMachine(id: Long?): Machine? = id?.let {machineDAO.getItemById(id)}
+
     init {
         val realmConfig = RealmConfiguration.Builder()
             .name(REALM_MACHINE_NAME)

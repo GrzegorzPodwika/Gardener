@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
@@ -31,9 +32,6 @@ class AddGardenFragment : Fragment(), DatePickerFragment.OnDateSelectedListener 
     private val period = Period()
     private var isAddedGarden = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,6 +60,19 @@ class AddGardenFragment : Fragment(), DatePickerFragment.OnDateSelectedListener 
         gardenBinding.materialButtonLocateGarden.setOnClickListener {
             val intent = Intent(context, MapsActivity::class.java)
             startActivityForResult(intent, REQUEST_TAKEN_SNAPSHOT_OK)
+        }
+
+        gardenBinding.switchMaterialGardenOrService.setOnCheckedChangeListener { button, isChecked ->
+            when (isChecked){
+                true -> {
+                    gardenBinding.shapeableImageViewGardenOrService.setImageResource(R.drawable.ic_farm)
+                    button.setText(R.string.garden)
+                }
+                false ->{
+                    gardenBinding.shapeableImageViewGardenOrService.setImageResource(R.drawable.ic_lawn_mower)
+                    button.setText(R.string.service)
+                }
+            }
         }
 
         //adding Bundles and confirm adding new Garden
@@ -126,11 +137,11 @@ class AddGardenFragment : Fragment(), DatePickerFragment.OnDateSelectedListener 
     ) {
         if (isRequireStartDate) {
             period.startDay = dayOfMonth
-            period.startMonth = month
+            period.startMonth = month + 1
             period.startYear = year
         } else {
             period.endDay = dayOfMonth
-            period.endMonth = month
+            period.endMonth = month + 1
             period.endYear = year
         }
 

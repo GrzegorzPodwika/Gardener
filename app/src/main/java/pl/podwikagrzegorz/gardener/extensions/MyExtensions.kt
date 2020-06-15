@@ -1,9 +1,11 @@
 package pl.podwikagrzegorz.gardener.extensions
 
 
+
 import pl.podwikagrzegorz.gardener.data.pojo.Period
 import pl.podwikagrzegorz.gardener.data.realm.PeriodRealm
 import java.io.File
+
 
 fun String.deleteCaptionedImage(){
     val fileToDelete = File(this)
