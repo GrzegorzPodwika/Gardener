@@ -14,10 +14,11 @@
 
         <TextView
             android:id="@+id/textView_item_name"
-            android:layout_width="@dimen/custom_mcv_width"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
+            android:paddingStart="@dimen/keyline_1"
+            android:paddingEnd="@dimen/keyline_1"
             android:gravity="center_vertical" />
 
 
@@ -25,8 +26,9 @@
             android:id="@+id/imageButton_item_to_delete"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="5dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/keyline_4"
+            android:layout_marginEnd="@dimen/keyline_2"
             app:srcCompat="@drawable/ic_minus" />
     </LinearLayout>
 

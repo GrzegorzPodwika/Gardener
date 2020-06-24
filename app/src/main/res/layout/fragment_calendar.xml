@@ -1,12 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ui.calendar.CalendarFragment">
 
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+        android:id="@+id/calendar"
+        app:mcv_firstDayOfWeek="monday"
+        app:mcv_monthLabels="@array/polish_month_names"
+        app:mcv_weekDayLabels="@array/polish_week_names"
+        app:mcv_selectionMode="range"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:mcv_showOtherDates="decorated_disabled" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/keyline_4"
+        android:layout_marginStart="@dimen/keyline_2"
+        android:text="Legenda:"
+        android:textAppearance="?attr/textAppearanceHeadline5"/>
+
     <LinearLayout
+        android:layout_marginStart="@dimen/keyline_2"
+        android:layout_marginTop="@dimen/keyline_2"
+        android:layout_marginBottom="@dimen/keyline_4"
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:scaleType="centerCrop"
+            android:layout_height="match_parent"
+            android:src="@drawable/calendar_circle"/>
+
+        <TextView
+            android:layout_marginStart="@dimen/keyline_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text=" - dni pracy"
+            android:textAppearance="?attr/textAppearanceBody1"/>
+    </LinearLayout>
+
+</LinearLayout>
+</layout>
+
+    <!--
+        <LinearLayout
         android:id="@+id/appBarCalendar"
         android:layout_width="match_parent"
         android:layout_height="110dp"
@@ -15,6 +62,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/textView_calendar_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="2020"
@@ -22,6 +70,7 @@
             android:textAppearance="?attr/textAppearanceHeadline6"/>
 
         <TextView
+            android:id="@+id/textView_calendar_month"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Styczeń"
@@ -30,21 +79,26 @@
             android:textAppearance="?attr/textAppearanceHeadline4"/>
     </LinearLayout>
 
-    <com.github.sundeepk.compactcalendarview.CompactCalendarView
-        android:id="@+id/calendarView_gardens"
-        android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:layout_below="@id/appBarCalendar"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        app:compactCalendarBackgroundColor="@color/purple_400"
-        app:compactCalendarCurrentDayBackgroundColor="@color/purple_200"
-        app:compactCalendarCurrentSelectedDayBackgroundColor="@color/colorAccent"
-        app:compactCalendarDisplayOtherMonthDays="true"
-        app:compactCalendarMultiEventIndicatorColor="@color/colorWhite"
 
-        app:compactCalendarOtherMonthDaysTextColor="@color/colorBlack"
-        app:compactCalendarTextColor="@color/colorWhite"
-        app:compactCalendarTextSize="20sp" />
 
-</RelativeLayout>
+
+
+
+
+
+            <com.github.sundeepk.compactcalendarview.CompactCalendarView
+            android:id="@+id/calendarView_gardens"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/appBarCalendar"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            app:compactCalendarBackgroundColor="@color/purple_400"
+            app:compactCalendarCurrentDayBackgroundColor="@color/purple_200"
+            app:compactCalendarCurrentSelectedDayBackgroundColor="@color/colorAccent"
+            app:compactCalendarDisplayOtherMonthDays="true"
+            app:compactCalendarMultiEventIndicatorColor="@color/colorWhite"
+
+            app:compactCalendarOtherMonthDaysTextColor="@color/colorBlack"
+            app:compactCalendarTextColor="@color/colorWhite"
+            app:compactCalendarTextSize="20sp" />-->

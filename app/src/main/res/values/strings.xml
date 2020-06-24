@@ -35,6 +35,32 @@
 
     <!--Toolbar strings-->
 
+    <!--Strings connected to polish names for dates-->
+    <string-array name="polish_month_names">
+        <item>Styczeń</item>
+        <item>Luty</item>
+        <item>Marzec</item>
+        <item>Kwiecień</item>
+        <item>Maj</item>
+        <item>Czerwiec</item>
+        <item>Lipiec</item>
+        <item>Sierpień</item>
+        <item>Wrzesień</item>
+        <item>Październik</item>
+        <item>Listopad</item>
+        <item>Grudzień</item>
+    </string-array>
+
+    <string-array name="polish_week_names">
+        <item>Pon</item>
+        <item>Wto</item>
+        <item>Śro</item>
+        <item>Czw</item>
+        <item>Pią</item>
+        <item>Sob</item>
+        <item>Nie</item>
+    </string-array>
+
     <string-array name="component_garden_names">
         <item>Podstawowe informacje</item>
         <item>Opis</item>
@@ -52,4 +78,7 @@
     <string name="permission_required_toast">Ta aplikacja wymaga dostępu do lokalizacji</string>
     <string name="permission_rationale_location">Access to the location service is required to demonstrate the \\\'my location\\\' feature, which shows your current location on the map.</string>
     <string name="call">Zadzwoń</string>
+    <string name="hint_price_list">Koszenie trawników</string>
+    <string name="hint_price_list_price">50zł/m2</string>
+    <string name="created_by_info">Created by Grzegorz Podwika</string>
 </resources>

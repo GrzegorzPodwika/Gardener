@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:insetBottom="1dp"
+    android:insetLeft="1dp"
+    android:insetRight="1dp"
+    android:insetTop="1dp"
+>
+
+    <shape android:shape="rectangle">
+        <stroke
+            android:width="5dp"
+            android:color="@color/colorSummer" />
+        <size
+            android:width="25dp"
+            android:height="25dp" />
+        <solid android:color="@color/colorSummer" />
+    </shape>
+</inset>
+
+<!--    @android:color/transparent     android:insetBottom="1dp"
+    android:insetLeft="1dp"
+    android:insetRight="1dp"
+    android:insetTop="1dp"-->

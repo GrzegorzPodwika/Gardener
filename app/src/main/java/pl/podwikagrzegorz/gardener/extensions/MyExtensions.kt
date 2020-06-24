@@ -2,9 +2,11 @@ package pl.podwikagrzegorz.gardener.extensions
 
 
 
+import com.prolificinteractive.materialcalendarview.CalendarDay
 import pl.podwikagrzegorz.gardener.data.pojo.Period
 import pl.podwikagrzegorz.gardener.data.realm.PeriodRealm
 import java.io.File
+import java.util.*
 
 
 fun String.deleteCaptionedImage(){
@@ -35,4 +37,29 @@ fun PeriodRealm.mapToPeriod() : Period{
     period.endYear = this.endYear
 
     return period
+}
+
+fun Int.convertMonthToName() : String {
+    return when(this){
+        0 -> "Styczeń"
+        1 -> "Luty"
+        2 -> "Marzec"
+        3 -> "Kwiecień"
+        4 -> "Maj"
+        5 -> "Czerwiec"
+        6 -> "Lipiec"
+        7 -> "Sierpień"
+        8 -> "Wrzesień"
+        9 -> "Październik"
+        10 -> "Listopad"
+        11 -> "Grudzień"
+        else -> throw ArrayIndexOutOfBoundsException("Month out of range : $this")
+    }
+}
+
+fun Calendar.asCalendarDay() : CalendarDay {
+    val year = this.get(Calendar.YEAR)
+    val month = this.get(Calendar.MONTH) + 1
+    val day = this.get(Calendar.DAY_OF_MONTH)
+    return CalendarDay.from(year, month, day)
 }

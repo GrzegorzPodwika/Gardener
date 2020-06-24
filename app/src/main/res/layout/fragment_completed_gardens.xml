@@ -6,8 +6,9 @@
     tools:context=".ui.completed_gardens.CompletedGardensFragment">
 
     <TextView
+        android:textSize="30dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Hello" />
+        android:text="COMPLETED_GARDENS_FRAGMENT" />
 
 </FrameLayout>

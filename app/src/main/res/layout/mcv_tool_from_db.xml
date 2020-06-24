@@ -18,16 +18,16 @@
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:paddingStart="@dimen/custom_margin_10"
-                android:paddingEnd="@dimen/custom_margin_10" />
+                android:paddingStart="@dimen/keyline_1"
+                android:paddingEnd="@dimen/keyline_1" />
 
             <ImageButton
                 android:id="@+id/imageButton_tool_to_pass"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/keyline_4"
+                android:layout_marginEnd="@dimen/keyline_2"
                 app:srcCompat="@drawable/ic_right_arrow" />
 
         </LinearLayout>
