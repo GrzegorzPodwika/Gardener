@@ -81,4 +81,6 @@
     <string name="hint_price_list">Koszenie trawników</string>
     <string name="hint_price_list_price">50zł/m2</string>
     <string name="created_by_info">Created by Grzegorz Podwika</string>
+    <string name="workers">Pracownicy</string>
+    <string name="workers_list">Lista pracowników:</string>
 </resources>

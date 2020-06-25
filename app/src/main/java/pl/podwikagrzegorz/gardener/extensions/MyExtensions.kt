@@ -6,6 +6,7 @@ import com.prolificinteractive.materialcalendarview.CalendarDay
 import pl.podwikagrzegorz.gardener.data.pojo.Period
 import pl.podwikagrzegorz.gardener.data.realm.PeriodRealm
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -62,4 +63,9 @@ fun Calendar.asCalendarDay() : CalendarDay {
     val month = this.get(Calendar.MONTH) + 1
     val day = this.get(Calendar.DAY_OF_MONTH)
     return CalendarDay.from(year, month, day)
+}
+
+fun Date.toSimpleFormat() : String {
+    val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
+    return simpleDateFormat.format(this)
 }

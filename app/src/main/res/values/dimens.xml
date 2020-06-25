@@ -26,4 +26,5 @@
     <dimen name="custom_mcv_height">140dp</dimen>
     <dimen name="custom_mcv_width">350dp</dimen>
     <dimen name="half_width_mcv">200dp</dimen>
+    <dimen name="bottom_sheet_height">250dp</dimen>
 </resources>

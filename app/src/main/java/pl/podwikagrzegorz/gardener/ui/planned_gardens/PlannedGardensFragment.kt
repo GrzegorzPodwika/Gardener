@@ -98,7 +98,7 @@ class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
         super.onDestroyView()
         Log.i(LOG, "onDestroyView\n")
     }
-
+    //TODO zmienic bo nie jest to Delete tylko przejdz do Activity
     override fun onDeleteItemClick(id: Long?) {
         startGardenFragmentActivity(id)
     }

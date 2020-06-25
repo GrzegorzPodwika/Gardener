@@ -23,15 +23,15 @@ class DeleteBasicGardenDialog(private val ctx: Context?,
             val builder = AlertDialog.Builder(it)
             builder.setMessage(R.string.delete_basic_garden)
                 .setPositiveButton(
-                    R.string.confirm,
-                    DialogInterface.OnClickListener { _, _ ->
-                        listener.onDialogClick(true)
-                    })
+                    R.string.confirm
+                ) { _, _ ->
+                    listener.onDialogClick(true)
+                }
             builder.setNegativeButton(
-                R.string.cancel,
-                DialogInterface.OnClickListener { _, _ ->
-                    listener.onDialogClick(false)
-                })
+                R.string.cancel
+            ) { _, _ ->
+                listener.onDialogClick(false)
+            }
 
             builder.create()
         } ?: throw IllegalStateException("Context cannot be null")

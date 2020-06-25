@@ -37,14 +37,14 @@ class GardenFragmentActivity : AppCompatActivity() {
 
     }
 
-    override fun onBackPressed() {
+/*    override fun onBackPressed() {
         if (viewPager.currentItem == 0) {
             super.onBackPressed()
         } else {
             // Otherwise, select the previous step.
             viewPager.currentItem = viewPager.currentItem - 1
         }
-    }
+    }*/
 
     companion object {
         private const val NUMBER_OF_FRAGMENTS = 9

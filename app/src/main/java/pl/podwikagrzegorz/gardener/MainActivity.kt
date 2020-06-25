@@ -22,29 +22,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         AppBarConfiguration(
             setOf(
                 R.id.nav_planned_gardens, R.id.nav_my_tools, R.id.nav_calendar,
-                R.id.nav_garden_price_list, R.id.nav_completed_gardens,
+                R.id.nav_garden_price_list, R.id.nav_completed_gardens, R.id.nav_workers,
                 R.id.nav_settings, R.id.nav_info
             ), drawerLayout
         )
     }
-    private lateinit var drawerLayout : DrawerLayout
+    private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         setupNavigation()
         setupViews()
-    }
-
-    private fun setupViews() {
-        navView.setNavigationItemSelectedListener(this)
     }
 
     private fun setupNavigation() {
         drawerLayout = findViewById(R.id.drawer_layout)
         navView = findViewById(R.id.nav_view)
-        val toolbar : Toolbar = findViewById(R.id.toolbar)
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
         NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
@@ -60,21 +57,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-
+    private fun setupViews() {
+        navView.setNavigationItemSelectedListener(this)
+    }
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
     override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
-        }else
+        } else
             super.onBackPressed()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             R.id.nav_planned_gardens -> {
                 navController.navigate(R.id.nav_planned_gardens)
             }
@@ -83,6 +82,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_calendar -> {
                 navController.navigate(R.id.nav_calendar)
+            }
+            R.id.nav_workers -> {
+                navController.navigate(R.id.nav_workers)
             }
             R.id.nav_garden_price_list -> {
                 navController.navigate(R.id.nav_garden_price_list)

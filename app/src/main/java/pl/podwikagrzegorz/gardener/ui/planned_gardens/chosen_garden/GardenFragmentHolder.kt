@@ -13,12 +13,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.daos.WorkerDAO
 import pl.podwikagrzegorz.gardener.data.pojo.Machine
 import pl.podwikagrzegorz.gardener.data.pojo.Property
 import pl.podwikagrzegorz.gardener.data.pojo.Tool
 import pl.podwikagrzegorz.gardener.data.realm.BasicGardenRealm
 import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
+import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
+import pl.podwikagrzegorz.gardener.databinding.ExpandableListsOfManHoursBinding
 import pl.podwikagrzegorz.gardener.databinding.FragmentAddGardenBinding
 import pl.podwikagrzegorz.gardener.databinding.FragmentRecViewWithBottomViewBinding
 import pl.podwikagrzegorz.gardener.databinding.FragmentToolDividedVerticalBinding
@@ -27,7 +31,6 @@ import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.PropertiesC
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.ToolsChildViewModel
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
-//TODO("Zajac sie kolejnymi fragmentem Basic Garden moze zeby Intent -> callPhone
 sealed class GardenFragmentHolder {
 
     //Class No1 - BasicGarden
@@ -526,18 +529,72 @@ sealed class GardenFragmentHolder {
     }
 
     //Class No8 - Man hours
+    //TODO("Zajac sie kolejnymi fragmentem Man hours aby ExpandableList dzialala jak nalezy
     class ManHoursFragment : Fragment() {
+
+        private lateinit var binding: ExpandableListsOfManHoursBinding
+        private val gardenID: Long by lazy {
+            ManHoursViewModel.fromBundle(requireArguments())
+        }
+        private val viewModel: ManHoursViewModel by viewModels {
+            GardenViewModelFactory(gardenID)
+        }
+        private lateinit var workersList: RealmResults<WorkerRealm>
+
         override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View? {
-            return super.onCreateView(inflater, container, savedInstanceState)
+            binding = DataBindingUtil.inflate(
+                inflater,
+                R.layout.expandable_lists_of_man_hours,
+                container,
+                false
+            )
+            return binding.root
+        }
+
+        override fun onActivityCreated(savedInstanceState: Bundle?) {
+            super.onActivityCreated(savedInstanceState)
+            workersList = viewModel.getWorkersResults()
+
+            //setExpandableListAdapter()
+            setOnAddWorkerButtonListener()
+            setOnAddManHoursButtonListener()
+        }
+
+        private fun setExpandableListAdapter() {
+            val expandableList = binding.expandableListView
+
+            viewModel.mapOfWorkedHours?.observe(
+                viewLifecycleOwner,
+                Observer { mapOfWorkedHours ->
+                    expandableList.setAdapter(
+                        ExpandableListAdapter(
+                            requireContext(),
+                            workersList,
+                            mapOfWorkedHours
+                        )
+                    )
+
+                })
+        }
+
+        private fun setOnAddWorkerButtonListener() {
+            binding.materialButtonAddWorkers.setOnClickListener {
+                SheetAssignWorkerFragment(workersList).show(childFragmentManager, null)
+            }
+        }
+
+        private fun setOnAddManHoursButtonListener() {
+           // TODO("wyswietlanei z animacja bottomsheet")
         }
 
         companion object {
             fun create(gardenID: Long): ManHoursFragment {
                 val fragment = ManHoursFragment()
+                fragment.arguments = ManHoursViewModel.toBundle(gardenID)
                 return fragment
             }
         }
