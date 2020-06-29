@@ -1,42 +1,48 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden
 
+import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.realm.RealmList
 import io.realm.RealmResults
+import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.data.daos.WorkerDAO
 import pl.podwikagrzegorz.gardener.data.pojo.Machine
 import pl.podwikagrzegorz.gardener.data.pojo.Property
 import pl.podwikagrzegorz.gardener.data.pojo.Tool
-import pl.podwikagrzegorz.gardener.data.realm.BasicGardenRealm
 import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
 import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
-import pl.podwikagrzegorz.gardener.databinding.ExpandableListsOfManHoursBinding
-import pl.podwikagrzegorz.gardener.databinding.FragmentAddGardenBinding
-import pl.podwikagrzegorz.gardener.databinding.FragmentRecViewWithBottomViewBinding
-import pl.podwikagrzegorz.gardener.databinding.FragmentToolDividedVerticalBinding
+import pl.podwikagrzegorz.gardener.databinding.*
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.MachinesChildViewModel
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.PropertiesChildViewModel
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.ToolsChildViewModel
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
+import java.io.File
+import java.io.IOException
+import java.util.*
+import kotlin.math.min
 
 sealed class GardenFragmentHolder {
 
     //Class No1 - BasicGarden
     class BasicGardenFragment : Fragment() {
 
-        private lateinit var gardenBinding: FragmentAddGardenBinding
+        private lateinit var gardenBinding: FragmentAddedGardenBinding
         private val gardenID: Long by lazy {
             BasicGardenViewModel.fromBundle(requireArguments())
         }
@@ -52,7 +58,7 @@ sealed class GardenFragmentHolder {
             savedInstanceState: Bundle?
         ): View? {
             gardenBinding =
-                DataBindingUtil.inflate(inflater, R.layout.fragment_add_garden, container, false)
+                DataBindingUtil.inflate(inflater, R.layout.fragment_added_garden, container, false)
 
             return gardenBinding.root
         }
@@ -60,48 +66,31 @@ sealed class GardenFragmentHolder {
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
 
+            loadViewsWithBasicInfoAboutGarden()
+            setOnCallToClientButtonListener()
+        }
+
+        private fun loadViewsWithBasicInfoAboutGarden() {
             val basicGarden = viewModelGarden.getBasicGarden()
-            presetViews()
-            setViewsWithContent(basicGarden)
-        }
 
-        private fun presetViews() {
-            gardenBinding.textInputEditTextGardenTitle.isEnabled = false
-            gardenBinding.textInputEditTextPhoneNumber.isEnabled = false
-            gardenBinding.materialButtonStartGardenDate.isEnabled = false
-            gardenBinding.materialButtonEndGardenDate.isEnabled = false
-            gardenBinding.switchMaterialGardenOrService.isClickable = false
-            gardenBinding.materialButtonLocateGarden.isEnabled = false
-
-            gardenBinding.materialButtonCallToClient.isEnabled = true
-            gardenBinding.materialButtonCallToClient.setOnClickListener {
-                val phoneNumber = gardenBinding.textInputEditTextPhoneNumber.text.toString()
-                val implicitIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${phoneNumber}"))
-                startActivity(implicitIntent)
-            }
-        }
-
-        private fun setViewsWithContent(basicGarden: BasicGardenRealm?) {
             if (basicGarden != null) {
-                gardenBinding.textInputEditTextGardenTitle.setText(basicGarden.gardenTitle)
-                gardenBinding.textInputEditTextPhoneNumber.setText(basicGarden.phoneNumber.toString())
-                gardenBinding.materialTextViewPickedPeriod.text =
-                    basicGarden.period?.getPeriodAsString()
+                gardenBinding.textViewGardenTitle.text = basicGarden.gardenTitle
+                gardenBinding.textViewPhoneNumber.text = basicGarden.phoneNumber.toString()
+                gardenBinding.textViewPlannedPeriod.text = basicGarden.period!!.getPeriodAsString()
 
-                if (basicGarden.isGarden) {
-                    gardenBinding.switchMaterialGardenOrService.isChecked = true
-
-                } else {
-                    gardenBinding.switchMaterialGardenOrService.isChecked = false
-                    gardenBinding.switchMaterialGardenOrService.setText(R.string.service)
-                    gardenBinding.shapeableImageViewGardenOrService.setImageResource(R.drawable.ic_lawn_mower)
-                }
-
-                gardenBinding.shapeableImageViewPickedLocalization.setImageDrawable(
+                gardenBinding.imageViewPickedLocalization.setImageDrawable(
                     Drawable.createFromPath(
                         basicGarden.snapshotPath
                     )
                 )
+            }
+        }
+
+        private fun setOnCallToClientButtonListener() {
+            gardenBinding.materialButtonCallToClient.setOnClickListener {
+                val phoneNumber = gardenBinding.textViewPhoneNumber.text.toString()
+                val implicitIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${phoneNumber}"))
+                startActivity(implicitIntent)
             }
         }
 
@@ -557,9 +546,8 @@ sealed class GardenFragmentHolder {
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
-            workersList = viewModel.getWorkersResults()
 
-            //setExpandableListAdapter()
+            setExpandableListAdapter()
             setOnAddWorkerButtonListener()
             setOnAddManHoursButtonListener()
         }
@@ -567,14 +555,13 @@ sealed class GardenFragmentHolder {
         private fun setExpandableListAdapter() {
             val expandableList = binding.expandableListView
 
+
             viewModel.mapOfWorkedHours?.observe(
                 viewLifecycleOwner,
                 Observer { mapOfWorkedHours ->
                     expandableList.setAdapter(
                         ExpandableListAdapter(
-                            requireContext(),
-                            workersList,
-                            mapOfWorkedHours
+                            requireContext(), mapOfWorkedHours
                         )
                     )
 
@@ -582,13 +569,34 @@ sealed class GardenFragmentHolder {
         }
 
         private fun setOnAddWorkerButtonListener() {
+
+            workersList = viewModel.getWorkersResults()
             binding.materialButtonAddWorkers.setOnClickListener {
-                SheetAssignWorkerFragment(workersList).show(childFragmentManager, null)
+                SheetAssignWorkerFragment(
+                    workersList,
+                    object : SheetAssignWorkerFragment.OnGetListOfWorkersFullNameListener {
+                        override fun onGetListOfWorkersFullName(listOfWorkersFullName: List<String>) {
+                            viewModel.addListOfWorkersFullName(listOfWorkersFullName)
+                        }
+                    }).show(childFragmentManager, null)
             }
         }
 
         private fun setOnAddManHoursButtonListener() {
-           // TODO("wyswietlanei z animacja bottomsheet")
+            val workersFullNames = viewModel.getWorkersFullNames()
+
+            binding.materialButtonAddManHours.setOnClickListener {
+                SheetManHoursFragment(
+                    workersFullNames,
+                    object : SheetManHoursFragment.OnGetListOfWorkedHoursWithPickedDate {
+                        override fun onGetListOfWorkedHoursWithPickedDate(
+                            listOfWorkedHours: List<Double>,
+                            date: Date
+                        ) {
+                            viewModel.addListOfWorkedHoursWithPickedDate(listOfWorkedHours, date)
+                        }
+                    }).show(childFragmentManager, null)
+            }
         }
 
         companion object {
@@ -600,19 +608,170 @@ sealed class GardenFragmentHolder {
         }
     }
 
-    //Class No9 - Photos
+    //TODO adapter do zdjec itd.
     class PhotosFragment : Fragment() {
+
+        private lateinit var binding: FragmentPhotosBinding
+        private val gardenID: Long by lazy {
+            PhotosViewModel.fromBundle(requireArguments())
+        }
+
+        private val viewModel: PhotosViewModel by viewModels {
+            GardenViewModelFactory(gardenID)
+        }
+
+        private var uniquePhotoName: String = ""
+
+        private val fileProviderPath: File by lazy {
+            requireContext().filesDir
+        }
+
+        //private val
+
+        private val targetWidth: Int =
+            GardenerApp.res.getDimensionPixelSize(R.dimen.image_size_small)
+        private val targetHeight: Int = targetWidth
+
         override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View? {
-            return super.onCreateView(inflater, container, savedInstanceState)
+            binding = DataBindingUtil.inflate(inflater, R.layout.fragment_photos, container, false)
+            return binding.root
+        }
+
+        override fun onActivityCreated(savedInstanceState: Bundle?) {
+            super.onActivityCreated(savedInstanceState)
+
+            observePhotosListFromDb()
+            setOnTakePhotoButtonListener()
+            setOnCompleteGardenButtonListener()
+        }
+
+        private fun observePhotosListFromDb() {
+            viewModel.getItemsList()?.observe(viewLifecycleOwner, Observer { listOfPicturesPaths ->
+                if (listOfPicturesPaths.size == MAX_NUMBER_OF_POSSIBLE_PICTURES){
+                    binding.materialButtonTakePhoto.isEnabled = false
+                }
+
+                setReceivedPhotos(listOfPicturesPaths)
+            })
+        }
+
+        private fun setReceivedPhotos(listOfPicturesPaths: RealmList<String>?) {
+            listOfPicturesPaths?.let {
+
+                for (index in it.indices) {
+                    val absolutePath = getAbsolutePathFrom(it[index]!!)
+                    val scaledBitmap = getScaledBitmap(absolutePath)
+
+                    when (index) {
+                        0 -> binding.imageViewPhoto0.setImageBitmap(scaledBitmap)
+
+                        1 -> binding.imageViewPhoto1.setImageBitmap(scaledBitmap)
+
+                        2 -> binding.imageViewPhoto2.setImageBitmap(scaledBitmap)
+
+                        3 -> binding.imageViewPhoto3.setImageBitmap(scaledBitmap)
+
+                        4 -> binding.imageViewPhoto4.setImageBitmap(scaledBitmap)
+
+                        5 -> binding.imageViewPhoto5.setImageBitmap(scaledBitmap)
+
+                        6 -> binding.imageViewPhoto6.setImageBitmap(scaledBitmap)
+
+                        7 -> binding.imageViewPhoto7.setImageBitmap(scaledBitmap)
+
+                        8 -> binding.imageViewPhoto8.setImageBitmap(scaledBitmap)
+
+                        9 -> binding.imageViewPhoto9.setImageBitmap(scaledBitmap)
+
+                        10 -> binding.imageViewPhoto10.setImageBitmap(scaledBitmap)
+
+                        11 -> binding.imageViewPhoto11.setImageBitmap(scaledBitmap)
+
+                    }
+                }
+            }
+        }
+
+        private fun getAbsolutePathFrom(fileName: String): String =
+            File(fileProviderPath, fileName).absolutePath
+
+
+        private fun getScaledBitmap(path: String): Bitmap {
+            val bmOptions = BitmapFactory.Options().apply {
+                // Get the dimensions of the bitmap
+                inJustDecodeBounds = true
+
+                val photoW: Int = outWidth
+                val photoH: Int = outHeight
+
+                // Determine how much to scale down the image
+                val scaleFactor: Int = min(photoW / targetWidth, photoH / targetHeight)
+
+                // Decode the image file into a Bitmap sized to fill the View
+                inJustDecodeBounds = false
+                inSampleSize = scaleFactor
+            }
+            return BitmapFactory.decodeFile(path, bmOptions)
+        }
+
+        private fun setOnTakePhotoButtonListener() {
+            binding.materialButtonTakePhoto.setOnClickListener {
+                val packageManager = requireContext().packageManager
+                Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+                    takePictureIntent.resolveActivity(packageManager)?.also {
+                        val photoFile: File? = try {
+                            createImageFile()
+                        } catch (ex: IOException) {
+
+                            null
+                        }
+
+                        photoFile?.also {
+                            val photoUri: Uri = FileProvider.getUriForFile(
+                                requireContext(),
+                                GardenerApp.WRITTEN_FILE_LOCATION,
+                                it
+                            )
+                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                            startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE)
+                        }
+                    }
+                }
+            }
+        }
+
+        @Throws(IOException::class)
+        private fun createImageFile(): File {
+            uniquePhotoName = "${System.currentTimeMillis()}.jpg"
+
+            return File(fileProviderPath, uniquePhotoName)
+        }
+
+
+        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+            super.onActivityResult(requestCode, resultCode, data)
+
+            if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+                viewModel.addItemToList(uniquePhotoName)
+
+            }
+        }
+
+        private fun setOnCompleteGardenButtonListener() {
+            //TODO - zaimplementowac konczenie ogrodu kiedys tam
         }
 
         companion object {
+            const val CAMERA_REQUEST_CODE = 1001
+            const val MAX_NUMBER_OF_POSSIBLE_PICTURES = 12
+
             fun create(gardenID: Long): PhotosFragment {
                 val fragment = PhotosFragment()
+                fragment.arguments = PhotosViewModel.toBundle(gardenID)
                 return fragment
             }
         }

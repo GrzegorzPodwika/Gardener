@@ -12,6 +12,7 @@ import pl.podwikagrzegorz.gardener.databinding.BottomSheetWorkerCheckboxBinding
 class SheetAssignWorkerAdapter(
     private val workersList: RealmResults<WorkerRealm>
 ) : RecyclerView.Adapter<SheetAssignWorkerAdapter.WorkerHolder>() {
+    private val isCheckedWorkerList = mutableListOf<Boolean>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkerHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -31,15 +32,38 @@ class SheetAssignWorkerAdapter(
 
     override fun onBindViewHolder(holder: WorkerHolder, position: Int) {
         holder.bind(workersList[position])
+        holder.binding.materialCheckBoxReceivedWorkers.setOnCheckedChangeListener { _, isChecked ->
+            isCheckedWorkerList[position] = isChecked
+        }
+    }
+
+    fun getListOfWorkersFullName() : List<String> {
+        val workersFullName = mutableListOf<String>()
+
+        for (i in isCheckedWorkerList.indices){
+            if (isCheckedWorkerList[i]){
+                if (workersList[i] != null){
+                    workersFullName.add(workersList[i]!!.getFullName())
+                }
+            }
+        }
+
+        return workersFullName
     }
 
     class WorkerHolder(val binding: BottomSheetWorkerCheckboxBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(workerRealm: WorkerRealm?){
+        fun bind(workerRealm: WorkerRealm?) {
             workerRealm?.let {
                 binding.materialCheckBoxReceivedWorkers.text = it.getFullName()
             }
+        }
+    }
+
+    init {
+        for (index in workersList.indices) {
+            isCheckedWorkerList.add(false)
         }
     }
 }

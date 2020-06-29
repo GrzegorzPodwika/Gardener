@@ -18,5 +18,6 @@ class GardenerApp: Application() {
     companion object{
         lateinit var ctx: Context
         lateinit var res: Resources
+        const val WRITTEN_FILE_LOCATION = "pl.podwikagrzegorz.gardener.fileprovider"
     }
 }

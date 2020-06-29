@@ -2,6 +2,7 @@ package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import java.lang.ClassCastException
 
 class GardenViewModelFactory(private val gardenID: Long) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -33,8 +34,11 @@ class GardenViewModelFactory(private val gardenID: Long) : ViewModelProvider.New
             modelClass.isAssignableFrom(ManHoursViewModel::class.java) ->
                 ManHoursViewModel(gardenID) as T
 
-            //dodac jeszcze dla mapofworkedhours
-            else -> DescriptionViewModel(gardenID) as T
+            modelClass.isAssignableFrom(PhotosViewModel::class.java) ->
+                PhotosViewModel(gardenID) as T
+
+            else -> throw ClassCastException("ViewModel class not found.")
+
         }
 
     }

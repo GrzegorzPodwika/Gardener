@@ -159,7 +159,26 @@ class AddedItemAdapter(
 
 }
 
+/*class PhotosAdapter(
+    private val listOfPicturesPaths : RealmList<String>
+) : RecyclerView.Adapter<PhotosAdapter.PhotosHolder>(){
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotosHolder {
+        TODO("Not yet implemented")
+    }
+
+    override fun getItemCount(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBindViewHolder(holder: PhotosHolder, position: Int) {
+        TODO("Not yet implemented")
+    }
+
+    class PhotosHolder() : RecyclerView.ViewHolder() {
+
+    }
+}*/
 
 /*abstract class AbstractReceivedItemAdapter<T>(
     protected val itemRealmResults: RealmResults<T>,

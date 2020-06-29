@@ -6,6 +6,8 @@
     <dimen name="keyline_2">8dp</dimen>
     <dimen name="keyline_4">16dp</dimen>
     <dimen name="keyline_5">24dp</dimen>
+    <dimen name="keyline_6">32dp</dimen>
+    <dimen name="keyline_7">40dp</dimen>
 
     <dimen name="custom_margin_10">10dp</dimen>
 
@@ -26,5 +28,5 @@
     <dimen name="custom_mcv_height">140dp</dimen>
     <dimen name="custom_mcv_width">350dp</dimen>
     <dimen name="half_width_mcv">200dp</dimen>
-    <dimen name="bottom_sheet_height">250dp</dimen>
+    <dimen name="custom_map_height">300dp</dimen>
 </resources>

@@ -54,7 +54,7 @@ class BasicGardenAdapter(
 
         fun bind(garden: BasicGardenRealm){
             binding.materialTextViewGardenTitle.text = garden.gardenTitle
-            binding.materialTextViewPlannedPhone.text = garden.phoneNumber.toString()
+            binding.textViewPhoneNumber.text = garden.phoneNumber.toString()
             binding.materialTextViewPlannedPeriod.text = formatPeriodToString(garden.period)
 
             if (!garden.isGarden)

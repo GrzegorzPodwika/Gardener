@@ -42,7 +42,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/materialTextView_garden_title" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/materialTextView_planned_phone"
+                android:id="@+id/textView_phone_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/keyline_4"

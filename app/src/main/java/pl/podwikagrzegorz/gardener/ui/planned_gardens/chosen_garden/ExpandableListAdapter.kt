@@ -17,9 +17,8 @@ import pl.podwikagrzegorz.gardener.databinding.ExpandableListItemBinding
 import pl.podwikagrzegorz.gardener.extensions.toSimpleFormat
 import java.lang.StringBuilder
 
-class ExpandableListAdapter(
+class ExpandableListAdapter internal constructor(
     private val context: Context,
-    private val workersList: RealmResults<WorkerRealm>,
     private val manHoursMap: RealmList<ManHoursMapRealm>
 ) :
     BaseExpandableListAdapter() {
@@ -62,7 +61,7 @@ class ExpandableListAdapter(
     override fun getChildrenCount(parentPosition: Int): Int =
         manHoursMap[parentPosition]!!.listOfManHours.size
 
-    override fun getGroup(parentPosition: Int): Long = manHoursMap[parentPosition]!!.idWorker
+    override fun getGroup(parentPosition: Int): String = manHoursMap[parentPosition]!!.workerFullName
 
     override fun getGroupCount(): Int =
         manHoursMap.size
@@ -77,7 +76,7 @@ class ExpandableListAdapter(
         convertView: View?,
         parent: ViewGroup?
     ): View {
-        val workerId: Long = getGroup(parentPosition)
+        val workerFullName: String = getGroup(parentPosition)
 
         val binding: ExpandableListGroupBinding
 
@@ -95,19 +94,11 @@ class ExpandableListAdapter(
         } else {
             DataBindingUtil.bind(convertView)!!
         }
-        binding.listTitle.text = getWorkerFullName(workerId)
+        binding.listTitle.text = workerFullName
 
         return binding.root
     }
 
-    private fun getWorkerFullName(workerId: Long): String {
-        val searchingWorker = workersList.find { it.id == workerId }
-
-        return if (searchingWorker != null)
-            StringBuilder().append(searchingWorker.name).append(" ").append(searchingWorker.surname)
-                .toString()
-        else "null"
-    }
 
     override fun hasStableIds(): Boolean = false
 

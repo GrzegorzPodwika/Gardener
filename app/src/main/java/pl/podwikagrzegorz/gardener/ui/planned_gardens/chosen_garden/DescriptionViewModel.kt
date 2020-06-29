@@ -46,26 +46,3 @@ class DescriptionViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
         fun fromBundle(bundle: Bundle): Long = bundle.getLong(GARDEN_ID)
     }
 }
-
-
-/*    private val listOfDescriptions: MutableLiveData<RealmList<String>>? =
-        gardenRealm?.listOfDescriptions?.asLiveList()
-
-    fun getDescriptionsList(): MutableLiveData<RealmList<String>>? =
-        listOfDescriptions
-
-    fun addDescriptionToList(description: String) {
-        realm.executeTransaction {
-            gardenRealm?.listOfDescriptions?.add(description)
-            refreshLiveDataList()
-        }
-    }
-
-    fun deleteDescription(id: Long?) {
-        if (id != null) {
-            realm.executeTransaction {
-                gardenRealm?.listOfDescriptions?.removeAt(id.toInt())
-                refreshLiveDataList()
-            }
-        }
-    }*/

@@ -49,22 +49,3 @@ class NoteViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
         fun fromBundle(bundle: Bundle): Long = bundle.getLong(GARDEN_ID)
     }
 }
-
-/*
-    fun getNotesList(): MutableLiveData<RealmList<String>>? = listOfNotes
-
-    fun addNoteToList(note: String) {
-        realm.executeTransaction {
-            gardenRealm?.listOfNotes?.add(note)
-            listOfNotes?.postValue(listOfNotes.value)
-        }
-    }
-
-    fun deleteNote(id: Long?) {
-        if (id != null) {
-            realm.executeTransaction {
-                gardenRealm?.listOfNotes?.removeAt(id.toInt())
-                listOfNotes?.postValue(listOfNotes.value)
-            }
-        }
-    }*/

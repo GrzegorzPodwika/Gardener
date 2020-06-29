@@ -2,6 +2,7 @@ package pl.podwikagrzegorz.gardener.extensions
 
 
 
+import android.widget.DatePicker
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import pl.podwikagrzegorz.gardener.data.pojo.Period
 import pl.podwikagrzegorz.gardener.data.realm.PeriodRealm
@@ -68,4 +69,10 @@ fun Calendar.asCalendarDay() : CalendarDay {
 fun Date.toSimpleFormat() : String {
     val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     return simpleDateFormat.format(this)
+}
+
+fun DatePicker.getDate() : Date {
+    val calendar = Calendar.getInstance()
+    calendar.set(year, month, dayOfMonth)
+    return calendar.time
 }

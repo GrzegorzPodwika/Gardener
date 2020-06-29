@@ -4,7 +4,7 @@ import io.realm.RealmList
 import io.realm.RealmObject
 
 open class ManHoursMapRealm(
-    var idWorker: Long = 0,
+    var workerFullName: String = "",
     var listOfManHours: RealmList<ManHoursRealm> = RealmList()
 ) : RealmObject() {
     fun cascadeDelete() {

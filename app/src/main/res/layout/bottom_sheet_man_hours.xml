@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <DatePicker
+        android:layout_marginTop="@dimen/keyline_2"
+        android:id="@+id/datePicker_day_of_work"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:datePickerMode="calendar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_man_hours_list"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginStart="@dimen/keyline_5"
+        android:layout_marginEnd="@dimen/keyline_5"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/materialButton_confirm_adding_man_hours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/confirm"
+        android:layout_marginEnd="@dimen/keyline_4"
+        android:layout_marginTop="@dimen/keyline_2"
+        android:layout_marginBottom="@dimen/keyline_2"
+        android:layout_gravity="end"/>
+</LinearLayout>
+</layout>

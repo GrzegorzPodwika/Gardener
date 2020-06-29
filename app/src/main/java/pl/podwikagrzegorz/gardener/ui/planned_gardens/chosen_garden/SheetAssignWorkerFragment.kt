@@ -12,8 +12,17 @@ import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
 import pl.podwikagrzegorz.gardener.databinding.BottomSheetAssignWorkerBinding
 
-class SheetAssignWorkerFragment(private val workersList: RealmResults<WorkerRealm>) : BottomSheetDialogFragment() {
+class SheetAssignWorkerFragment(
+    private val workersList: RealmResults<WorkerRealm>,
+    private val listener: OnGetListOfWorkersFullNameListener
+) :
+    BottomSheetDialogFragment() {
     private lateinit var binding: BottomSheetAssignWorkerBinding
+    private val adapter = SheetAssignWorkerAdapter(workersList)
+
+    interface OnGetListOfWorkersFullNameListener {
+        fun onGetListOfWorkersFullName(listOfWorkersFullName: List<String>)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,10 +38,19 @@ class SheetAssignWorkerFragment(private val workersList: RealmResults<WorkerReal
         super.onActivityCreated(savedInstanceState)
 
         setRecViewWithReceivedWorkers()
+        setAddWorkersButton()
     }
 
     private fun setRecViewWithReceivedWorkers() {
         binding.recyclerViewReceivedWorkers.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerViewReceivedWorkers.adapter = SheetAssignWorkerAdapter(workersList)
+        binding.recyclerViewReceivedWorkers.adapter = adapter
+    }
+
+    private fun setAddWorkersButton() {
+        binding.materialButtonConfirmAddingWorkers.setOnClickListener {
+            val listOfWorkersFullName = adapter.getListOfWorkersFullName()
+            listener.onGetListOfWorkersFullName(listOfWorkersFullName)
+            dismiss()
+        }
     }
 }
