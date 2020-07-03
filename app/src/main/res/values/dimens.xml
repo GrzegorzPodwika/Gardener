@@ -24,6 +24,7 @@
     <dimen name="mcv_height">50dp</dimen>
     <dimen name="textField_height">58dp</dimen>
     <dimen name="image_size">132dp</dimen>
+    <dimen name="image_size_extra_small">90dp</dimen>
     <dimen name="image_size_small">100dp</dimen>
     <dimen name="custom_mcv_height">140dp</dimen>
     <dimen name="custom_mcv_width">350dp</dimen>

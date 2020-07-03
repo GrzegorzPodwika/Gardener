@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.ListMaterialcardviewBinding
+import pl.podwikagrzegorz.gardener.databinding.McvSingleToolBinding
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
 abstract class MyToolsAbstractAdapter <T>(
@@ -17,10 +18,10 @@ abstract class MyToolsAbstractAdapter <T>(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
 
-        val materialCVBinding =
-            DataBindingUtil.inflate<ListMaterialcardviewBinding>(inflater, R.layout.list_materialcardview, parent, false)
+        val mcvSingleTool =
+            DataBindingUtil.inflate<McvSingleToolBinding>(inflater, R.layout.mcv_single_tool, parent, false)
 
-        return getViewHolder(materialCVBinding, viewType)
+        return getViewHolder(mcvSingleTool, viewType)
     }
 
     override fun getItemCount(): Int = itemRealmResults.size
@@ -33,12 +34,12 @@ abstract class MyToolsAbstractAdapter <T>(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return itemRealmResults[position]?.let { getLayoutId(position, it) } ?: R.layout.list_materialcardview
+        return itemRealmResults[position]?.let { getLayoutId(position, it) } ?: R.layout.mcv_single_tool
     }
 
     protected abstract fun getLayoutId(position: Int, obj: T): Int
 
-    abstract fun getViewHolder( binding: ListMaterialcardviewBinding, viewType: Int):RecyclerView.ViewHolder
+    abstract fun getViewHolder( binding: McvSingleToolBinding, viewType: Int):RecyclerView.ViewHolder
 
     internal interface Binder<T>{
         fun bind(data: T, listener: OnDeleteItemListener)

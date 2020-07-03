@@ -15,7 +15,7 @@ import pl.podwikagrzegorz.gardener.data.pojo.Property
 import pl.podwikagrzegorz.gardener.databinding.RecViewAndMcvBinding
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
-class PropertiesChildFragment private constructor() : Fragment(), OnDeleteItemListener {
+class PropertiesChildFragment : Fragment(), OnDeleteItemListener {
 
     private val propertiesVM: PropertiesChildViewModel by lazy {
         ViewModelProvider(this).get(PropertiesChildViewModel::class.java)
@@ -79,11 +79,6 @@ class PropertiesChildFragment private constructor() : Fragment(), OnDeleteItemLi
 
     override fun onDeleteItemClick(id: Long?) {
         propertiesVM.deleteProperty(id)
-    }
-
-    companion object {
-        fun newInstance() = PropertiesChildFragment()
-
     }
 
 }

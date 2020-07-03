@@ -30,7 +30,7 @@ class MyToolsFragment : Fragment() {
 
         childFragmentManager.beginTransaction().replace(
             R.id.tools_fragment_container,
-            ToolsChildFragment.newInstance()
+            ToolsChildFragment()
         ).commit()
 
         return binding.root
@@ -41,9 +41,9 @@ class MyToolsFragment : Fragment() {
             var selectedFragment: Fragment? = null
 
             when (item.itemId) {
-                R.id.nav_menu_tools -> selectedFragment = ToolsChildFragment.newInstance()
-                R.id.nav_menu_equipment -> selectedFragment = MachinesChildFragment.newInstance()
-                R.id.nav_menu_canister -> selectedFragment = PropertiesChildFragment.newInstance()
+                R.id.nav_menu_tools -> selectedFragment = ToolsChildFragment()
+                R.id.nav_menu_equipment -> selectedFragment = MachinesChildFragment()
+                R.id.nav_menu_canister -> selectedFragment = PropertiesChildFragment()
             }
 
             if (selectedFragment != null) {

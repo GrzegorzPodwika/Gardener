@@ -13,9 +13,6 @@ class PhotosViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
 
     override fun getItemsList(): LiveData<RealmList<String>>? = listOfPicturesPaths
 
-    fun getSizeOfPicturesPathsList() : Int
-        = gardenRealm?.listOfPicturesPaths?.size ?: 0
-
     override fun addItemToList(item: String) {
         realm.executeTransaction {
             val list = listOfPicturesPaths?.value

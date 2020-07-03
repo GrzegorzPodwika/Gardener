@@ -24,13 +24,12 @@ class ManHoursViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
     fun getWorkersFullNames(): List<String> {
         val listOfNames = mutableListOf<String>()
 
-        gardenRealm?.let {
-            val mapOfWorkedHours = it.mapOfWorkedHours
-            for (item in mapOfWorkedHours) {
+        val tmpListOfWorkedHours = _mapOfWorkedHours?.value
+        tmpListOfWorkedHours?.let {
+            for (item in it) {
                 listOfNames.add(item.workerFullName)
             }
         }
-
         return listOfNames
     }
 
@@ -45,29 +44,45 @@ class ManHoursViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
 
     fun addListOfWorkersFullName(listOfWorkersFullName: List<String>) {
         realm.executeTransaction {
-            gardenRealm?.let { gardenRealm ->
-                for (name in listOfWorkersFullName) {
-                    gardenRealm.mapOfWorkedHours.add(ManHoursMapRealm(name))
+
+            for (name in listOfWorkersFullName) {
+                val tmpListOfWorkedHours = _mapOfWorkedHours?.value
+
+                tmpListOfWorkedHours?.let { list ->
+                    val isCurrentlyInList = list.find { it.workerFullName == name }
+
+                    if (isCurrentlyInList == null)
+                        list.add(ManHoursMapRealm(name))
                 }
+
+                refreshLiveDataList()
             }
+
         }
     }
 
     fun addListOfWorkedHoursWithPickedDate(listOfWorkedHours: List<Double>, date: Date) {
         realm.executeTransaction {
-            gardenRealm?.let {
-                for (index in listOfWorkedHours.indices) {
-                    if (listOfWorkedHours[index] != 0.0)
-                        it.mapOfWorkedHours[index]!!.listOfManHours.add(
-                            ManHoursRealm(
-                                date,
-                                listOfWorkedHours[index]
-                            )
+            for (index in listOfWorkedHours.indices) {
+                if (listOfWorkedHours[index] != 0.0) {
+                    _mapOfWorkedHours?.value?.get(index)?.listOfManHours?.add(
+                        ManHoursRealm(
+                            date,
+                            listOfWorkedHours[index]
                         )
+                    )
+
                 }
             }
+
+            refreshLiveDataList()
         }
     }
+
+    private fun refreshLiveDataList() {
+        _mapOfWorkedHours?.postValue(_mapOfWorkedHours.value)
+    }
+
 
     companion object {
         private const val GARDEN_ID = "GARDEN_ID"

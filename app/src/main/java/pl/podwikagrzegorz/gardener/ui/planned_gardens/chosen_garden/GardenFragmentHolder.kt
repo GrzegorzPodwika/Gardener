@@ -583,11 +583,11 @@ sealed class GardenFragmentHolder {
         }
 
         private fun setOnAddManHoursButtonListener() {
-            val workersFullNames = viewModel.getWorkersFullNames()
+            //val workersFullNames = viewModel.getWorkersFullNames()
 
             binding.materialButtonAddManHours.setOnClickListener {
                 SheetManHoursFragment(
-                    workersFullNames,
+                    viewModel.getWorkersFullNames(),
                     object : SheetManHoursFragment.OnGetListOfWorkedHoursWithPickedDate {
                         override fun onGetListOfWorkedHoursWithPickedDate(
                             listOfWorkedHours: List<Double>,

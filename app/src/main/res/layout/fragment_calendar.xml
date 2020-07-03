@@ -2,54 +2,58 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ui.calendar.CalendarFragment">
-
-    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
-        android:id="@+id/calendar"
-        app:mcv_firstDayOfWeek="monday"
-        app:mcv_monthLabels="@array/polish_month_names"
-        app:mcv_weekDayLabels="@array/polish_week_names"
-        app:mcv_selectionMode="range"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:mcv_showOtherDates="decorated_disabled" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/keyline_4"
-        android:layout_marginStart="@dimen/keyline_2"
-        android:text="Legenda:"
-        android:textAppearance="?attr/textAppearanceHeadline5"/>
 
     <LinearLayout
-        android:layout_marginStart="@dimen/keyline_2"
-        android:layout_marginTop="@dimen/keyline_2"
-        android:layout_marginBottom="@dimen/keyline_4"
         android:layout_width="match_parent"
-        android:layout_height="30dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.calendar.CalendarFragment">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:scaleType="centerCrop"
-            android:layout_height="match_parent"
-            android:src="@drawable/calendar_circle"/>
+        <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+            android:id="@+id/calendar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:mcv_headerTextAppearance="?attr/textAppearanceHeadline5"
+            app:mcv_weekDayTextAppearance="?attr/textAppearanceSubtitle1"
+            app:mcv_dateTextAppearance="?attr/textAppearanceSubtitle1"
+            app:mcv_firstDayOfWeek="monday"
+            app:mcv_monthLabels="@array/polish_month_names"
+            app:mcv_selectionMode="range"
+            app:mcv_showOtherDates="decorated_disabled"
+            app:mcv_weekDayLabels="@array/polish_week_names" />
 
         <TextView
-            android:layout_marginStart="@dimen/keyline_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text=" - dni pracy"
-            android:textAppearance="?attr/textAppearanceBody1"/>
-    </LinearLayout>
+            android:layout_marginStart="@dimen/keyline_2"
+            android:layout_marginTop="@dimen/keyline_4"
+            android:text="Legenda:"
+            android:textAppearance="?attr/textAppearanceHeadline5" />
 
-</LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginStart="@dimen/keyline_2"
+            android:layout_marginTop="@dimen/keyline_2"
+            android:layout_marginBottom="@dimen/keyline_7">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/calendar_circle" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/keyline_2"
+                android:text=" - dni pracy"
+                android:textAppearance="?attr/textAppearanceBody1" />
+        </LinearLayout>
+
+    </LinearLayout>
 </layout>
 
     <!--

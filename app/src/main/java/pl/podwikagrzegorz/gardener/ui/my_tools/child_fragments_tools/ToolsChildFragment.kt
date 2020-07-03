@@ -15,7 +15,7 @@ import pl.podwikagrzegorz.gardener.data.pojo.Tool
 import pl.podwikagrzegorz.gardener.databinding.RecViewAndMcvBinding
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
-class ToolsChildFragment private constructor() : Fragment(), OnDeleteItemListener {
+class ToolsChildFragment : Fragment(), OnDeleteItemListener {
 
     private val toolsVM: ToolsChildViewModel by lazy {
         ViewModelProvider(this).get(ToolsChildViewModel::class.java)
@@ -81,8 +81,5 @@ class ToolsChildFragment private constructor() : Fragment(), OnDeleteItemListene
         toolsVM.deleteTool(id)
     }
 
-    companion object {
-        fun newInstance() = ToolsChildFragment()
-    }
 
 }

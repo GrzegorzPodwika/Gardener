@@ -76,3 +76,7 @@ fun DatePicker.getDate() : Date {
     calendar.set(year, month, dayOfMonth)
     return calendar.time
 }
+
+fun Period.isDefault() : Boolean {
+    return this.startDay == 0 || this.endDay == 0
+}

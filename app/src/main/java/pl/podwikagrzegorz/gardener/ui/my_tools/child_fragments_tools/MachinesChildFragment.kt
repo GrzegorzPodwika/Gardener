@@ -15,7 +15,7 @@ import pl.podwikagrzegorz.gardener.data.pojo.Machine
 import pl.podwikagrzegorz.gardener.databinding.RecViewAndMcvBinding
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
-class MachinesChildFragment private constructor() : Fragment(), OnDeleteItemListener {
+class MachinesChildFragment : Fragment(), OnDeleteItemListener {
 
     private val viewModel: MachinesChildViewModel by lazy {
         ViewModelProvider(this).get(MachinesChildViewModel::class.java)
@@ -80,9 +80,4 @@ class MachinesChildFragment private constructor() : Fragment(), OnDeleteItemList
     override fun onDeleteItemClick(id: Long?) {
         viewModel.deleteMachine(id)
     }
-
-    companion object {
-        fun newInstance() = MachinesChildFragment()
-    }
-
 }

@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.WorkersFragmentBinding
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
@@ -32,16 +33,32 @@ class WorkersFragment : Fragment(), OnDeleteItemListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        setListOfWorkers()
+        setRecyclerViewWithListOfWorkers()
         setFabListener()
     }
 
-    private fun setListOfWorkers() {
-        val recyclerView = workersBinding.recyclerViewWorkersList
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+    private fun setRecyclerViewWithListOfWorkers() {
+        presetRecyclerView()
+        observeListOfWorkers()
+    }
 
+    private fun presetRecyclerView() {
+        workersBinding.recyclerViewWorkersList.layoutManager = LinearLayoutManager(requireContext())
+        workersBinding.recyclerViewWorkersList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && workersBinding.fabAddWorker.visibility == View.VISIBLE)
+                    workersBinding.fabAddWorker.hide()
+                else if (dy < 0 && workersBinding.fabAddWorker.visibility != View.VISIBLE)
+                    workersBinding.fabAddWorker.show()
+            }
+        })
+    }
+
+    private fun observeListOfWorkers() {
         viewModel.listOfWorkers.observe(viewLifecycleOwner, Observer { listOfWorkers ->
-            recyclerView.adapter = WorkerAdapter(listOfWorkers, this)
+            workersBinding.recyclerViewWorkersList.adapter = WorkerAdapter(listOfWorkers, this)
         })
     }
 

@@ -1,5 +1,6 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.realm.Realm
@@ -13,8 +14,10 @@ import pl.podwikagrzegorz.gardener.data.realm.*
 class PlannedGardensViewModel : ViewModel() {
     private val gardenDAO: GardenDAO = GardenDAO()
 
-    fun getBasicGardenData(): MutableLiveData<RealmResults<BasicGardenRealm>> =
+    private val _listOfBasicGardens : MutableLiveData<RealmResults<BasicGardenRealm>> =
         gardenDAO.getBasicGardenRealmData()
+    val listOfBasicGardens : LiveData<RealmResults<BasicGardenRealm>>
+        get() = _listOfBasicGardens
 
     fun addBasicGarden(basicGardenRealm: BasicGardenRealm) {
         gardenDAO.insertItem(basicGardenRealm)

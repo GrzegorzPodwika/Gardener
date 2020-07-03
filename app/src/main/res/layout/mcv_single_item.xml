@@ -6,7 +6,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/cardView_height"
-    android:layout_margin="3dp">
+    app:strokeWidth="0.75dp"
+    app:strokeColor="@color/colorSummer"
+    android:layout_margin="@dimen/keyline_1"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,11 +17,12 @@
 
         <TextView
             android:id="@+id/textView_item_name"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:paddingStart="@dimen/keyline_1"
-            android:paddingEnd="@dimen/keyline_1"
+            android:paddingStart="@dimen/keyline_2"
+            android:paddingEnd="@dimen/keyline_2"
             android:gravity="center_vertical" />
 
 

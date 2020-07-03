@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:text="@string/garden_title"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,6 +34,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textInputEditText_garden_title"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_garden_title" />
@@ -48,14 +49,14 @@
             android:layout_marginTop="@dimen/keyline_4"
             android:gravity="center_vertical"
             android:text="@string/phone"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout2"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="150dp"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/keyline_4"
             android:layout_marginTop="@dimen/keyline_4"
@@ -68,8 +69,10 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/keyline_4"
                 android:gravity="center"
                 android:hint="@string/hint_phone_number"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:inputType="phone"
                 android:maxLength="9" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -81,8 +84,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:gravity="center_vertical"
-            android:text="Wybierz daty rozpoczęcia i zakończenia ogrodu: "
-            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:text="Wybierz przewidywaną datę rozpoczęcia i zakończenia ogrodu: "
+            android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView2" />
@@ -149,7 +152,7 @@
             android:layout_marginTop="32dp"
             android:gravity="center_vertical"
             android:text="Wybierz miejsce pracy:"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView_picked_period" />
 

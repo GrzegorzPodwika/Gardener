@@ -23,7 +23,7 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="garden_title">Tytuł ogrodu:</string>
-    <string name="hint_garden_title">Miejscowosc - Imie i nazwisko zleceniodawcy</string>
+    <string name="hint_garden_title">Miejsce - Imię i nazwisko zleceniodawcy</string>
     <string name="phone">Telefon:</string>
     <string name="hint_phone_number">123456789</string>
     <string name="title_activity_maps">Map</string>
@@ -73,6 +73,13 @@
         <item>Zdjęcia</item>
     </string-array>
 
+    <!--Toast messages-->
+    <string name="empty_garden_title">Wprowadź nazwę ogrodu!</string>
+    <string name="empty_phone_number">Wprowadź telefon zleceniodawcy!</string>
+    <string name="default_period">Wprowadź datę rozpoczęcia i zakończenia pracy!</string>
+    <string name="none_taken_snapshot">Zlokalizuj miejsce pracy!</string>
+
+
     <!--Location strings-->
     <string name="location_permission_denied">Aplikacja wymaga dostępu do twojej lokalizacji, udziel dostępu.</string>
     <string name="permission_required_toast">Ta aplikacja wymaga dostępu do lokalizacji</string>
@@ -83,4 +90,5 @@
     <string name="created_by_info">Created by Grzegorz Podwika</string>
     <string name="workers">Pracownicy</string>
     <string name="workers_list">Lista pracowników:</string>
+    <string name="instructions_enable_dark_title">Tryb nocny</string>
 </resources>

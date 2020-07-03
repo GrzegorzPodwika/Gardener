@@ -10,6 +10,7 @@ import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
 class WorkersViewModel : ViewModel() {
     private val workerDAO: WorkerDAO = WorkerDAO()
     private val _listOfWorkers: MutableLiveData<RealmResults<WorkerRealm>>
+            = workerDAO.getWorkersList()
     val listOfWorkers: LiveData<RealmResults<WorkerRealm>>
         get() = _listOfWorkers
 
@@ -26,7 +27,4 @@ class WorkersViewModel : ViewModel() {
         workerDAO.deleteWorkerVia(id)
     }
 
-    init {
-        _listOfWorkers = workerDAO.getWorkersList()
-    }
 }

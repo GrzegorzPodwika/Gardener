@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.realm.BasicGardenRealm
 import pl.podwikagrzegorz.gardener.databinding.FragmentPlannedGardensBinding
@@ -31,7 +32,6 @@ class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.i(LOG, "onCreateView")
 
         plannedGardensViewModel = ViewModelProvider(this).get(PlannedGardensViewModel::class.java)
 
@@ -46,20 +46,10 @@ class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
 
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        Log.i(LOG, "onActivityCreated")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         getArgumentsFromAddedFragment()
-
-        plannedGardensViewModel.getBasicGardenData().observe(viewLifecycleOwner,
-            Observer { gardens ->
-                binding.recyclerViewPlannedGardens.also {
-                    it.layoutManager = LinearLayoutManager(requireContext())
-                    it.adapter = BasicGardenAdapter(gardens, this)
-                }
-            }
-        )
     }
 
     private fun getArgumentsFromAddedFragment() {
@@ -84,20 +74,37 @@ class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        Log.i(LOG, "onStart")
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        presetRecyclerView()
+        observeListOfBasicGardens()
     }
 
-    override fun onStop() {
-        super.onStop()
-        Log.i(LOG, "onStop\n")
+    private fun presetRecyclerView() {
+        binding.recyclerViewPlannedGardens.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerViewPlannedGardens.addOnScrollListener(object :
+            RecyclerView.OnScrollListener() {
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && binding.fabAddGarden.visibility == View.VISIBLE)
+                    binding.fabAddGarden.hide()
+                else if (dy < 0 && binding.fabAddGarden.visibility != View.VISIBLE)
+                    binding.fabAddGarden.show()
+            }
+        })
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.i(LOG, "onDestroyView\n")
+    private fun observeListOfBasicGardens() {
+        plannedGardensViewModel.listOfBasicGardens.observe(viewLifecycleOwner,
+            Observer { listOfBasicGardens ->
+                binding.recyclerViewPlannedGardens.adapter =
+                    BasicGardenAdapter(listOfBasicGardens, this)
+            }
+        )
     }
+
     //TODO zmienic bo nie jest to Delete tylko przejdz do Activity
     override fun onDeleteItemClick(id: Long?) {
         startGardenFragmentActivity(id)
@@ -110,12 +117,14 @@ class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
     }
 
     override fun onDeleteItemLongClick(id: Long?) {
-        val fragmentDialog = DeleteBasicGardenDialog(requireContext(), object : DeleteBasicGardenDialog.NoticeDialogListener{
-            override fun onDialogClick(isClickedPositive: Boolean) {
-                if (isClickedPositive)
-                    plannedGardensViewModel.deleteGarden(id)
-            }
-        })
+        val fragmentDialog = DeleteBasicGardenDialog(
+            requireContext(),
+            object : DeleteBasicGardenDialog.NoticeDialogListener {
+                override fun onDialogClick(isClickedPositive: Boolean) {
+                    if (isClickedPositive)
+                        plannedGardensViewModel.deleteGarden(id)
+                }
+            })
         fragmentDialog.show(childFragmentManager, null)
     }
 

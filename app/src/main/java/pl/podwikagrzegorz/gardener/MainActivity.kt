@@ -11,13 +11,15 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.Observer
 import androidx.navigation.ui.*
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import kotlinx.android.synthetic.main.app_bar_main.*
 
+//TODO clean codu, refactor layoutow, moze unit tests? testowanie na fizycznym, wyladnienie interfejsu
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private val navController by lazy { findNavController(R.id.nav_host_fragment) } //1
+    private val navController by lazy { findNavController(R.id.nav_host_fragment) }
     private val appBarConfiguration by lazy {
         AppBarConfiguration(
             setOf(
@@ -36,11 +38,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         setupNavigation()
         setupViews()
+
+        (application as GardenerApp).preferenceRepository.nightModeLive.observe(this, Observer { nightMode ->
+            nightMode?.let { delegate.localNightMode = it }
+        })
     }
 
     private fun setupNavigation() {
         drawerLayout = findViewById(R.id.drawer_layout)
         navView = findViewById(R.id.nav_view)
+
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 

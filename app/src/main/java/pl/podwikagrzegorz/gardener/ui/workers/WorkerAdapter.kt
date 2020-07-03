@@ -33,7 +33,7 @@ class WorkerAdapter(
         holder.bind(noteRealmResults[position])
 
         holder.binding.imageButtonItemToDelete.setOnClickListener{
-            listener.onDeleteItemClick(position.toLong())
+            listener.onDeleteItemClick(noteRealmResults[position]?.id)
         }
     }
 
