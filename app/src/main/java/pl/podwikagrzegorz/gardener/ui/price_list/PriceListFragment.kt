@@ -12,22 +12,24 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.pojo.Note
+import pl.podwikagrzegorz.gardener.data.realm.NoteRealm
 import pl.podwikagrzegorz.gardener.databinding.FragmentPriceListBinding
 
 class PriceListFragment : Fragment(), OnDeleteItemListener {
 
+    private lateinit var priceListBinding: FragmentPriceListBinding
     private val priceListVM: PriceListViewModel by lazy {
         ViewModelProvider(this).get(
             PriceListViewModel::class.java
         )
     }
-    private lateinit var priceListBinding: FragmentPriceListBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        priceListBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_price_list, container, false)
+        priceListBinding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_price_list, container, false)
         return priceListBinding.root
     }
 
@@ -39,17 +41,9 @@ class PriceListFragment : Fragment(), OnDeleteItemListener {
     }
 
     private fun setOnAddServiceListener() {
-        priceListBinding.imageButtonAddService.setOnClickListener { insertServiceWithPrice() }
-    }
-
-    private fun observeNoteData() {
-        priceListVM.getNoteData().observe(viewLifecycleOwner,
-            Observer { notes ->
-                priceListBinding.recyclerViewPriceList.also {
-                    it.layoutManager = LinearLayoutManager(requireContext())
-                    it.adapter = NoteAdapter(notes, this)
-                }
-            })
+        priceListBinding.imageButtonAddService.setOnClickListener {
+            insertServiceWithPrice()
+        }
     }
 
     private fun insertServiceWithPrice() {
@@ -59,7 +53,7 @@ class PriceListFragment : Fragment(), OnDeleteItemListener {
     }
 
     private fun addNote() {
-        val note = Note(
+        val note = NoteRealm(
             0,
             priceListBinding.editTextService.text.toString(),
             priceListBinding.editTextPriceOfService.text.toString()
@@ -75,6 +69,16 @@ class PriceListFragment : Fragment(), OnDeleteItemListener {
 
     private fun setFocusOnFirstEditText() {
         priceListBinding.editTextService.requestFocus()
+    }
+
+    private fun observeNoteData() {
+        priceListVM.priceList.observe(viewLifecycleOwner,
+            Observer { notes ->
+                priceListBinding.recyclerViewPriceList.also {
+                    it.layoutManager = LinearLayoutManager(requireContext())
+                    it.adapter = NoteAdapter(notes, this)
+                }
+            })
     }
 
     override fun onDeleteItemClick(id: Long?) {

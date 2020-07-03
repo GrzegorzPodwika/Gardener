@@ -2,29 +2,28 @@ package pl.podwikagrzegorz.gardener.data.daos
 
 import androidx.lifecycle.MutableLiveData
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.realm.RealmResults
 import io.realm.kotlin.where
 import pl.podwikagrzegorz.gardener.data.pojo.Machine
 import pl.podwikagrzegorz.gardener.data.realm.MachineMapper
+import pl.podwikagrzegorz.gardener.data.realm.MachineModule
 import pl.podwikagrzegorz.gardener.data.realm.MachineRealm
 import pl.podwikagrzegorz.gardener.data.realm.asLiveData
 
-class MachineDAO(override val realm: Realm) : AbstractRealmDAO<Machine, MachineRealm>(realm) {
+class MachineDAO : DAO<MachineRealm> {
+    private val realm: Realm
 
-    override fun insertItem(item: Machine) {
-        realm.executeTransaction { realm ->
-            val machineRealm = MachineRealm(generateId(), item.machineName, item.numberOfMachines)
-            realm.insert(machineRealm)
+    override fun insertItem(item: MachineRealm) {
+        val generatedNewId = generateId()
+
+        realm.executeTransactionAsync { bgRealm ->
+            item.id = generatedNewId
+            bgRealm.insert(item)
         }
     }
 
-    override fun getItemById(id: Long): Machine? {
-        val machineRealm = realm.where<MachineRealm>().equalTo(ID, id).findFirst()
-
-        return machineRealm?.let { MachineMapper().fromRealm(machineRealm) }
-    }
-
-    override fun updateItem(item: Machine) {
+    override fun updateItem(item: MachineRealm) {
         realm.executeTransactionAsync {bgRealm ->
             val machineRealm = bgRealm.where<MachineRealm>().equalTo(ID, item.id).findFirst()
             machineRealm?.machineName = item.machineName
@@ -39,33 +38,23 @@ class MachineDAO(override val realm: Realm) : AbstractRealmDAO<Machine, MachineR
         }
     }
 
+    override fun getItemById(id: Long): MachineRealm?
+        = realm.where<MachineRealm>().equalTo(ID, id).findFirst()
+
     override fun getRealmResults(): RealmResults<MachineRealm> {
-        return realm.where<MachineRealm>().findAll()
+        return realm.where<MachineRealm>().findAllAsync()
     }
 
     override fun getLiveRealmResults(): MutableLiveData<RealmResults<MachineRealm>> {
         return realm.where<MachineRealm>().findAllAsync().asLiveData()
     }
 
-    override fun getItemsList(): List<Machine> {
-        val notes: MutableList<Machine> = ArrayList()
-        val noteMapper = MachineMapper()
 
-        val realmResults = getRealmResults()
-
-        for (note in realmResults) {
-            notes.add(noteMapper.fromRealm(note))
-        }
-        return notes
+    override fun closeRealm() {
+        realm.close()
     }
 
-    override fun deleteAllItems() {
-        realm.executeTransactionAsync {bgRealm ->
-            bgRealm.where<MachineRealm>().findAll().deleteAllFromRealm()
-        }
-    }
-
-    override fun generateId(): Long {
+    private fun generateId(): Long {
         val maxValue = realm.where<MachineRealm>().max(ID)
         var nextId: Long = 0
 
@@ -74,5 +63,18 @@ class MachineDAO(override val realm: Realm) : AbstractRealmDAO<Machine, MachineR
         }
 
         return nextId
+    }
+
+    init {
+        val realmConfig = RealmConfiguration.Builder()
+            .name(REALM_MACHINE_NAME)
+            .modules(MachineModule())
+            .build()
+        realm = Realm.getInstance(realmConfig)
+    }
+
+    companion object {
+        private const val ID = "id"
+        private const val REALM_MACHINE_NAME = "machine.realm"
     }
 }

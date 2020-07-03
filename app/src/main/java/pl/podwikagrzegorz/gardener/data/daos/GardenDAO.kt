@@ -3,12 +3,12 @@ package pl.podwikagrzegorz.gardener.data.daos
 import androidx.lifecycle.MutableLiveData
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import io.realm.RealmList
 import io.realm.RealmResults
 import io.realm.kotlin.where
 import pl.podwikagrzegorz.gardener.data.realm.*
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.PlannedGardensViewModel
 
+
+//TODO moze przerobic zeby jednak dziedziczyla?
 class GardenDAO {
     private val realm: Realm
 

@@ -1,13 +1,11 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmList
 import io.realm.kotlin.where
-import pl.podwikagrzegorz.gardener.data.daos.AbstractRealmDAO
 import pl.podwikagrzegorz.gardener.data.realm.GardenModule
 import pl.podwikagrzegorz.gardener.data.realm.GardenRealm
 
@@ -31,11 +29,12 @@ abstract class AbstractGardenViewModel(private val gardenID: Long) : ViewModel()
             .build()
 
         realm = Realm.getInstance(realmConfig)
-        gardenRealm = realm.where<GardenRealm>().equalTo(AbstractRealmDAO.ID, gardenID).findFirst()
+        gardenRealm = realm.where<GardenRealm>().equalTo(ID, gardenID).findFirst()
     }
 
     companion object {
         private const val REALM_GARDEN_NAME = "garden.realm"
+        private const val ID = "id"
     }
 }
 

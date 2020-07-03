@@ -34,7 +34,7 @@ class WorkersFragment : Fragment(), OnDeleteItemListener {
         super.onActivityCreated(savedInstanceState)
 
         setRecyclerViewWithListOfWorkers()
-        setFabListener()
+        setOnAddWorkerFabListener()
     }
 
     private fun setRecyclerViewWithListOfWorkers() {
@@ -62,7 +62,7 @@ class WorkersFragment : Fragment(), OnDeleteItemListener {
         })
     }
 
-    private fun setFabListener() {
+    private fun setOnAddWorkerFabListener() {
         workersBinding.fabAddWorker.setOnClickListener {
             AddWorkerDialog(object : AddWorkerDialog.OnInputListener {
                 override fun sendInput(workerFullName: String) {
@@ -92,6 +92,5 @@ class WorkersFragment : Fragment(), OnDeleteItemListener {
 
     companion object {
         fun newInstance() = WorkersFragment()
-
     }
 }

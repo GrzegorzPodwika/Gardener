@@ -35,10 +35,17 @@ class AddWorkerDialog(
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        setOnCancelButtonListener()
+        setOnAddWorkerButtonListener()
+    }
+
+    private fun setOnCancelButtonListener() {
         binding.buttonCancel.setOnClickListener {
             dialog?.dismiss()
         }
+    }
 
+    private fun setOnAddWorkerButtonListener() {
         binding.buttonAddWorker.setOnClickListener {
             listener.sendInput(binding.editTextWorkerName.text.toString())
             dialog?.dismiss()

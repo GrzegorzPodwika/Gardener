@@ -6,7 +6,9 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="@dimen/cardView_height"
-        android:layout_margin="3dp">
+        app:strokeWidth="0.75dp"
+        app:strokeColor="@color/colorSummer"
+        android:layout_margin="@dimen/keyline_1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -16,9 +18,10 @@
                 android:id="@+id/textView_tool_from_db"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:paddingStart="@dimen/keyline_1"
+                android:paddingStart="@dimen/keyline_2"
                 android:paddingEnd="@dimen/keyline_1" />
 
             <ImageButton

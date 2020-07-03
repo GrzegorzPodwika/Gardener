@@ -9,22 +9,23 @@ import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
 
 class WorkersViewModel : ViewModel() {
     private val workerDAO: WorkerDAO = WorkerDAO()
+
     private val _listOfWorkers: MutableLiveData<RealmResults<WorkerRealm>>
-            = workerDAO.getWorkersList()
+            = workerDAO.getLiveRealmResults()
     val listOfWorkers: LiveData<RealmResults<WorkerRealm>>
         get() = _listOfWorkers
 
     fun addWorkerIntoDatabase(name: String, surname: String) {
-        workerDAO.addWorker(name, surname)
+        val workerRealm = WorkerRealm(0, name, surname)
+        workerDAO.insertItem(workerRealm)
+    }
+
+    fun deleteWorker(id: Long) {
+        workerDAO.deleteItem(id)
     }
 
     override fun onCleared() {
         workerDAO.closeRealm()
         super.onCleared()
     }
-
-    fun deleteWorker(id: Long) {
-        workerDAO.deleteWorkerVia(id)
-    }
-
 }

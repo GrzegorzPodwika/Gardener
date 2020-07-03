@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.pojo.Property
+import pl.podwikagrzegorz.gardener.data.realm.PropertyRealm
 import pl.podwikagrzegorz.gardener.databinding.RecViewAndMcvBinding
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
@@ -45,7 +46,7 @@ class PropertiesChildFragment : Fragment(), OnDeleteItemListener {
         val recViewProperties = binding.recyclerViewMyTools
         recViewProperties.layoutManager = LinearLayoutManager(requireContext())
 
-        propertiesVM.getPropertyData().observe(viewLifecycleOwner,
+        propertiesVM.listOfProperties.observe(viewLifecycleOwner,
             Observer { properties ->
                 recViewProperties.also {
                     it.adapter = PropertyAdapter(properties, this)
@@ -60,7 +61,7 @@ class PropertiesChildFragment : Fragment(), OnDeleteItemListener {
     }
 
     private fun addProperty() {
-        val property = Property(
+        val property = PropertyRealm(
             0,
             binding.editTextMyToolsNameAdd.text.toString(),
             binding.editTextPriceOfTool.text.toString().toInt()

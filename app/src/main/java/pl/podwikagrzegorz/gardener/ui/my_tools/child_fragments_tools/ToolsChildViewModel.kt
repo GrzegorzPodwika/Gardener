@@ -1,26 +1,25 @@
 package pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.realm.Realm
-import io.realm.RealmConfiguration
 import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.data.daos.ToolDAO
 import pl.podwikagrzegorz.gardener.data.pojo.Tool
-import pl.podwikagrzegorz.gardener.data.realm.ToolModule
 import pl.podwikagrzegorz.gardener.data.realm.ToolRealm
-import pl.podwikagrzegorz.gardener.data.realm.toolDAO
 
 class ToolsChildViewModel : ViewModel() {
-    private val realm: Realm
-    private val toolDAO : ToolDAO
+    private val toolDAO = ToolDAO()
 
-    fun getToolData() : MutableLiveData<RealmResults<ToolRealm>>
+    private val _listOfTools : MutableLiveData<RealmResults<ToolRealm>>
             = toolDAO.getLiveRealmResults()
 
-    fun getSingleTool(id: Long?) : Tool? = id?.let { toolDAO.getItemById(it) }
+    val listOfTools : LiveData<RealmResults<ToolRealm>>
+        get() = _listOfTools
 
-    fun addTool(tool : Tool){
+    fun getSingleTool(id: Long?) : ToolRealm? = id?.let { toolDAO.getItemById(it) }
+
+    fun addTool(tool : ToolRealm){
         toolDAO.insertItem(tool)
     }
 
@@ -29,20 +28,8 @@ class ToolsChildViewModel : ViewModel() {
     }
 
     override fun onCleared() {
-        realm.close()
+        toolDAO.closeRealm()
         super.onCleared()
     }
 
-    init {
-        val realmConfig = RealmConfiguration.Builder()
-            .name(REALM_TOOL_NAME)
-            .modules(ToolModule())
-            .build()
-        realm = Realm.getInstance(realmConfig)
-        toolDAO = realm.toolDAO()
-    }
-
-    companion object{
-        const val REALM_TOOL_NAME = "tool.realm"
-    }
 }

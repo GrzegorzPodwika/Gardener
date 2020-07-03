@@ -23,7 +23,7 @@ open class GardenRealm(
 ) : RealmObject() {
 
     fun cascadeDelete() {
-        basicGarden?.deleteFromRealm()
+        basicGarden?.cascadeDelete()
 
         for (item : ItemRealm in listOfTools){
             item.deleteFromRealm()

@@ -20,6 +20,7 @@
     <string name="tools">Narzędzia</string>
     <string name="equipment">Sprzęt</string>
     <string name="others">Inne</string>
+    <string name="sum_of_hours">Suma przepracowanych godzin:</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="garden_title">Tytuł ogrodu:</string>

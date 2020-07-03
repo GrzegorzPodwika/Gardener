@@ -14,6 +14,7 @@ open class BasicGardenRealm(
     var longitude: Double = 0.0
 ) : RealmObject() {
     fun cascadeDelete() {
+        period?.deleteFromRealm()
         deleteFromRealm()
     }
 }

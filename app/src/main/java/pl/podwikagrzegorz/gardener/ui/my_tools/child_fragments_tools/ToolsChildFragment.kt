@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.pojo.Tool
+import pl.podwikagrzegorz.gardener.data.realm.ToolRealm
 import pl.podwikagrzegorz.gardener.databinding.RecViewAndMcvBinding
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
@@ -45,7 +46,7 @@ class ToolsChildFragment : Fragment(), OnDeleteItemListener {
         val recViewTools = binding.recyclerViewMyTools
         recViewTools.layoutManager = LinearLayoutManager(requireContext())
 
-        toolsVM.getToolData().observe(viewLifecycleOwner,
+        toolsVM.listOfTools.observe(viewLifecycleOwner,
             Observer { tools ->
                 recViewTools.also {
                     it.adapter = ToolAdapter(tools, this)
@@ -60,7 +61,7 @@ class ToolsChildFragment : Fragment(), OnDeleteItemListener {
     }
 
     private fun addTool() {
-        val tool = Tool(
+        val tool = ToolRealm(
             0,
             binding.editTextMyToolsNameAdd.text.toString(),
             binding.editTextPriceOfTool.text.toString().toInt()

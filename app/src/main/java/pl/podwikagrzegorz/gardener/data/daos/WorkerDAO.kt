@@ -7,27 +7,48 @@ import io.realm.RealmResults
 import io.realm.kotlin.where
 import pl.podwikagrzegorz.gardener.data.realm.*
 
-class WorkerDAO {
+class WorkerDAO : DAO<WorkerRealm> {
     private val realm: Realm
 
-    fun addWorker(name: String, surname: String) {
-        val generatedId = generateId()
+    override fun insertItem(item: WorkerRealm) {
+        val generatedNewId = generateId()
 
-        realm.executeTransactionAsync {bgRealm ->
-            val worker = WorkerRealm(generatedId, name, surname)
-            bgRealm.insert(worker)
+        realm.executeTransactionAsync { bgRealm ->
+            item.id = generatedNewId
+
+            bgRealm.insert(item)
         }
     }
 
-    fun getWorkersList(): MutableLiveData<RealmResults<WorkerRealm>> =
+    override fun updateItem(item: WorkerRealm) {
+        realm.executeTransactionAsync { bgRealm ->
+            val workerRealm = bgRealm.where<WorkerRealm>().equalTo(ID, item.id).findFirst()
+            workerRealm?.name = item.name
+            workerRealm?.surname = item.surname
+        }
+    }
+
+    override fun deleteItem(id: Long) {
+        realm.executeTransactionAsync { bgRealm ->
+            val result = bgRealm.where<WorkerRealm>().equalTo(ID, id).findFirst()
+            result?.deleteFromRealm()
+        }
+    }
+
+    override fun getItemById(id: Long): WorkerRealm? =
+        realm.where<WorkerRealm>().equalTo(ID, id).findFirst()
+
+    override fun getRealmResults(): RealmResults<WorkerRealm> =
+        realm.where<WorkerRealm>().findAllAsync()
+
+    override fun getLiveRealmResults(): MutableLiveData<RealmResults<WorkerRealm>> =
         realm.where<WorkerRealm>().findAllAsync().asLiveData()
 
-    fun getWorkersResults() : RealmResults<WorkerRealm> =
-        realm.where<WorkerRealm>().findAll()
 
-    fun closeRealm() {
+    override fun closeRealm() {
         realm.close()
     }
+
 
     private fun generateId(): Long {
         val maxValue = realm.where<WorkerRealm>().max(ID)
@@ -40,14 +61,6 @@ class WorkerDAO {
         return nextId
     }
 
-    fun deleteWorkerVia(id: Long) {
-        realm.executeTransactionAsync { bgRealm ->
-            val workerRealm = bgRealm.where<WorkerRealm>().equalTo(ID, id).findFirst()
-            workerRealm?.deleteFromRealm()
-        }
-    }
-
-
     init {
         val realmConfig = RealmConfiguration.Builder()
             .name(REALM_WORKER_NAME)
@@ -57,7 +70,7 @@ class WorkerDAO {
         realm = Realm.getInstance(realmConfig)
     }
 
-    companion object{
+    companion object {
         private const val ID = "id"
         private const val REALM_WORKER_NAME = "worker.realm"
     }

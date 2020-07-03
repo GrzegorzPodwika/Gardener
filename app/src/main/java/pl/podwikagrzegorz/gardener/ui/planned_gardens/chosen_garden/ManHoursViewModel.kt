@@ -34,7 +34,7 @@ class ManHoursViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
     }
 
     fun getWorkersResults(): RealmResults<WorkerRealm> =
-        workerDAO.getWorkersResults()
+        workerDAO.getRealmResults()
 
     override fun onCleared() {
         workerDAO.closeRealm()

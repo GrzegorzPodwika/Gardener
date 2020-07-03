@@ -2,30 +2,24 @@ package pl.podwikagrzegorz.gardener.data.daos
 
 import androidx.lifecycle.MutableLiveData
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.realm.RealmResults
 import io.realm.kotlin.where
-import pl.podwikagrzegorz.gardener.data.pojo.Tool
-import pl.podwikagrzegorz.gardener.data.realm.NoteRealm
-import pl.podwikagrzegorz.gardener.data.realm.ToolMapper
-import pl.podwikagrzegorz.gardener.data.realm.ToolRealm
-import pl.podwikagrzegorz.gardener.data.realm.asLiveData
+import pl.podwikagrzegorz.gardener.data.realm.*
 
-class ToolDAO(override val realm: Realm) : AbstractRealmDAO<Tool, ToolRealm>(realm) {
+class ToolDAO : DAO<ToolRealm> {
+    private val realm: Realm
 
-    override fun insertItem(item: Tool) {
-        realm.executeTransaction{
-            val toolRealm = ToolRealm(generateId(), item.toolName, item.numberOfTools)
-            it.insert(toolRealm)
+    override fun insertItem(item: ToolRealm) {
+        val generatedNewId = generateId()
+
+        realm.executeTransactionAsync { bgRealm ->
+            item.id = generatedNewId
+            bgRealm.insert(item)
         }
     }
 
-    override fun getItemById(id: Long): Tool? {
-        val toolRealm = realm.where<ToolRealm>().equalTo(ID, id).findFirst()
-
-        return toolRealm?.let { ToolMapper().fromRealm(it) }
-    }
-
-    override fun updateItem(item: Tool) {
+    override fun updateItem(item: ToolRealm) {
         realm.executeTransactionAsync { bgRealm ->
             val toolRealm = bgRealm.where<ToolRealm>().equalTo(ID, item.id).findFirst()
             toolRealm?.toolName = item.toolName
@@ -34,38 +28,29 @@ class ToolDAO(override val realm: Realm) : AbstractRealmDAO<Tool, ToolRealm>(rea
     }
 
     override fun deleteItem(id: Long) {
-        realm.executeTransactionAsync {bgRealm ->
+        realm.executeTransactionAsync { bgRealm ->
             val toolToDelete = bgRealm.where<ToolRealm>().equalTo(ID, id).findFirst()
             toolToDelete?.deleteFromRealm()
         }
     }
 
+
+    override fun getItemById(id: Long): ToolRealm? =
+        realm.where<ToolRealm>().equalTo(ID, id).findFirst()
+
     override fun getRealmResults(): RealmResults<ToolRealm>
-            = realm.where<ToolRealm>().findAll()
+            = realm.where<ToolRealm>().findAllAsync()
 
 
-    override fun getLiveRealmResults(): MutableLiveData<RealmResults<ToolRealm>>
-            = realm.where<ToolRealm>().findAllAsync().asLiveData()
+    override fun getLiveRealmResults(): MutableLiveData<RealmResults<ToolRealm>> =
+        realm.where<ToolRealm>().findAllAsync().asLiveData()
 
-    override fun getItemsList(): List<Tool> {
-        val tools : MutableList<Tool> = ArrayList()
-        val toolMapper = ToolMapper()
-        val realmResults = getRealmResults()
 
-        for (tool in realmResults){
-            tools.add(toolMapper.fromRealm(tool))
-        }
-
-        return tools
+    override fun closeRealm() {
+        realm.close()
     }
 
-    override fun deleteAllItems() {
-        realm.executeTransactionAsync { bgRealm ->
-            bgRealm.where<ToolRealm>().findAll().deleteAllFromRealm()
-        }
-    }
-
-    override fun generateId(): Long {
+    private fun generateId(): Long {
         val maxValue = realm.where<ToolRealm>().max(ID)
         var nextId: Long = 0
 
@@ -74,5 +59,18 @@ class ToolDAO(override val realm: Realm) : AbstractRealmDAO<Tool, ToolRealm>(rea
         }
 
         return nextId
+    }
+
+    init {
+        val realmConfig = RealmConfiguration.Builder()
+            .name(REALM_TOOL_NAME)
+            .modules(ToolModule())
+            .build()
+        realm = Realm.getInstance(realmConfig)
+    }
+
+    companion object {
+        private const val ID = "id"
+        private const val REALM_TOOL_NAME = "tool.realm"
     }
 }

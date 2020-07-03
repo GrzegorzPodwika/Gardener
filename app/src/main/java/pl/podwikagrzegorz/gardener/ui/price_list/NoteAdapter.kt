@@ -18,7 +18,12 @@ class NoteAdapter(
         val inflater = LayoutInflater.from(parent.context)
 
         val materialCVBinding =
-            DataBindingUtil.inflate<ListMaterialcardviewBinding>(inflater, R.layout.list_materialcardview, parent, false)
+            DataBindingUtil.inflate<ListMaterialcardviewBinding>(
+                inflater,
+                R.layout.list_materialcardview,
+                parent,
+                false
+            )
 
         return NoteHolder(materialCVBinding)
     }
@@ -28,24 +33,24 @@ class NoteAdapter(
     override fun onBindViewHolder(holder: NoteHolder, position: Int) {
         val realmNote = noteRealmResults[position]
 
-        if (realmNote != null){
-            holder.bind(realmNote)
-            holder.noteToDeletionIB.setOnClickListener {
-                val id = noteRealmResults[position]?.id
-                listener.onDeleteItemClick(id)
-            }
+        holder.bind(realmNote)
+        holder.noteToDeletionIB.setOnClickListener {
+            listener.onDeleteItemClick(realmNote?.id)
         }
+
     }
 
 
-    class NoteHolder(private val binding: ListMaterialcardviewBinding) : RecyclerView.ViewHolder(binding.root) {
+    class NoteHolder(private val binding: ListMaterialcardviewBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         val noteToDeletionIB = binding.imageButtonServiceToDelete
 
-        fun bind(note: NoteRealm){
-            binding.textViewService.text = note.service
-            binding.textViewPriceOfService.text = note.priceOfService
+        fun bind(note: NoteRealm?) {
+            note?.let {
+                binding.textViewService.text = note.service
+                binding.textViewPriceOfService.text = note.priceOfService
+            }
         }
-
     }
 
 }

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.pojo.Machine
+import pl.podwikagrzegorz.gardener.data.realm.MachineRealm
 import pl.podwikagrzegorz.gardener.databinding.RecViewAndMcvBinding
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
@@ -45,7 +46,7 @@ class MachinesChildFragment : Fragment(), OnDeleteItemListener {
         val recViewMachines = binding.recyclerViewMyTools
         recViewMachines.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.getMachineData().observe(viewLifecycleOwner,
+        viewModel.listOfMachines.observe(viewLifecycleOwner,
             Observer { machines ->
                 recViewMachines.also {
                     it.adapter = MachineAdapter(machines, this)
@@ -60,7 +61,7 @@ class MachinesChildFragment : Fragment(), OnDeleteItemListener {
     }
 
     private fun addMachine() {
-        val machine = Machine(
+        val machine = MachineRealm(
             0,
             binding.editTextMyToolsNameAdd.text.toString(),
             binding.editTextPriceOfTool.text.toString().toInt()

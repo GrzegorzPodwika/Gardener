@@ -25,8 +25,7 @@ import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.pojo.Machine
 import pl.podwikagrzegorz.gardener.data.pojo.Property
 import pl.podwikagrzegorz.gardener.data.pojo.Tool
-import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
-import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
+import pl.podwikagrzegorz.gardener.data.realm.*
 import pl.podwikagrzegorz.gardener.databinding.*
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.MachinesChildViewModel
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.PropertiesChildViewModel
@@ -149,8 +148,22 @@ sealed class GardenFragmentHolder {
         }
 
         private fun insertUserDescription() {
+            insertDescriptionToViewModel()
+            clearView()
+            setFocusToEditTextView()
+        }
+
+        private fun insertDescriptionToViewModel() {
             val userDescription: String = recViewBinding.editTextBotItemName.text.toString()
             viewModelGarden.addItemToList(userDescription)
+        }
+
+        private fun clearView() {
+            recViewBinding.editTextBotItemName.text.clear()
+        }
+
+        private fun setFocusToEditTextView() {
+            recViewBinding.editTextBotItemName.requestFocus()
         }
 
         override fun onDeleteItemClick(id: Long?) {
@@ -209,8 +222,23 @@ sealed class GardenFragmentHolder {
         }
 
         private fun insertUserNote() {
+            insertNoteToViewModel()
+            clearView()
+            setFocusToEditTextView()
+
+        }
+
+        private fun insertNoteToViewModel() {
             val userNote: String = recViewBinding.editTextBotItemName.text.toString()
             viewModelGarden.addItemToList(userNote)
+        }
+
+        private fun clearView() {
+            recViewBinding.editTextBotItemName.text.clear()
+        }
+
+        private fun setFocusToEditTextView() {
+            recViewBinding.editTextBotItemName.requestFocus()
         }
 
         override fun onDeleteItemClick(id: Long?) {
@@ -258,7 +286,7 @@ sealed class GardenFragmentHolder {
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
 
-            viewModelTools.getToolData().observe(viewLifecycleOwner, Observer { receivedTools ->
+            viewModelTools.listOfTools.observe(viewLifecycleOwner, Observer { receivedTools ->
                 recViewBinding.recyclerViewReceivedTools.also {
                     it.layoutManager = LinearLayoutManager(requireContext())
                     it.adapter = ReceivedToolsAdapter(receivedTools, this)
@@ -285,7 +313,7 @@ sealed class GardenFragmentHolder {
         }
 
         override fun onPushItemClick(id: Long?) {
-            val receivedTool: Tool? = viewModelTools.getSingleTool(id)
+            val receivedTool: ToolRealm? = viewModelTools.getSingleTool(id)
             receivedTool?.let {
                 val toolToAdd = ItemRealm(it.toolName, it.numberOfTools)
                 viewModelGarden.addToolToList(toolToAdd)
@@ -302,6 +330,7 @@ sealed class GardenFragmentHolder {
         }
     }
 
+    //TODO clean CODE!!!!!!
     //Class No5 - Machines
     class MachineFragment : Fragment(), OnDeleteItemListener, OnPushItemListener {
         private lateinit var recViewBinding: FragmentToolDividedVerticalBinding
@@ -336,7 +365,7 @@ sealed class GardenFragmentHolder {
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
 
-            viewModelMachines.getMachineData()
+            viewModelMachines.listOfMachines
                 .observe(viewLifecycleOwner, Observer { receivedMachines ->
                     recViewBinding.recyclerViewReceivedTools.also {
                         it.layoutManager = LinearLayoutManager(requireContext())
@@ -359,7 +388,7 @@ sealed class GardenFragmentHolder {
         }
 
         override fun onPushItemClick(id: Long?) {
-            val receivedMachine: Machine? = viewModelMachines.getSingleMachine(id)
+            val receivedMachine: MachineRealm? = viewModelMachines.getSingleMachine(id)
             receivedMachine?.let {
                 val machineToAdd = ItemRealm(it.machineName, it.numberOfMachines)
                 viewModelGarden.addMachineToList(machineToAdd)
@@ -414,7 +443,7 @@ sealed class GardenFragmentHolder {
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
 
-            viewModelProperties.getPropertyData()
+            viewModelProperties.listOfProperties
                 .observe(viewLifecycleOwner, Observer { receivedProperties ->
                     recViewBinding.recyclerViewReceivedTools.also {
                         it.layoutManager = LinearLayoutManager(requireContext())
@@ -440,7 +469,7 @@ sealed class GardenFragmentHolder {
         }
 
         override fun onPushItemClick(id: Long?) {
-            val receivedProperty: Property? = viewModelProperties.getSingleProperty(id)
+            val receivedProperty: PropertyRealm? = viewModelProperties.getSingleProperty(id)
             receivedProperty?.let {
                 val propertyToAdd = ItemRealm(it.propertyName, it.numberOfProperties)
                 viewModelGarden.addPropertyToList(propertyToAdd)
@@ -500,8 +529,22 @@ sealed class GardenFragmentHolder {
         }
 
         private fun insertNewShoppingNote() {
+            insertShoppingNoteToViewModel()
+            clearView()
+            setFocusToEditTextView()
+        }
+
+        private fun insertShoppingNoteToViewModel() {
             val userShoppingNote: String = recViewBinding.editTextBotItemName.text.toString()
             viewModelGarden.addItemToList(userShoppingNote)
+        }
+
+        private fun clearView() {
+            recViewBinding.editTextBotItemName.text.clear()
+        }
+
+        private fun setFocusToEditTextView() {
+            recViewBinding.editTextBotItemName.requestFocus()
         }
 
         override fun onDeleteItemClick(id: Long?) {
