@@ -106,7 +106,7 @@ sealed class GardenFragmentHolder {
     //Class No2 - DescriptionFragment
     class DescriptionFragment : Fragment(), OnDeleteItemListener {
 
-        private lateinit var recViewBinding: FragmentRecViewWithBottomViewBinding
+        private lateinit var binding: FragmentRecViewWithBottomViewBinding
         private val gardenID: Long by lazy {
             DescriptionViewModel.fromBundle(requireArguments())
         }
@@ -122,29 +122,40 @@ sealed class GardenFragmentHolder {
             savedInstanceState: Bundle?
         ): View? {
 
-            recViewBinding = DataBindingUtil.inflate(
+            binding = DataBindingUtil.inflate(
                 inflater,
                 R.layout.fragment_rec_view_with_bottom_view,
                 container,
                 false
             )
 
-            return recViewBinding.root
+            return binding.root
         }
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
 
-            recViewBinding.recyclerViewSingleItems.layoutManager = LinearLayoutManager(requireContext())
+            presetRecyclerView()
+            observeListOfDescriptions()
+            setOnAddDescriptionButtonListener()
+        }
 
+        private fun presetRecyclerView() {
+            binding.recyclerViewSingleItems.layoutManager =
+                LinearLayoutManager(requireContext())
+        }
+
+        private fun observeListOfDescriptions() {
             viewModelGarden.listOfDescriptions
-                .observe(viewLifecycleOwner, Observer { descriptionsList ->
-                    recViewBinding.recyclerViewSingleItems.also {
-                        it.adapter = SingleItemAdapter(descriptionsList, this)
-                    }
-                })
+                .observe(viewLifecycleOwner, Observer {
+                    binding.recyclerViewSingleItems.adapter =
+                        SingleItemAdapter(it).apply { setListener(this@DescriptionFragment) }
 
-            recViewBinding.imageButtonAddItem.setOnClickListener {
+                })
+        }
+
+        private fun setOnAddDescriptionButtonListener() {
+            binding.imageButtonAddItem.setOnClickListener {
                 insertUserDescription()
             }
         }
@@ -156,16 +167,16 @@ sealed class GardenFragmentHolder {
         }
 
         private fun insertDescriptionToViewModel() {
-            val userDescription: String = recViewBinding.editTextBotItemName.text.toString()
+            val userDescription: String = binding.editTextBotItemName.text.toString()
             viewModelGarden.addDescriptionToList(userDescription)
         }
 
         private fun clearView() {
-            recViewBinding.editTextBotItemName.text.clear()
+            binding.editTextBotItemName.text.clear()
         }
 
         private fun setFocusToEditTextView() {
-            recViewBinding.editTextBotItemName.requestFocus()
+            binding.editTextBotItemName.requestFocus()
         }
 
         override fun onDeleteItemClick(id: Long?) {
@@ -185,7 +196,7 @@ sealed class GardenFragmentHolder {
     //Class No3 - Notes
     class NoteFragment : Fragment(), OnDeleteItemListener {
 
-        private lateinit var recViewBinding: FragmentRecViewWithBottomViewBinding
+        private lateinit var binding: FragmentRecViewWithBottomViewBinding
         private val gardenID: Long by lazy {
             NoteViewModel.fromBundle(requireArguments())
         }
@@ -201,28 +212,38 @@ sealed class GardenFragmentHolder {
             savedInstanceState: Bundle?
         ): View? {
 
-            recViewBinding = DataBindingUtil.inflate(
+            binding = DataBindingUtil.inflate(
                 inflater,
                 R.layout.fragment_rec_view_with_bottom_view,
                 container,
                 false
             )
 
-            return recViewBinding.root
+            return binding.root
         }
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
 
-            viewModelGarden.getItemsList()
-                ?.observe(viewLifecycleOwner, Observer { notesList ->
-                    recViewBinding.recyclerViewSingleItems.also {
-                        it.layoutManager = LinearLayoutManager(requireContext())
-                        it.adapter = SingleItemAdapter(notesList, this)
-                    }
-                })
+            presetRecyclerView()
+            observeListOfNotes()
+            setOnAddNoteButtonListener()
+        }
 
-            recViewBinding.imageButtonAddItem.setOnClickListener {
+        private fun presetRecyclerView() {
+            binding.recyclerViewSingleItems.layoutManager =
+                LinearLayoutManager(requireContext())
+        }
+
+        private fun observeListOfNotes() {
+            viewModelGarden.listOfNotes
+                .observe(viewLifecycleOwner, Observer {
+                    binding.recyclerViewSingleItems.adapter = SingleItemAdapter(it).apply { setListener(this@NoteFragment) }
+                })
+        }
+
+        private fun setOnAddNoteButtonListener() {
+            binding.imageButtonAddItem.setOnClickListener {
                 insertUserNote()
             }
         }
@@ -235,16 +256,16 @@ sealed class GardenFragmentHolder {
         }
 
         private fun insertNoteToViewModel() {
-            val userNote: String = recViewBinding.editTextBotItemName.text.toString()
-            viewModelGarden.addItemToList(userNote)
+            val userNote: String = binding.editTextBotItemName.text.toString()
+            viewModelGarden.addNoteToList(userNote)
         }
 
         private fun clearView() {
-            recViewBinding.editTextBotItemName.text.clear()
+            binding.editTextBotItemName.text.clear()
         }
 
         private fun setFocusToEditTextView() {
-            recViewBinding.editTextBotItemName.requestFocus()
+            binding.editTextBotItemName.requestFocus()
         }
 
         override fun onDeleteItemClick(id: Long?) {
@@ -281,6 +302,7 @@ sealed class GardenFragmentHolder {
         }
 
         private val receivedToolsAsStringList = mutableListOf<String>()
+        private lateinit var adapter : AddedItemAdapter
 
         override fun onCreateView(
             inflater: LayoutInflater,
@@ -300,27 +322,30 @@ sealed class GardenFragmentHolder {
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
 
-            recViewBinding.recyclerViewAddedTools.layoutManager =
-                LinearLayoutManager(requireContext())
-
-            viewModelMainTools.getToolsList()
-                ?.observe(viewLifecycleOwner, Observer { toolsList ->
-                    recViewBinding.recyclerViewAddedTools.also {
-                        it.adapter = AddedItemAdapter(toolsList, this)
-                    }
-                })
-
+            presetRecyclerView()
+            mapReceivedToolsIntoNames()
+            observeListOfAddedTools()
             setOnAddToolsButtonListener()
         }
 
-        private fun fetchReceivedToolsFromViewModel() {
-            for (tool in receivedTools) {
-                receivedToolsAsStringList.add(tool.toolName)
-            }
+        private fun presetRecyclerView() {
+            recViewBinding.recyclerViewAddedTools.layoutManager =
+                LinearLayoutManager(requireContext())
+        }
+
+        private fun mapReceivedToolsIntoNames() {
+            receivedTools.forEach { receivedToolsAsStringList.add(it.toolName) }
+        }
+
+        private fun observeListOfAddedTools() {
+            viewModelMainTools.listOfTools
+                .observe(viewLifecycleOwner, Observer {
+                    adapter = AddedItemAdapter(it, this)
+                    recViewBinding.recyclerViewAddedTools.adapter = adapter
+                })
         }
 
         private fun setOnAddToolsButtonListener() {
-            fetchReceivedToolsFromViewModel()
             recViewBinding.materialButtonAddTools.setOnClickListener {
                 SheetToolsFragment(
                     receivedToolsAsStringList,
@@ -332,6 +357,8 @@ sealed class GardenFragmentHolder {
                 ).show(childFragmentManager, null)
             }
         }
+
+
 
         //TODO zrobic aby dodawalo cala liste a nie tylko po jednej pozycji
         private fun addListOfPickedToolsToMainList(listOfPickedTools: List<Boolean>) {
@@ -364,6 +391,16 @@ sealed class GardenFragmentHolder {
 
         override fun onDeleteItemClick(id: Long?) {
             viewModelMainTools.deleteItemFromList(id)
+        }
+
+        override fun onChangeFlagToOpposite(position: Int) {
+            viewModelMainTools.changeFlagToOpposite(position)
+        }
+
+        override fun onDestroyView() {
+            super.onDestroyView()
+/*            val listOfActiveTools = adapter.listOfActiveTools
+            viewModelMainTools.updateListOfActiveTools(listOfActiveTools)*/
         }
 
         companion object {
@@ -553,7 +590,7 @@ sealed class GardenFragmentHolder {
     //Class No7 - Shopping
     class ShoppingFragment : Fragment(), OnDeleteItemListener {
 
-        private lateinit var recViewBinding: FragmentRecViewWithBottomViewBinding
+        private lateinit var binding: FragmentRecViewWithBottomViewBinding
         private val gardenID: Long by lazy {
             ShoppingViewModel.fromBundle(requireArguments())
         }
@@ -568,27 +605,37 @@ sealed class GardenFragmentHolder {
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View? {
-            recViewBinding = DataBindingUtil.inflate(
+            binding = DataBindingUtil.inflate(
                 inflater,
                 R.layout.fragment_rec_view_with_bottom_view,
                 container,
                 false
             )
 
-            return recViewBinding.root
+            return binding.root
         }
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
 
-            viewModelGarden.getItemsList()?.observe(viewLifecycleOwner, Observer { shoppingList ->
-                recViewBinding.recyclerViewSingleItems.also {
-                    it.layoutManager = LinearLayoutManager(requireContext())
-                    it.adapter = SingleItemAdapter(shoppingList, this)
-                }
-            })
+            presetRecyclerView()
+            observeListOfShopping()
+            setOnAddShoppingNoteButtonListener()
+        }
 
-            recViewBinding.imageButtonAddItem.setOnClickListener {
+        private fun presetRecyclerView() {
+            binding.recyclerViewSingleItems.layoutManager =
+                LinearLayoutManager(requireContext())
+        }
+
+        private fun observeListOfShopping() {
+            viewModelGarden.listOfShopping.observe(viewLifecycleOwner, Observer {
+                binding.recyclerViewSingleItems.adapter = SingleItemAdapter(it).apply { setListener(this@ShoppingFragment) }
+            })
+        }
+
+        private fun setOnAddShoppingNoteButtonListener() {
+            binding.imageButtonAddItem.setOnClickListener {
                 insertNewShoppingNote()
             }
         }
@@ -600,20 +647,20 @@ sealed class GardenFragmentHolder {
         }
 
         private fun insertShoppingNoteToViewModel() {
-            val userShoppingNote: String = recViewBinding.editTextBotItemName.text.toString()
-            viewModelGarden.addItemToList(userShoppingNote)
+            val userShoppingNote: String = binding.editTextBotItemName.text.toString()
+            viewModelGarden.addShoppingNoteToList(userShoppingNote)
         }
 
         private fun clearView() {
-            recViewBinding.editTextBotItemName.text.clear()
+            binding.editTextBotItemName.text.clear()
         }
 
         private fun setFocusToEditTextView() {
-            recViewBinding.editTextBotItemName.requestFocus()
+            binding.editTextBotItemName.requestFocus()
         }
 
         override fun onDeleteItemClick(id: Long?) {
-            viewModelGarden.deleteItemFromList(id)
+            viewModelGarden.deleteShoppingNoteFromList(id)
         }
 
         companion object {

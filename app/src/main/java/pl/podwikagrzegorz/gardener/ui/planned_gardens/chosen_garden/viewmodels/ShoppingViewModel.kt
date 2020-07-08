@@ -3,36 +3,36 @@ package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import io.realm.RealmList
-import pl.podwikagrzegorz.gardener.data.realm.asLiveList
+import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
 
-class ShoppingViewModel(gardenID: Long): AbstractGardenViewModel(gardenID) {
+class ShoppingViewModel(gardenID: Long) : ViewModel() {
+    private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
 
-    private val listOfShopping: MutableLiveData<RealmList<String>>? =
-        gardenRealm?.listOfShopping?.asLiveList()
+    private val _listOfShopping: MutableLiveData<RealmList<String>> =
+        gardenComponentsDAO.getLiveListOfShopping()
+    val listOfShopping: LiveData<RealmList<String>>
+        get() = _listOfShopping
 
-    override fun getItemsList(): LiveData<RealmList<String>>? =
-        listOfShopping
+    fun addShoppingNoteToList(shoppingNote: String) {
+        gardenComponentsDAO.addShoppingNoteToList(shoppingNote)
+    }
 
-
-    override fun addItemToList(item: String) {
-        realm.executeTransaction {
-            gardenRealm?.listOfShopping?.add(item)
+     fun deleteShoppingNoteFromList(id: Long?) {
+        id?.let {
+            gardenComponentsDAO.deleteShoppingNoteFromList(it)
             refreshLiveDataList()
         }
     }
 
-    override fun deleteItemFromList(id: Long?) {
-        if (id != null) {
-            realm.executeTransaction {
-                gardenRealm?.listOfShopping?.removeAt(id.toInt())
-                refreshLiveDataList()
-            }
-        }
+    private fun refreshLiveDataList() {
+        _listOfShopping.postValue(_listOfShopping.value)
     }
 
-    private fun refreshLiveDataList() {
-        listOfShopping?.postValue(listOfShopping.value)
+    override fun onCleared() {
+        gardenComponentsDAO.closeRealm()
+        super.onCleared()
     }
 
     companion object {

@@ -6,4 +6,5 @@ interface OnDeleteItemListener {
     fun onDeleteItemClick(id: Long?)
     fun onDeleteItemLongClick(id: Long?) {}
     fun onChangeNumberOfItems(currentValue: Int, position: Int, itemName: String){}
+    fun onChangeFlagToOpposite(position: Int) {}
 }

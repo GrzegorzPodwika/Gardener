@@ -10,9 +10,13 @@ import pl.podwikagrzegorz.gardener.databinding.McvSingleItemBinding
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
 class SingleItemAdapter(
-    private val listOfResults: RealmList<String>,
-    private val listener: OnDeleteItemListener
+    private val listOfResults: RealmList<String>
 ) : RecyclerView.Adapter<SingleItemAdapter.SingleItemHolder>() {
+    private var listener: OnDeleteItemListener? = null
+
+    fun setListener(listener: OnDeleteItemListener){
+        this.listener = listener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SingleItemHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -29,7 +33,7 @@ class SingleItemAdapter(
         holder.bind(listOfResults[position])
 
         holder.binding.imageButtonItemToDelete.setOnClickListener{
-            listener.onDeleteItemClick(position.toLong())
+            listener?.onDeleteItemClick(position.toLong())
         }
     }
 

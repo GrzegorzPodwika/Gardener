@@ -123,6 +123,7 @@ class AddedItemAdapter(
     val listOfActiveTools : List<Boolean>
         get() = _listOfActiveTools
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddedItemHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding: McvAddedToolBinding =
@@ -135,7 +136,8 @@ class AddedItemAdapter(
 
     override fun onBindViewHolder(holder: AddedItemHolder, position: Int) {
         val item = listOfItems[position]
-        holder.bind(item, _listOfActiveTools[position])
+        //holder.bind(item, _listOfActiveTools[position])
+        holder.bind(item)
 
         holder.binding.textViewNumbOfTools.setOnClickListener {
             listener.onChangeNumberOfItems(item?.numberOfItems ?: 0, position, item?.itemName ?: "")
@@ -146,8 +148,10 @@ class AddedItemAdapter(
         }
 
         holder.binding.textViewAddedTool.setOnClickListener {
-            _listOfActiveTools[position] = !_listOfActiveTools[position]
-            holder.checkIfTextViewShouldBeCrossed(_listOfActiveTools[position])
+            listener.onChangeFlagToOpposite(position)
+/*            _listOfActiveTools[position] = !_listOfActiveTools[position]
+            holder.checkIfTextViewShouldBeCrossed(_listOfActiveTools[position])*/
+
         }
     }
 
@@ -155,16 +159,16 @@ class AddedItemAdapter(
     class AddedItemHolder(val binding: McvAddedToolBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(tool: ItemRealm?, isActive: Boolean) {
+        fun bind(tool: ItemRealm?) {
             tool?.let {
                 binding.textViewAddedTool.text = it.itemName
                 binding.textViewNumbOfTools.text = it.numberOfItems.toString()
 
-                checkIfTextViewShouldBeCrossed(isActive)
+                checkIfTextViewShouldBeCrossed(it.isActive)
             }
         }
 
-        fun checkIfTextViewShouldBeCrossed(isActive: Boolean) {
+        private fun checkIfTextViewShouldBeCrossed(isActive: Boolean) {
             if (isActive) {
                 binding.mcvAddedTool.foreground = null
                 binding.mcvAddedTool.foreground = defaultMCVForeground

@@ -3,37 +3,39 @@ package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import io.realm.RealmList
-import pl.podwikagrzegorz.gardener.data.realm.asLiveList
+import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
 
-class NoteViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
+class NoteViewModel(gardenID: Long) : ViewModel() {
+    private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
 
-    private val listOfNotes: MutableLiveData<RealmList<String>>? =
-        gardenRealm?.listOfNotes?.asLiveList()
+    private val _listOfNotes: MutableLiveData<RealmList<String>> =
+        gardenComponentsDAO.getLiveListOfNotes()
+    val listOfNotes : LiveData<RealmList<String>>
+        get() = _listOfNotes
 
-    override fun getItemsList(): LiveData<RealmList<String>>? =
-        listOfNotes
+
+    fun addNoteToList(note: String) {
+        gardenComponentsDAO.addNoteToList(note)
+        refreshLiveDataList()
+    }
 
 
-    override fun addItemToList(item: String) {
-        realm.executeTransaction {
-            gardenRealm?.listOfNotes?.add(item)
+    fun deleteItemFromList(id: Long?) {
+        id?.let {
+            gardenComponentsDAO.deleteNoteFromList(it)
             refreshLiveDataList()
         }
     }
 
-    override fun deleteItemFromList(id: Long?) {
-        if (id != null) {
-            realm.executeTransaction {
-                gardenRealm?.listOfNotes?.removeAt(id.toInt())
-                refreshLiveDataList()
-            }
-        }
+    override fun onCleared() {
+        gardenComponentsDAO.closeRealm()
+        super.onCleared()
     }
 
-
     private fun refreshLiveDataList() {
-        listOfNotes?.postValue(listOfNotes.value)
+        _listOfNotes.postValue(_listOfNotes.value)
     }
 
 

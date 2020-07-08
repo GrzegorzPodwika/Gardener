@@ -20,14 +20,14 @@ class DescriptionViewModel(gardenID: Long) : ViewModel() {
     fun addDescriptionToList(description: String) {
         gardenComponentsDAO.addDescriptionToList(description)
 
-        //refreshLiveDataList()
+        refreshLiveDataList()
     }
 
     fun deleteDescriptionFromList(id: Long?) {
         id?.let {
             gardenComponentsDAO.deleteDescriptionFromList(it)
+            refreshLiveDataList()
         }
-        //refreshLiveDataList()
     }
 
     override fun onCleared() {
@@ -35,9 +35,9 @@ class DescriptionViewModel(gardenID: Long) : ViewModel() {
         super.onCleared()
     }
 
-/*    private fun refreshLiveDataList() {
-        _listOfDescriptions?.postValue(_listOfDescriptions.value)
-    }*/
+    private fun refreshLiveDataList() {
+        _listOfDescriptions.postValue(_listOfDescriptions.value)
+    }
 
     companion object {
         private const val GARDEN_ID = "GARDEN_ID"
