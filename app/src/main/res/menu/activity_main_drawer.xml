@@ -20,7 +20,7 @@
         <item
             android:id="@+id/nav_workers"
             android:icon="@drawable/ic_group"
-            android:title="@string/workers" />
+            android:title="@string/menu_workers" />
 
         <item
             android:id="@+id/nav_garden_price_list"
@@ -32,7 +32,7 @@
             android:title="@string/menu_completed_gardens" />
     </group>
 
-    <item android:title="@string/communicate">
+    <item android:title="@string/sub_menu_communicate">
         <menu>
             <item
                 android:id="@+id/nav_settings"

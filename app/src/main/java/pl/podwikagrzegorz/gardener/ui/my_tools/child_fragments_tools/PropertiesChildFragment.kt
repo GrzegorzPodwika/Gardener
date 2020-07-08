@@ -14,6 +14,7 @@ import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.pojo.Property
 import pl.podwikagrzegorz.gardener.data.realm.PropertyRealm
 import pl.podwikagrzegorz.gardener.databinding.RecViewAndMcvBinding
+import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
 class PropertiesChildFragment : Fragment(), OnDeleteItemListener {
@@ -61,12 +62,20 @@ class PropertiesChildFragment : Fragment(), OnDeleteItemListener {
     }
 
     private fun addProperty() {
-        val property = PropertyRealm(
-            0,
-            binding.editTextMyToolsNameAdd.text.toString(),
-            binding.editTextPriceOfTool.text.toString().toInt()
-        )
-        propertiesVM.addProperty(property)
+        if (areNotEmptyViews()){
+            val property = PropertyRealm(
+                0,
+                binding.editTextMyToolsNameAdd.text.toString(),
+                binding.editTextPriceOfTool.text.toString().toInt()
+            )
+            propertiesVM.addProperty(property)
+        } else {
+            requireContext().toast(getString(R.string.fill_all_fields))
+        }
+    }
+
+    private fun areNotEmptyViews(): Boolean {
+        return binding.editTextMyToolsNameAdd.text.isNotEmpty() && binding.editTextPriceOfTool.text.isNotEmpty()
     }
 
     private fun clearViews() {

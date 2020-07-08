@@ -4,5 +4,6 @@ import io.realm.RealmObject
 
 open class ItemRealm(
     var itemName: String = "",
-    var numberOfItems: Int = 0
+    var numberOfItems: Int = 0,
+    var isActive : Boolean = true
 ): RealmObject()

@@ -13,12 +13,9 @@ class DatePickerFragment(
     private val listener: OnDateSelectedListener
 ) : DialogFragment(), DatePickerDialog.OnDateSetListener {
 
-    //private var listener: OnDateSelectedListener? = null
-
     interface OnDateSelectedListener {
         fun onDateSelected(year: Int, month: Int, dayOfMonth: Int, isRequireStartDate: Boolean)
     }
-
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val calendar = Calendar.getInstance()
@@ -28,7 +25,6 @@ class DatePickerFragment(
 
         return DatePickerDialog(requireContext(), this, year, month, dayOfMonth)
     }
-
 
     override fun onDateSet(datePicker: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
         listener.onDateSelected(year, month, dayOfMonth, isRequireStartDate)

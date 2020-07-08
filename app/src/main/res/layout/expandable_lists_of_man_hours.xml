@@ -24,7 +24,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="@dimen/keyline_2"
         android:layout_marginBottom="@dimen/keyline_2"
-        android:text="Godziny pracy" />
+        android:text="@string/working_hours" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/materialButton_add_workers"
@@ -34,7 +34,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginStart="@dimen/keyline_2"
         android:layout_marginBottom="@dimen/keyline_2"
-        android:text="Pracownicy" />
+        android:text="@string/workers" />
 
 </RelativeLayout>
 </layout>

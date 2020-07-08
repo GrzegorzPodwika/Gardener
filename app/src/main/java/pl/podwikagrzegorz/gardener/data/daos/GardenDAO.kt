@@ -39,14 +39,10 @@ class GardenDAO {
     fun getBasicGardenRealmData(): MutableLiveData<RealmResults<BasicGardenRealm>> =
         realm.where<BasicGardenRealm>().findAllAsync().asLiveData()
 
-    fun getPeriodRealmData(): List<PeriodRealm?> {
+    fun getPeriodRealmData(): List<PeriodRealm> {
         val basicGardens = realm.where<BasicGardenRealm>().findAll()
-        val mutableList = ArrayList<PeriodRealm?>()
-        for (index in basicGardens.indices){
-            mutableList.add(basicGardens[index]?.period)
-        }
 
-        return mutableList
+        return basicGardens.map { it.period!! }
     }
 
 

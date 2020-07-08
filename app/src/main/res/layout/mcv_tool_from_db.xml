@@ -6,7 +6,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="@dimen/cardView_height"
-        app:strokeWidth="0.75dp"
+        app:strokeWidth="@dimen/mcv_stroke_width"
         app:strokeColor="@color/colorSummer"
         android:layout_margin="@dimen/keyline_1">
 

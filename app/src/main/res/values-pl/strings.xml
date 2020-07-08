@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Main app info -->
+    <string name="app_name">Ogrodnik</string>
+    <string name="title_activity_maps">Mapa</string>
+
+    <!--  Navigation Drawer Header -->
+    <string name="nav_header_image_desc">Nagłówek</string>
+    <string name="nav_header_title">Imię Nazwisko</string>
+    <string name="nav_header_subtitle">przyklad@gmail.com</string>
+
+    <!--  Navigation Drawer Menu -->
+    <string name="menu_planned_gardens">Zaplanowane ogrody</string>
+    <string name="menu_my_tools">Moje narzędzia</string>
+    <string name="menu_calendar">Kalendarz</string>
+    <string name="menu_workers">Pracownicy</string>
+    <string name="menu_price_list">Cennik usług</string>
+    <string name="menu_completed_gardens">Wykonane ogrody</string>
+    <string name="sub_menu_communicate">Komunikacja</string>
+    <string name="menu_settings">Ustawienia aplikacji</string>
+    <string name="menu_info_about_app">O aplikacji</string>
+
+    <!-- Submenu in My Tools Fragment -->
+    <string name="tools">Narzędzia</string>
+    <string name="equipment">Sprzęt</string>
+    <string name="others">Inne</string>
+
+    <!-- Add Garden Fragment -->
+    <string name="garden_title">Tytuł ogrodu:</string>
+    <string name="hint_garden_title">Miejsce - Imię i nazwisko zleceniodawcy</string>
+    <string name="phone">Telefon:</string>
+    <string name="hint_phone_number">123456789</string>
+    <string name="garden">Ogród</string>
+    <string name="service">Usługa</string>
+    <string name="choose_start_end_date">Wybierz przewidywaną datę rozpoczęcia i zakończenia ogrodu:</string>
+    <string name="start_date">DATA ROZ.</string>
+    <string name="end_date">DATA ZAK.</string>
+    <string name="date_hint">10.04.20 – 10.05.20</string>
+    <string name="choose_workplace">Wybierz miejsce pracy:</string>
+    <string name="locate">LOKALIZUJ</string>
+
+    <!-- Added Garden Fragment Summary -->
+    <string name="sample_name_surname">Przykład - Imię Nazwisko</string>
+    <string name="planned_start_end_date">Planowana data rozpoczęcia i zakończenia ogrodu:</string>
+    <string name="workplace_location">Lokalizacja miejsca pracy:</string>
+
+    <!-- Short actions -->
+    <string name="confirm">Zatwierdź</string>
+    <string name="call">Zadzwoń</string>
+    <string name="cancel">Odrzuć</string>
+    <string name="delete_basic_garden">Usunąć zaplanowany ogród?</string>
+
+    <!--Strings connected to polish names for dates-->
+    <string-array name="month_names">
+        <item>Styczeń</item>
+        <item>Luty</item>
+        <item>Marzec</item>
+        <item>Kwiecień</item>
+        <item>Maj</item>
+        <item>Czerwiec</item>
+        <item>Lipiec</item>
+        <item>Sierpień</item>
+        <item>Wrzesień</item>
+        <item>Październik</item>
+        <item>Listopad</item>
+        <item>Grudzień</item>
+    </string-array>
+
+    <string-array name="week_names">
+        <item>Pon</item>
+        <item>Wto</item>
+        <item>Śro</item>
+        <item>Czw</item>
+        <item>Pią</item>
+        <item>Sob</item>
+        <item>Nie</item>
+    </string-array>
+
+    <string-array name="component_garden_names">
+        <item>Podstawowe informacje</item>
+        <item>Opis</item>
+        <item>Notatki</item>
+        <item>Narzędzia</item>
+        <item>Sprzęty</item>
+        <item>Inne</item>
+        <item>Zakupy</item>
+        <item>Godziny pracy</item>
+        <item>Zdjęcia</item>
+    </string-array>
+
+    <!--Toast messages-->
+    <string name="empty_garden_title">Wprowadź nazwę ogrodu!</string>
+    <string name="empty_phone_number">Wprowadź telefon zleceniodawcy!</string>
+    <string name="default_period">Wprowadź datę rozpoczęcia i zakończenia pracy!</string>
+    <string name="none_taken_snapshot">Zlokalizuj miejsce pracy!</string>
+    <string name="fill_all_fields">Wypełnij wszystkie pola!</string>
+    <string name="fill_name_surname">Podaj imię i nazwisko!</string>
+
+
+    <!--Location strings-->
+    <string name="location_permission_denied">Aplikacja wymaga dostępu do twojej lokalizacji, udziel dostępu.</string>
+    <string name="permission_required_toast">Ta aplikacja wymaga dostępu do lokalizacji</string>
+    <string name="permission_rationale_location">Dostęp do lokalizacji jest konieczny, aby zademonstrować przycisk Moja lokalizacja, który pokazuje towją lokalizację na mapie.</string>
+
+    <!-- Info Fragment -->
+    <string name="created_by_info">Stworzone przez Grzegorz Podwika</string>
+
+    <!-- Settings Fragment -->
+    <string name="instructions_enable_dark_title">Tryb nocny</string>
+
+    <!-- Others -->
+    <string name="sum_of_hours">Suma przepracowanych godzin:</string>
+    <string name="workers_list">Lista pracowników:</string>
+    <string name="working_hours">Godziny pracy</string>
+    <string name="workers">Pracownicy</string>
+    <string name="make_photo">Zrób zdjęcie</string>
+    <string name="jobs_finished">Praca skończona</string>
+    <string name="sample_text">Sample text</string>
+    <string name="start_end_date">Data rozp. Data zak.</string>
+    <string name="to_make_in_future">W przygotowaniu</string>
+
+
+</resources>

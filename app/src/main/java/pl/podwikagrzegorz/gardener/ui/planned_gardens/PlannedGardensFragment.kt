@@ -2,7 +2,6 @@ package pl.podwikagrzegorz.gardener.ui.planned_gardens
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,10 +17,12 @@ import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.realm.BasicGardenRealm
 import pl.podwikagrzegorz.gardener.databinding.FragmentPlannedGardensBinding
 import pl.podwikagrzegorz.gardener.extensions.mapIntoPeriodRealm
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.basic_garden.BasicGardenAdapter
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.basic_garden.DeleteBasicGardenDialog
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.GardenFragmentActivity
-import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
-class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
+class PlannedGardensFragment : Fragment(),
+    OnClickItemListener {
 
     private lateinit var plannedGardensViewModel: PlannedGardensViewModel
     private lateinit var binding: FragmentPlannedGardensBinding
@@ -57,8 +58,6 @@ class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
         var isAddedGarden = false
         if (args.flowPeriod != null)
             isAddedGarden = true
-
-        //TODO("Dodawac now GardenRealm a nie BasicGardenRealm")
 
         if (isAddedGarden) {
             val basicGardenRealm = BasicGardenRealm()
@@ -100,37 +99,41 @@ class PlannedGardensFragment : Fragment(), OnDeleteItemListener {
         plannedGardensViewModel.listOfBasicGardens.observe(viewLifecycleOwner,
             Observer { listOfBasicGardens ->
                 binding.recyclerViewPlannedGardens.adapter =
-                    BasicGardenAdapter(listOfBasicGardens, this)
+                    BasicGardenAdapter(
+                        listOfBasicGardens,
+                        this
+                    )
             }
         )
     }
 
-    //TODO zmienic bo nie jest to Delete tylko przejdz do Activity
-    override fun onDeleteItemClick(id: Long?) {
+    override fun onClickListener(id: Long) {
         startGardenFragmentActivity(id)
     }
 
-    private fun startGardenFragmentActivity(id: Long?) {
+    private fun startGardenFragmentActivity(id: Long) {
         val intent = Intent(requireContext(), GardenFragmentActivity::class.java)
-        intent.putExtra(GARDEN_ID, id ?: 0)
+        intent.putExtra(GARDEN_ID, id)
         startActivity(intent)
     }
 
-    override fun onDeleteItemLongClick(id: Long?) {
-        val fragmentDialog = DeleteBasicGardenDialog(
-            requireContext(),
-            object : DeleteBasicGardenDialog.NoticeDialogListener {
-                override fun onDialogClick(isClickedPositive: Boolean) {
-                    if (isClickedPositive)
-                        plannedGardensViewModel.deleteGarden(id)
-                }
-            })
+    override fun onLongClickListener(id: Long) {
+        val fragmentDialog =
+            DeleteBasicGardenDialog(
+                requireContext(),
+                object :
+                    DeleteBasicGardenDialog.NoticeDialogListener {
+                    override fun onDialogClick(isClickedPositive: Boolean) {
+                        if (isClickedPositive)
+                            plannedGardensViewModel.deleteGarden(id)
+                    }
+                })
         fragmentDialog.show(childFragmentManager, null)
     }
 
     companion object {
         const val LOG = "LOG"
         const val GARDEN_ID = "GARDEN_ID"
-    }
 
+    }
 }

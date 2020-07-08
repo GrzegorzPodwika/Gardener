@@ -42,7 +42,7 @@ class WorkerAdapter(
 
         fun bind(worker: WorkerRealm?) {
             worker?.let {
-                binding.textViewItemName.text = String.format(worker.name + " " +  worker.surname)
+                binding.textViewItemName.text = it.getFullName()
             }
         }
     }

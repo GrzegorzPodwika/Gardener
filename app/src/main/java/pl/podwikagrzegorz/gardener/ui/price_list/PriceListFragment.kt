@@ -62,9 +62,8 @@ class PriceListFragment : Fragment(), OnDeleteItemListener {
     }
 
     private fun clearViews() {
-        priceListBinding.editTextService.text = null
-        priceListBinding.editTextPriceOfService.text = null
-
+        priceListBinding.editTextService.text.clear()
+        priceListBinding.editTextPriceOfService.text.clear()
     }
 
     private fun setFocusOnFirstEditText() {
@@ -72,10 +71,11 @@ class PriceListFragment : Fragment(), OnDeleteItemListener {
     }
 
     private fun observeNoteData() {
+        priceListBinding.recyclerViewPriceList.layoutManager = LinearLayoutManager(requireContext())
+
         priceListVM.priceList.observe(viewLifecycleOwner,
             Observer { notes ->
                 priceListBinding.recyclerViewPriceList.also {
-                    it.layoutManager = LinearLayoutManager(requireContext())
                     it.adapter = NoteAdapter(notes, this)
                 }
             })

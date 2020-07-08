@@ -8,9 +8,9 @@ import pl.podwikagrzegorz.gardener.data.realm.PeriodRealm
 
 class CalendarViewModel : ViewModel() {
     private val gardenDAO = GardenDAO()
-    private val periodsList : List<PeriodRealm?>
+    private val periodsList : List<PeriodRealm>
 
-    fun getPeriodsList() : List<PeriodRealm?> = periodsList
+    fun getListOfPeriods() : List<PeriodRealm> = periodsList
 
     override fun onCleared() {
         gardenDAO.closeRealm()

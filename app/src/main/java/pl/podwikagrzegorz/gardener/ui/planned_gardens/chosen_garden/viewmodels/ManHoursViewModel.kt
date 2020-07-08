@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
 import android.os.Bundle
 import androidx.lifecycle.LiveData
@@ -21,17 +21,9 @@ class ManHoursViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
 
     val mapOfWorkedHours: LiveData<RealmList<ManHoursMapRealm>>? = _mapOfWorkedHours
 
-    fun getWorkersFullNames(): List<String> {
-        val listOfNames = mutableListOf<String>()
+    fun getWorkersFullNames(): List<String>
+        = _mapOfWorkedHours?.value?.map { it.workerFullName } ?: mutableListOf()
 
-        val tmpListOfWorkedHours = _mapOfWorkedHours?.value
-        tmpListOfWorkedHours?.let {
-            for (item in it) {
-                listOfNames.add(item.workerFullName)
-            }
-        }
-        return listOfNames
-    }
 
     fun getWorkersResults(): RealmResults<WorkerRealm> =
         workerDAO.getRealmResults()
@@ -42,10 +34,11 @@ class ManHoursViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
         super.onCleared()
     }
 
-    fun addListOfWorkersFullName(listOfWorkersFullName: List<String>) {
+    fun addListOfWorkersFullNames(listOfWorkersFullNames: List<String>) {
         realm.executeTransaction {
 
-            for (name in listOfWorkersFullName) {
+
+            for (name in listOfWorkersFullNames) {
                 val tmpListOfWorkedHours = _mapOfWorkedHours?.value
 
                 tmpListOfWorkedHours?.let { list ->
@@ -55,9 +48,9 @@ class ManHoursViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
                         list.add(ManHoursMapRealm(name))
                 }
 
-                refreshLiveDataList()
             }
 
+            refreshLiveDataList()
         }
     }
 

@@ -73,7 +73,7 @@
                 android:gravity="center"
                 android:hint="@string/hint_phone_number"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
-                android:inputType="phone"
+                android:inputType="number"
                 android:maxLength="9" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:gravity="center_vertical"
-            android:text="Wybierz przewidywaną datę rozpoczęcia i zakończenia ogrodu: "
+            android:text="@string/choose_start_end_date"
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -95,7 +95,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/keyline_4"
-            android:text="DATA ROZ."
+            android:text="@string/start_date"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView3" />
 
@@ -105,7 +105,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/keyline_4"
             android:layout_marginTop="@dimen/keyline_4"
-            android:text="DATA ZAK."
+            android:text="@string/end_date"
             app:layout_constraintStart_toEndOf="@+id/materialButton_start_garden_date"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView3" />
 
@@ -117,7 +117,7 @@
             android:layout_marginTop="@dimen/keyline_4"
             android:layout_marginEnd="32dp"
             android:gravity="center"
-            android:hint="10.04.20 - 10.05.20"
+            android:hint="@string/date_hint"
             android:textAppearance="?attr/textAppearanceSubtitle1"
             app:layout_constraintEnd_toStartOf="@+id/shapeableImageView_garden_or_service"
             app:layout_constraintStart_toStartOf="parent"
@@ -125,7 +125,7 @@
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switchMaterial_garden_or_service"
-            android:layout_width="@dimen/image_size_small"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/textField_height"
             android:layout_marginTop="@dimen/keyline_4"
             android:checked="true"
@@ -151,7 +151,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:gravity="center_vertical"
-            android:text="Wybierz miejsce pracy:"
+            android:text="@string/choose_workplace"
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView_picked_period" />
@@ -161,7 +161,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="LOKALIZUJ"
+            android:text="@string/locate"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView5" />

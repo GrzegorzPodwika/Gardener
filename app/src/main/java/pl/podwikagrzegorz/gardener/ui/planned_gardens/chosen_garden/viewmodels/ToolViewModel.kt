@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
 import android.os.Bundle
 import androidx.lifecycle.LiveData
@@ -17,28 +17,35 @@ class ToolViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
     fun addToolToList(tool: ItemRealm) {
         realm.executeTransaction {
             gardenRealm?.listOfTools?.add(tool)
-            refreshLiveDataList()
         }
+        refreshLiveDataList()
     }
 
     fun updateNumberOfTools(noItems: Int, position: Int){
         realm.executeTransaction{
             gardenRealm?.listOfTools?.get(position)?.numberOfItems = noItems
-            refreshLiveDataList()
         }
+        refreshLiveDataList()
     }
 
     override fun deleteItemFromList(id: Long?) {
         if (id != null) {
             realm.executeTransaction {
                 gardenRealm?.listOfTools?.removeAt(id.toInt())
-                refreshLiveDataList()
             }
+            refreshLiveDataList()
         }
     }
 
     private fun refreshLiveDataList() {
         listOfTools?.postValue(listOfTools.value)
+    }
+
+    fun addListOfPickedTools(listOfItemRealm: List<ItemRealm>) {
+        realm.executeTransaction {
+            gardenRealm?.listOfTools?.addAll(listOfItemRealm)
+        }
+        refreshLiveDataList()
     }
 
 

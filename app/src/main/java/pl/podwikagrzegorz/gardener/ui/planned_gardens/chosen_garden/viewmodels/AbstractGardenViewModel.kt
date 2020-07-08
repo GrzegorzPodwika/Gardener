@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -11,7 +11,7 @@ import pl.podwikagrzegorz.gardener.data.realm.GardenRealm
 
 abstract class AbstractGardenViewModel(private val gardenID: Long) : ViewModel() {
     protected val realm: Realm
-    protected val gardenRealm: GardenRealm?
+    protected val gardenRealm: GardenRealm
 
     open fun getItemsList(): LiveData<RealmList<String>>? = null
     open fun addItemToList(item: String) {}
@@ -29,7 +29,7 @@ abstract class AbstractGardenViewModel(private val gardenID: Long) : ViewModel()
             .build()
 
         realm = Realm.getInstance(realmConfig)
-        gardenRealm = realm.where<GardenRealm>().equalTo(ID, gardenID).findFirst()
+        gardenRealm = realm.where<GardenRealm>().equalTo(ID, gardenID).findFirst() ?: GardenRealm()
     }
 
     companion object {

@@ -117,7 +117,7 @@
         android:id="@+id/materialButton_take_photo"
         android:layout_width="wrap_content"
         android:layout_height="80dp"
-        android:text="Zrób zdjęcie"
+        android:text="@string/make_photo"
         android:layout_marginTop="@dimen/keyline_7"
         android:layout_below="@id/linearLayout_second_row"
         android:layout_centerInParent="true"
@@ -131,7 +131,7 @@
         android:layout_marginEnd="@dimen/keyline_4"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:text="Praca skończona" />
+        android:text="@string/jobs_finished" />
 </RelativeLayout>
 </layout>
 

@@ -1,17 +1,13 @@
 package pl.podwikagrzegorz.gardener.ui.workers
 
-import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.WorkerFragmentDialogBinding
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.DeleteBasicGardenDialog
 
 class AddWorkerDialog(
     private val listener: OnInputListener

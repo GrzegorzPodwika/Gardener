@@ -2,7 +2,9 @@ package pl.podwikagrzegorz.gardener.extensions
 
 
 
+import android.content.Context
 import android.widget.DatePicker
+import android.widget.Toast
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import pl.podwikagrzegorz.gardener.data.pojo.Period
 import pl.podwikagrzegorz.gardener.data.realm.PeriodRealm
@@ -10,6 +12,9 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
+fun Context.toast(msg: String, duration: Int = Toast.LENGTH_SHORT){
+    Toast.makeText(this, msg, duration).show()
+}
 
 fun String.deleteCaptionedImage(){
     val fileToDelete = File(this)
@@ -80,3 +85,4 @@ fun DatePicker.getDate() : Date {
 fun Period.isDefault() : Boolean {
     return this.startDay == 0 || this.endDay == 0
 }
+

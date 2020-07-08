@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.realm.RealmResults
+import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.data.daos.MachineDAO
 import pl.podwikagrzegorz.gardener.data.realm.MachineRealm
 
@@ -30,6 +31,14 @@ open class MachinesChildViewModel : ViewModel() {
     override fun onCleared() {
         machineDAO.closeRealm()
         super.onCleared()
+    }
+
+    fun findMaxValueOf(itemName: String): Int {
+        val searchedMachine = _listOfMachines.value?.find {
+            it.machineName == itemName
+        }
+
+        return searchedMachine?.numberOfMachines ?: GardenerApp.MAX_NUMBER_OF_MACHINES
     }
 
 }

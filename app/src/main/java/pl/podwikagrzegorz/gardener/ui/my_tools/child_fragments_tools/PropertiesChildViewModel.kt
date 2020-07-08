@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.realm.RealmResults
+import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.data.daos.PropertyDAO
 import pl.podwikagrzegorz.gardener.data.realm.PropertyRealm
 
@@ -28,6 +29,14 @@ class PropertiesChildViewModel : ViewModel() {
     override fun onCleared() {
         propertyDAO.closeRealm()
         super.onCleared()
+    }
+
+    fun findMaxValueOf(itemName: String): Int {
+        val searchedProperty = _listOfProperties.value?.find {
+            it.propertyName == itemName
+        }
+
+        return searchedProperty?.numberOfProperties ?: GardenerApp.MAX_NUMBER_OF_MACHINES
     }
 
 }

@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets
 
 import android.app.Dialog
 import android.os.Bundle
@@ -7,24 +7,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.databinding.BottomSheetManHoursBinding
-import pl.podwikagrzegorz.gardener.extensions.getDate
-import java.util.*
+import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
+import pl.podwikagrzegorz.gardener.databinding.BottomSheetAssignWorkerBinding
 
-class SheetManHoursFragment(
-    workersFullNames: List<String>,
-    private val listener: OnGetListOfWorkedHoursWithPickedDate
+class SheetAssignWorkerFragment(
+    private val workersList: RealmResults<WorkerRealm>,
+    private val listener: OnGetListOfWorkersFullNameListener
+) :
+    BottomSheetDialogFragment() {
+    private lateinit var binding: BottomSheetAssignWorkerBinding
+    private val adapter =
+        SheetAssignWorkerAdapter(
+            workersList
+        )
 
-) : BottomSheetDialogFragment() {
-    private lateinit var binding: BottomSheetManHoursBinding
-    private val adapter = SheetManHoursAdapter(workersFullNames)
-
-    interface OnGetListOfWorkedHoursWithPickedDate {
-        fun onGetListOfWorkedHoursWithPickedDate(listOfWorkedHours: List<Double>, date: Date)
+    interface OnGetListOfWorkersFullNameListener {
+        fun onGetListOfWorkersFullName(listOfWorkersFullName: List<String>)
     }
 
     override fun onCreateView(
@@ -33,7 +37,7 @@ class SheetManHoursFragment(
         savedInstanceState: Bundle?
     ): View? {
         binding =
-            DataBindingUtil.inflate(inflater, R.layout.bottom_sheet_man_hours, container, false)
+            DataBindingUtil.inflate(inflater, R.layout.bottom_sheet_assign_worker, container, false)
         return binding.root
     }
 
@@ -57,21 +61,19 @@ class SheetManHoursFragment(
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        setRecViewWithCurrentlyWorking()
-        setAddWorkedHoursButton()
+        setRecViewWithReceivedWorkers()
+        setAddWorkersButton()
     }
 
-    private fun setRecViewWithCurrentlyWorking() {
-        binding.recyclerViewManHoursList.adapter = adapter
+    private fun setRecViewWithReceivedWorkers() {
+        binding.recyclerViewReceivedWorkers.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerViewReceivedWorkers.adapter = adapter
     }
 
-    private fun setAddWorkedHoursButton() {
-        binding.materialButtonConfirmAddingManHours.setOnClickListener {
-            val listOfWorkedHours = adapter.getListOfWorkedHours()
-            val pickedDate = binding.datePickerDayOfWork.getDate()
-
-            listener.onGetListOfWorkedHoursWithPickedDate(listOfWorkedHours, pickedDate)
-
+    private fun setAddWorkersButton() {
+        binding.materialButtonConfirmAddingWorkers.setOnClickListener {
+            val listOfWorkersFullName = adapter.getListOfWorkersFullName()
+            listener.onGetListOfWorkersFullName(listOfWorkersFullName)
             dismiss()
         }
     }

@@ -5,5 +5,5 @@ import java.text.FieldPosition
 interface OnDeleteItemListener {
     fun onDeleteItemClick(id: Long?)
     fun onDeleteItemLongClick(id: Long?) {}
-    fun onChangeNumberOfItems(noItems: Int, position: Int){}
+    fun onChangeNumberOfItems(currentValue: Int, position: Int, itemName: String){}
 }

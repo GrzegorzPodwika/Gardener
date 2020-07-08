@@ -24,5 +24,6 @@ class GardenerApp: Application() {
         lateinit var res: Resources
         const val WRITTEN_FILE_LOCATION = "pl.podwikagrzegorz.gardener.fileprovider"
         const val DEFAULT_PREFERENCES = "default_preferences"
+        const val MAX_NUMBER_OF_MACHINES = 5
     }
 }

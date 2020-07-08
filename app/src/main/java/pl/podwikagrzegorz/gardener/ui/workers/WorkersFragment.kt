@@ -13,9 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.WorkersFragmentBinding
+import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
-class WorkersFragment : Fragment(), OnDeleteItemListener {
+class WorkersFragment : Fragment(), OnDeleteItemListener, AddWorkerDialog.OnInputListener{
 
     private lateinit var workersBinding: WorkersFragmentBinding
     private val viewModel: WorkersViewModel by lazy {
@@ -64,19 +65,20 @@ class WorkersFragment : Fragment(), OnDeleteItemListener {
 
     private fun setOnAddWorkerFabListener() {
         workersBinding.fabAddWorker.setOnClickListener {
-            AddWorkerDialog(object : AddWorkerDialog.OnInputListener {
-                override fun sendInput(workerFullName: String) {
-                    val nameList = workerFullName.split(Regex(" "))
+            AddWorkerDialog(this).show(childFragmentManager, "AddWorkerDialog")
+        }
+    }
 
-                    if (nameList.size == 2){
-                        val name = nameList[0]
-                        val surname = nameList[1]
+    override fun sendInput(workerFullName: String) {
+        val nameList = workerFullName.split(Regex(" "))
 
-                        addWorkerIntoViewModel(name, surname)
-                    }else
-                        Toast.makeText(requireContext(), "Podaj pełne dane!", Toast.LENGTH_SHORT).show()
-                }
-            }).show(childFragmentManager, "AddWorkerDialog")
+        if (nameList.size == 2){
+            val name = nameList[0]
+            val surname = nameList[1]
+
+            addWorkerIntoViewModel(name, surname)
+        }else {
+            requireContext().toast(getString(R.string.fill_all_fields))
         }
     }
 
@@ -89,8 +91,8 @@ class WorkersFragment : Fragment(), OnDeleteItemListener {
             viewModel.deleteWorker(id)
         }
     }
-
     companion object {
         fun newInstance() = WorkersFragment()
+
     }
 }

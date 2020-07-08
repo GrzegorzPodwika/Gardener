@@ -1,13 +1,12 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden
 
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import io.realm.RealmList
 import io.realm.RealmResults
+import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
 import pl.podwikagrzegorz.gardener.data.realm.MachineRealm
@@ -85,7 +84,7 @@ class ReceivedMachinesAdapter(
 class ReceivedPropertiesAdapter(
     private val itemRealmResults: RealmResults<PropertyRealm>,
     private val listener: OnPushItemListener
-) : RecyclerView.Adapter<ReceivedPropertiesAdapter.ReceivedPropertiesHolder>(){
+) : RecyclerView.Adapter<ReceivedPropertiesAdapter.ReceivedPropertiesHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReceivedPropertiesHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -104,19 +103,25 @@ class ReceivedPropertiesAdapter(
             listener.onPushItemClick(id)
         }
     }
-    class ReceivedPropertiesHolder(val binding: McvToolFromDbBinding) : RecyclerView.ViewHolder(binding.root){
+
+    class ReceivedPropertiesHolder(val binding: McvToolFromDbBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(propertyRealm: PropertyRealm?) {
             binding.textViewToolFromDb.text = propertyRealm?.propertyName
         }
     }
 }
 
+//TODO zobaczyc czy dziala
 //1 adapter for added data : Tool, Machine and Property values separately
 class AddedItemAdapter(
     private val listOfItems: RealmList<ItemRealm>,
     private val listener: OnDeleteItemListener
 ) : RecyclerView.Adapter<AddedItemAdapter.AddedItemHolder>() {
 
+    private val _listOfActiveTools: MutableList<Boolean> = mutableListOf()
+    val listOfActiveTools : List<Boolean>
+        get() = _listOfActiveTools
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddedItemHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -129,79 +134,70 @@ class AddedItemAdapter(
     override fun getItemCount(): Int = listOfItems.size
 
     override fun onBindViewHolder(holder: AddedItemHolder, position: Int) {
-        holder.bind(listOfItems[position])
-        holder.binding.editTextNumbOfTools.addTextChangedListener(object : TextWatcher {
+        val item = listOfItems[position]
+        holder.bind(item, _listOfActiveTools[position])
 
-            override fun afterTextChanged(text: Editable?) {
-                val getText = text.toString()
-                if (getText != "")
-                    listener.onChangeNumberOfItems(text.toString().toInt(), position)
-            }
+        holder.binding.textViewNumbOfTools.setOnClickListener {
+            listener.onChangeNumberOfItems(item?.numberOfItems ?: 0, position, item?.itemName ?: "")
+        }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        })
         holder.binding.imageButtonToolToDelete.setOnClickListener {
             listener.onDeleteItemClick(position.toLong())
         }
+
+        holder.binding.textViewAddedTool.setOnClickListener {
+            _listOfActiveTools[position] = !_listOfActiveTools[position]
+            holder.checkIfTextViewShouldBeCrossed(_listOfActiveTools[position])
+        }
     }
+
 
     class AddedItemHolder(val binding: McvAddedToolBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(tool: ItemRealm?){
-            binding.textViewAddedTool.text = tool?.itemName
-            binding.editTextNumbOfTools.setText(tool?.numberOfItems.toString())
+        fun bind(tool: ItemRealm?, isActive: Boolean) {
+            tool?.let {
+                binding.textViewAddedTool.text = it.itemName
+                binding.textViewNumbOfTools.text = it.numberOfItems.toString()
+
+                checkIfTextViewShouldBeCrossed(isActive)
+            }
+        }
+
+        fun checkIfTextViewShouldBeCrossed(isActive: Boolean) {
+            if (isActive) {
+                binding.mcvAddedTool.foreground = null
+                binding.mcvAddedTool.foreground = defaultMCVForeground
+                enableButtonAndNumberPicker()
+            } else {
+                binding.mcvAddedTool.foreground = strikeThroughForeground
+                disableButtonAndNumberPicker()
+            }
+        }
+
+        private fun enableButtonAndNumberPicker() {
+            binding.textViewNumbOfTools.isEnabled = true
+            binding.imageButtonToolToDelete.isEnabled = true
+        }
+
+        private fun disableButtonAndNumberPicker() {
+            binding.textViewNumbOfTools.isEnabled = false
+            binding.imageButtonToolToDelete.isEnabled = false
+        }
+
+    }
+
+    init {
+        for (item in listOfItems) {
+            _listOfActiveTools.add(item.isActive)
         }
     }
 
+    companion object {
+        private val strikeThroughForeground =
+            GardenerApp.res.getDrawable(R.drawable.stroke_foreground, null)
+        private val defaultMCVForeground =
+            GardenerApp.res.getDrawable(R.drawable.mcv_foreground, null)
 
+    }
 }
-
-/*class PhotosAdapter(
-    private val listOfPicturesPaths : RealmList<String>
-) : RecyclerView.Adapter<PhotosAdapter.PhotosHolder>(){
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotosHolder {
-        TODO("Not yet implemented")
-    }
-
-    override fun getItemCount(): Int {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBindViewHolder(holder: PhotosHolder, position: Int) {
-        TODO("Not yet implemented")
-    }
-
-    class PhotosHolder() : RecyclerView.ViewHolder() {
-
-    }
-}*/
-
-/*abstract class AbstractReceivedItemAdapter<T>(
-    protected val itemRealmResults: RealmResults<T>,
-    protected val listener: OnPushItemListener
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val binding: McvToolFromDbBinding =
-            DataBindingUtil.inflate(layoutInflater, R.layout.mcv_tool_from_db, parent, false)
-
-        return getViewHolder(binding)
-    }
-
-    abstract fun getViewHolder(binding: McvToolFromDbBinding):RecyclerView.ViewHolder
-
-    override fun getItemCount(): Int = itemRealmResults.size
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        holder.bind(itemRealmResults[position])
-        holder.binding.imageButtonToolToPass.setOnClickListener {
-            val id = itemRealmResults[position]?.id
-            listener.onPushItemClick(id)
-        }
-    }
-}*/

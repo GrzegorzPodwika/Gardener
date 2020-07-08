@@ -14,6 +14,7 @@ import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.pojo.Tool
 import pl.podwikagrzegorz.gardener.data.realm.ToolRealm
 import pl.podwikagrzegorz.gardener.databinding.RecViewAndMcvBinding
+import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
 class ToolsChildFragment : Fragment(), OnDeleteItemListener {
@@ -61,12 +62,21 @@ class ToolsChildFragment : Fragment(), OnDeleteItemListener {
     }
 
     private fun addTool() {
-        val tool = ToolRealm(
-            0,
-            binding.editTextMyToolsNameAdd.text.toString(),
-            binding.editTextPriceOfTool.text.toString().toInt()
-        )
-        toolsVM.addTool(tool)
+
+        if (areNotEmptyViews()) {
+            val tool = ToolRealm(
+                0,
+                binding.editTextMyToolsNameAdd.text.toString(),
+                binding.editTextPriceOfTool.text.toString().toInt()
+            )
+            toolsVM.addTool(tool)
+        } else {
+            requireContext().toast(getString(R.string.fill_all_fields))
+        }
+    }
+
+    private fun areNotEmptyViews(): Boolean {
+        return binding.editTextMyToolsNameAdd.text.isNotEmpty() && binding.editTextPriceOfTool.text.isNotEmpty()
     }
 
     private fun clearViews() {

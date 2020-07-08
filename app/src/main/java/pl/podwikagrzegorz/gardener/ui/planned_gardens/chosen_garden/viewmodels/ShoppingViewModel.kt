@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
 import android.os.Bundle
 import androidx.lifecycle.LiveData
@@ -6,17 +6,18 @@ import androidx.lifecycle.MutableLiveData
 import io.realm.RealmList
 import pl.podwikagrzegorz.gardener.data.realm.asLiveList
 
-class DescriptionViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
-    private val listOfDescriptions: MutableLiveData<RealmList<String>>? =
-        gardenRealm?.listOfDescriptions?.asLiveList()
+class ShoppingViewModel(gardenID: Long): AbstractGardenViewModel(gardenID) {
+
+    private val listOfShopping: MutableLiveData<RealmList<String>>? =
+        gardenRealm?.listOfShopping?.asLiveList()
 
     override fun getItemsList(): LiveData<RealmList<String>>? =
-        listOfDescriptions
+        listOfShopping
 
 
     override fun addItemToList(item: String) {
         realm.executeTransaction {
-            gardenRealm?.listOfDescriptions?.add(item)
+            gardenRealm?.listOfShopping?.add(item)
             refreshLiveDataList()
         }
     }
@@ -24,14 +25,14 @@ class DescriptionViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
     override fun deleteItemFromList(id: Long?) {
         if (id != null) {
             realm.executeTransaction {
-                gardenRealm?.listOfDescriptions?.removeAt(id.toInt())
+                gardenRealm?.listOfShopping?.removeAt(id.toInt())
                 refreshLiveDataList()
             }
         }
     }
 
     private fun refreshLiveDataList() {
-        listOfDescriptions?.postValue(listOfDescriptions.value)
+        listOfShopping?.postValue(listOfShopping.value)
     }
 
     companion object {

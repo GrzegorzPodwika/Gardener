@@ -10,16 +10,17 @@ import pl.podwikagrzegorz.gardener.data.realm.*
 class PlannedGardensViewModel : ViewModel() {
     private val gardenDAO: GardenDAO = GardenDAO()
 
-    private val _listOfBasicGardens : MutableLiveData<RealmResults<BasicGardenRealm>> =
+    private val _listOfBasicGardens: MutableLiveData<RealmResults<BasicGardenRealm>> =
         gardenDAO.getBasicGardenRealmData()
-    val listOfBasicGardens : LiveData<RealmResults<BasicGardenRealm>>
+    val listOfBasicGardens: LiveData<RealmResults<BasicGardenRealm>>
         get() = _listOfBasicGardens
 
     fun addBasicGarden(basicGardenRealm: BasicGardenRealm) {
         gardenDAO.insertItem(basicGardenRealm)
     }
 
-    fun deleteGarden(id: Long?) = id?.let { gardenDAO.deleteItem(id) }
+    fun deleteGarden(id: Long) =
+        gardenDAO.deleteItem(id)
 
     override fun onCleared() {
         gardenDAO.closeRealm()

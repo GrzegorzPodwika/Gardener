@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -23,7 +23,9 @@ class SheetAssignWorkerAdapter(
             false
         )
 
-        return WorkerHolder(binding)
+        return WorkerHolder(
+            binding
+        )
     }
 
     override fun getItemCount(): Int =

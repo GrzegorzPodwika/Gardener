@@ -13,7 +13,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
-import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.pojo.Period
 import pl.podwikagrzegorz.gardener.databinding.FragmentAddGardenBinding
@@ -26,6 +25,7 @@ import java.io.File
 class AddGardenFragment : Fragment(), DatePickerFragment.OnDateSelectedListener {
 
     private lateinit var gardenBinding: FragmentAddGardenBinding
+
     private var absoluteSnapshotPath: String? = null
     private var snapshotLatitude: Double? = null
     private var snapshotLongitude: Double? = null
@@ -87,13 +87,13 @@ class AddGardenFragment : Fragment(), DatePickerFragment.OnDateSelectedListener 
 
     private fun setConfirmAddingGardenButtonListener() {
         gardenBinding.fabConfirmAddingGarden.setOnClickListener {
-            if (checkIfViewsAreFilledByUser()){
+            if (checkViewsAreFilledByUser()){
                 prepareActionAndNavigateToPreviousFragment()
             }
         }
     }
 
-    private fun checkIfViewsAreFilledByUser() : Boolean{
+    private fun checkViewsAreFilledByUser() : Boolean{
 
         if (gardenBinding.textInputEditTextGardenTitle.text.toString().isEmpty()){
             val toastMessage = getString(R.string.empty_garden_title)
@@ -158,16 +158,22 @@ class AddGardenFragment : Fragment(), DatePickerFragment.OnDateSelectedListener 
             MapsActivity.CAPTIONED_SNAPSHOT_LONGITUDE,
             MapsActivity.defaultCoordinates.longitude
         )
+        val snapshotName = receivedData.getStringExtra(MapsActivity.CAPTIONED_SNAPSHOT_PATH)
 
-        val tmpSnapshotPath = receivedData.getStringExtra(MapsActivity.CAPTIONED_SNAPSHOT_PATH)
-        val file: File = ContextWrapper(context).getFileStreamPath(tmpSnapshotPath)
-        absoluteSnapshotPath = file.absolutePath
+        setTakenSnapshotIntoImageView(snapshotName)
+    }
 
-        gardenBinding.shapeableImageViewPickedLocalization.setImageDrawable(
-            Drawable.createFromPath(
-                absoluteSnapshotPath
+    private fun setTakenSnapshotIntoImageView(snapshotName: String?) {
+        snapshotName?.let {
+            val file: File = ContextWrapper(context).getFileStreamPath(snapshotName)
+            absoluteSnapshotPath = file.absolutePath
+
+            gardenBinding.shapeableImageViewPickedLocalization.setImageDrawable(
+                Drawable.createFromPath(
+                    absoluteSnapshotPath
+                )
             )
-        )
+        }
     }
 
     override fun onDateSelected(

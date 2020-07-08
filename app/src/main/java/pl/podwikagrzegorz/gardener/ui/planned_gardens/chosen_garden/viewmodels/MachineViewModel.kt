@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
 import android.os.Bundle
 import androidx.lifecycle.LiveData
@@ -16,16 +16,16 @@ class MachineViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
     fun addMachineToList(machine: ItemRealm) {
         realm.executeTransaction {
             gardenRealm?.listOfMachines?.add(machine)
-            refreshLiveDataList()
         }
+        refreshLiveDataList()
     }
 
     override fun deleteItemFromList(id: Long?) {
         if (id != null) {
             realm.executeTransaction {
                 gardenRealm?.listOfMachines?.removeAt(id.toInt())
-                refreshLiveDataList()
             }
+            refreshLiveDataList()
         }
     }
 
@@ -36,8 +36,8 @@ class MachineViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
     fun updateNumberOfMachines(noItems: Int, position: Int) {
         realm.executeTransaction{
             gardenRealm?.listOfMachines?.get(position)?.numberOfItems = noItems
-            refreshLiveDataList()
         }
+        refreshLiveDataList()
     }
 
     companion object {

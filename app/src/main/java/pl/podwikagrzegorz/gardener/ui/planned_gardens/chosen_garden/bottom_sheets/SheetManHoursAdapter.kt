@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets
 
 import android.text.Editable
 import android.view.LayoutInflater
@@ -14,6 +14,8 @@ class SheetManHoursAdapter(
 ) : RecyclerView.Adapter<SheetManHoursAdapter.ManHoursHolder>() {
 
     private val _listOfWorkedHours = mutableListOf<Double>()
+    val listOfWorkedHours : List<Double>
+        get() = _listOfWorkedHours
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ManHoursHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -40,9 +42,6 @@ class SheetManHoursAdapter(
             }
         }
     }
-
-    fun getListOfWorkedHours(): List<Double> =
-        _listOfWorkedHours
 
     class ManHoursHolder(val binding: BottomSheetSingleItemBinding) :
         RecyclerView.ViewHolder(binding.root) {

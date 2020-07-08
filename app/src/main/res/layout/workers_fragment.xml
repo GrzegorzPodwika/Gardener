@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/keyline_2"
             android:layout_marginEnd="@dimen/keyline_2"
-            android:text="@string/workers_list"
+            android:text="@string/workers"
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

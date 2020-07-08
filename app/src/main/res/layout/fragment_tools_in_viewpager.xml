@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_added_tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/materialButton_add_tools"
+            android:layout_margin="@dimen/keyline_2" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/materialButton_add_tools"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="@dimen/keyline_5"
+            android:layout_marginBottom="@dimen/keyline_2"
+            android:text="@string/tools" />
+    </RelativeLayout>
+</layout>
+
+<!--
+    android:layout_marginTop="@dimen/keyline_2"
+    android:layout_marginStart="@dimen/keyline_1"
+    android:layout_marginEnd="@dimen/keyline_1"
+    android:layout_marginBottom="@dimen/keyline_2"-->

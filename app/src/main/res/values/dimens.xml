@@ -30,4 +30,5 @@
     <dimen name="custom_mcv_width">350dp</dimen>
     <dimen name="half_width_mcv">200dp</dimen>
     <dimen name="custom_map_height">300dp</dimen>
+    <dimen name="mcv_stroke_width">1dp</dimen>
 </resources>

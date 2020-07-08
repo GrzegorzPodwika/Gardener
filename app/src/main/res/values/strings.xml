@@ -1,95 +1,120 @@
 <resources>
+    <!-- Main app info -->
     <string name="app_name">Gardener</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Grzegorz Podwika</string>
-    <string name="nav_header_subtitle">podwikagrzegorz@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
-
-    <string name="menu_planned_gardens">Zaplanowane ogrody</string>
-    <string name="menu_calendar">Kalendarz</string>
-    <string name="menu_completed_gardens">Wykonane ogrody</string>
-    <string name="menu_my_tools">Moje narzędzia</string>
-    <string name="menu_price_list">Cennik usług</string>
-    <string name="menu_settings">Ustawienia aplikacji</string>
-    <string name="menu_info_about_app">O aplikacji</string>
-    <string name="communicate">Komunikacja</string>
-
-    <string name="home_second">Home Second</string>
-    <string name="tools">Narzędzia</string>
-    <string name="equipment">Sprzęt</string>
-    <string name="others">Inne</string>
-    <string name="sum_of_hours">Suma przepracowanych godzin:</string>
-
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="garden_title">Tytuł ogrodu:</string>
-    <string name="hint_garden_title">Miejsce - Imię i nazwisko zleceniodawcy</string>
-    <string name="phone">Telefon:</string>
-    <string name="hint_phone_number">123456789</string>
     <string name="title_activity_maps">Map</string>
-    <string name="confirm">Zatwierdź</string>
-    <string name="cancel">Odrzuć</string>
-    <string name="delete_basic_garden">Usunąć zaplanowany ogród?</string>
-    <string name="garden">Ogród</string>
-    <string name="service">Usługa</string>
 
-    <!--Toolbar strings-->
+    <!--  Navigation Drawer Header -->
+    <string name="nav_header_image_desc">Navigation header</string>
+    <string name="nav_header_title">Name Surname</string>
+    <string name="nav_header_subtitle">example@gmail.com</string>
 
-    <!--Strings connected to polish names for dates-->
-    <string-array name="polish_month_names">
-        <item>Styczeń</item>
-        <item>Luty</item>
-        <item>Marzec</item>
-        <item>Kwiecień</item>
-        <item>Maj</item>
-        <item>Czerwiec</item>
-        <item>Lipiec</item>
-        <item>Sierpień</item>
-        <item>Wrzesień</item>
-        <item>Październik</item>
-        <item>Listopad</item>
-        <item>Grudzień</item>
+    <!--  Navigation Drawer Menu -->
+    <string name="menu_planned_gardens">Planned gardens</string>
+    <string name="menu_my_tools">My tools</string>
+    <string name="menu_calendar">Calendar</string>
+    <string name="menu_workers">Workers</string>
+    <string name="menu_price_list">PriceList</string>
+    <string name="menu_completed_gardens">Completed gardens</string>
+    <string name="sub_menu_communicate">Communicate</string>
+    <string name="menu_settings">App settings</string>
+    <string name="menu_info_about_app">About App</string>
+
+    <!-- Submenu in My Tools Fragment -->
+    <string name="tools">Tools</string>
+    <string name="equipment">Equipment</string>
+    <string name="others">Others</string>
+
+    <!-- Add Garden Fragment -->
+    <string name="garden_title">Garden title:</string>
+    <string name="hint_garden_title">Location - Name Surname of Client</string>
+    <string name="phone">Phone:</string>
+    <string name="hint_phone_number">123456789</string>
+    <string name="garden">Garden</string>
+    <string name="service">Service</string>
+    <string name="choose_start_end_date">Select the estimated start and end date of the garden.</string>
+    <string name="start_date">START DATE</string>
+    <string name="end_date">END DATE</string>
+    <string name="date_hint">10.04.20 – 10.05.20</string>
+    <string name="choose_workplace">Select work place:</string>
+    <string name="locate">Locate</string>
+
+    <!-- Added Garden Fragment Summary -->
+    <string name="sample_name_surname">Sample - Name Surname</string>
+    <string name="planned_start_end_date">Estimated start and end date of garden:</string>
+    <string name="workplace_location">Work place location:</string>
+
+    <!-- Short actions -->
+    <string name="confirm">Confirm</string>
+    <string name="call">Call</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_basic_garden">Are you sure you want delete planned garden?</string>
+
+    <string-array name="month_names">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
     </string-array>
 
-    <string-array name="polish_week_names">
-        <item>Pon</item>
-        <item>Wto</item>
-        <item>Śro</item>
-        <item>Czw</item>
-        <item>Pią</item>
-        <item>Sob</item>
-        <item>Nie</item>
+    <string-array name="week_names">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wen</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
     </string-array>
 
     <string-array name="component_garden_names">
-        <item>Podstawowe informacje</item>
-        <item>Opis</item>
-        <item>Notatki</item>
-        <item>Narzędzia</item>
-        <item>Sprzęty</item>
-        <item>Inne</item>
-        <item>Zakupy</item>
-        <item>Roboczogodziny</item>
-        <item>Zdjęcia</item>
+        <item>Basic info</item>
+        <item>Description</item>
+        <item>Notes</item>
+        <item>Tools</item>
+        <item>Equipment</item>
+        <item>Others</item>
+        <item>Shopping</item>
+        <item>ManHours</item>
+        <item>Photos</item>
     </string-array>
 
     <!--Toast messages-->
-    <string name="empty_garden_title">Wprowadź nazwę ogrodu!</string>
-    <string name="empty_phone_number">Wprowadź telefon zleceniodawcy!</string>
-    <string name="default_period">Wprowadź datę rozpoczęcia i zakończenia pracy!</string>
-    <string name="none_taken_snapshot">Zlokalizuj miejsce pracy!</string>
-
+    <string name="empty_garden_title">Enter title of garden!</string>
+    <string name="empty_phone_number">Enter client\'s phone!</string>
+    <string name="default_period">Enter start and end date!</string>
+    <string name="none_taken_snapshot">Locate work place!</string>
+    <string name="fill_all_fields">Fill up all fields!</string>
+    <string name="fill_name_surname">Enter name and surname!</string>
 
     <!--Location strings-->
-    <string name="location_permission_denied">Aplikacja wymaga dostępu do twojej lokalizacji, udziel dostępu.</string>
-    <string name="permission_required_toast">Ta aplikacja wymaga dostępu do lokalizacji</string>
+    <string name="location_permission_denied">This app require permission to your location, give the access.</string>
+    <string name="permission_required_toast">This app needs permission to your location.</string>
     <string name="permission_rationale_location">Access to the location service is required to demonstrate the \\\'my location\\\' feature, which shows your current location on the map.</string>
-    <string name="call">Zadzwoń</string>
-    <string name="hint_price_list">Koszenie trawników</string>
-    <string name="hint_price_list_price">50zł/m2</string>
+
+    <!-- Info Fragment -->
     <string name="created_by_info">Created by Grzegorz Podwika</string>
-    <string name="workers">Pracownicy</string>
-    <string name="workers_list">Lista pracowników:</string>
-    <string name="instructions_enable_dark_title">Tryb nocny</string>
+
+    <!-- Settings Fragment -->
+    <string name="instructions_enable_dark_title">Dark theme</string>
+
+    <!-- Others -->
+    <string name="sum_of_hours">Sum of worked hours:</string>
+    <string name="workers_list">List of workers:</string>
+    <string name="working_hours">Working hours</string>
+    <string name="workers">Workers</string>
+    <string name="make_photo">Take photo</string>
+    <string name="jobs_finished">Job\'s finished</string>
+    <string name="sample_text">Sample text</string>
+    <string name="start_end_date">Start date — End date</string>
+    <string name="to_make_in_future">In preparation</string>
+
+
 </resources>

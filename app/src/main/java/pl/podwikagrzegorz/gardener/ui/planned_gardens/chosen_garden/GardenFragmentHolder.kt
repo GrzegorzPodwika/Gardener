@@ -22,14 +22,15 @@ import io.realm.RealmList
 import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.data.pojo.Machine
-import pl.podwikagrzegorz.gardener.data.pojo.Property
-import pl.podwikagrzegorz.gardener.data.pojo.Tool
 import pl.podwikagrzegorz.gardener.data.realm.*
 import pl.podwikagrzegorz.gardener.databinding.*
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.MachinesChildViewModel
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.PropertiesChildViewModel
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.ToolsChildViewModel
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetAssignWorkerFragment
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetManHoursFragment
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetToolsFragment
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.*
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 import java.io.File
 import java.io.IOException
@@ -134,10 +135,11 @@ sealed class GardenFragmentHolder {
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
 
-            viewModelGarden.getItemsList()
-                ?.observe(viewLifecycleOwner, Observer { descriptionsList ->
+            recViewBinding.recyclerViewSingleItems.layoutManager = LinearLayoutManager(requireContext())
+
+            viewModelGarden.listOfDescriptions
+                .observe(viewLifecycleOwner, Observer { descriptionsList ->
                     recViewBinding.recyclerViewSingleItems.also {
-                        it.layoutManager = LinearLayoutManager(requireContext())
                         it.adapter = SingleItemAdapter(descriptionsList, this)
                     }
                 })
@@ -155,7 +157,7 @@ sealed class GardenFragmentHolder {
 
         private fun insertDescriptionToViewModel() {
             val userDescription: String = recViewBinding.editTextBotItemName.text.toString()
-            viewModelGarden.addItemToList(userDescription)
+            viewModelGarden.addDescriptionToList(userDescription)
         }
 
         private fun clearView() {
@@ -167,7 +169,7 @@ sealed class GardenFragmentHolder {
         }
 
         override fun onDeleteItemClick(id: Long?) {
-            viewModelGarden.deleteItemFromList(id)
+            viewModelGarden.deleteDescriptionFromList(id)
         }
 
         companion object {
@@ -187,7 +189,11 @@ sealed class GardenFragmentHolder {
         private val gardenID: Long by lazy {
             NoteViewModel.fromBundle(requireArguments())
         }
-        private val viewModelGarden: NoteViewModel by viewModels { GardenViewModelFactory(gardenID) }
+        private val viewModelGarden: NoteViewModel by viewModels {
+            GardenViewModelFactory(
+                gardenID
+            )
+        }
 
         override fun onCreateView(
             inflater: LayoutInflater,
@@ -256,17 +262,25 @@ sealed class GardenFragmentHolder {
     }
 
     //Class No4 - Tools
-    class ToolFragment : Fragment(), OnDeleteItemListener, OnPushItemListener {
-        private lateinit var recViewBinding: FragmentToolDividedVerticalBinding
+    class ToolFragment : Fragment(), OnDeleteItemListener {
+        private lateinit var recViewBinding: FragmentToolsInViewpagerBinding
         private val gardenID: Long by lazy {
             ToolViewModel.fromBundle(requireArguments())
         }
-        private val viewModelGarden: ToolViewModel by viewModels {
-            GardenViewModelFactory(gardenID)
+        private val viewModelMainTools: ToolViewModel by viewModels {
+            GardenViewModelFactory(
+                gardenID
+            )
         }
-        private val viewModelTools: ToolsChildViewModel by lazy {
+        private val viewModelReceivedTools: ToolsChildViewModel by lazy {
             ViewModelProvider(this).get(ToolsChildViewModel::class.java)
         }
+
+        private val receivedTools: RealmResults<ToolRealm> by lazy {
+            viewModelReceivedTools.getListOfToolsAsRealmResults()
+        }
+
+        private val receivedToolsAsStringList = mutableListOf<String>()
 
         override fun onCreateView(
             inflater: LayoutInflater,
@@ -275,7 +289,7 @@ sealed class GardenFragmentHolder {
         ): View? {
             recViewBinding = DataBindingUtil.inflate(
                 inflater,
-                R.layout.fragment_tool_divided_vertical,
+                R.layout.fragment_tools_in_viewpager,
                 container,
                 false
             )
@@ -286,38 +300,70 @@ sealed class GardenFragmentHolder {
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
 
-            viewModelTools.listOfTools.observe(viewLifecycleOwner, Observer { receivedTools ->
-                recViewBinding.recyclerViewReceivedTools.also {
-                    it.layoutManager = LinearLayoutManager(requireContext())
-                    it.adapter = ReceivedToolsAdapter(receivedTools, this)
-                }
-            })
+            recViewBinding.recyclerViewAddedTools.layoutManager =
+                LinearLayoutManager(requireContext())
 
-
-            viewModelGarden.getToolsList()
+            viewModelMainTools.getToolsList()
                 ?.observe(viewLifecycleOwner, Observer { toolsList ->
                     recViewBinding.recyclerViewAddedTools.also {
-                        it.layoutManager = LinearLayoutManager(requireContext())
                         it.adapter = AddedItemAdapter(toolsList, this)
                     }
                 })
 
+            setOnAddToolsButtonListener()
         }
 
-        override fun onChangeNumberOfItems(noItems: Int, position: Int) {
-            viewModelGarden.updateNumberOfTools(noItems, position)
+        private fun fetchReceivedToolsFromViewModel() {
+            for (tool in receivedTools) {
+                receivedToolsAsStringList.add(tool.toolName)
+            }
+        }
+
+        private fun setOnAddToolsButtonListener() {
+            fetchReceivedToolsFromViewModel()
+            recViewBinding.materialButtonAddTools.setOnClickListener {
+                SheetToolsFragment(
+                    receivedToolsAsStringList,
+                    object : SheetToolsFragment.OnGetListOfPickedToolsListener {
+                        override fun onGetListOfPickedTools(listOfPickedTools: List<Boolean>) {
+                            addListOfPickedToolsToMainList(listOfPickedTools)
+                        }
+                    }
+                ).show(childFragmentManager, null)
+            }
+        }
+
+        //TODO zrobic aby dodawalo cala liste a nie tylko po jednej pozycji
+        private fun addListOfPickedToolsToMainList(listOfPickedTools: List<Boolean>) {
+            val listOfItemRealm = mutableListOf<ItemRealm>()
+
+            for (index in listOfPickedTools.indices) {
+                if (listOfPickedTools[index]) {
+                    receivedTools[index]?.let {
+                        val toolToAdd = ItemRealm(it.toolName, it.numberOfTools)
+                        listOfItemRealm.add(toolToAdd)
+                    }
+                }
+            }
+
+            viewModelMainTools.addListOfPickedTools(listOfItemRealm)
+        }
+
+        override fun onChangeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
+            val maxValue: Int = viewModelReceivedTools.findMaxValueOf(itemName)
+
+            PickNumberDialog(
+                currentValue,
+                maxValue,
+                object : PickNumberDialog.OnChosenNumberListener {
+                    override fun onChosenNumber(chosenNumber: Int) {
+                        viewModelMainTools.updateNumberOfTools(chosenNumber, position)
+                    }
+                }).show(childFragmentManager, null)
         }
 
         override fun onDeleteItemClick(id: Long?) {
-            viewModelGarden.deleteItemFromList(id)
-        }
-
-        override fun onPushItemClick(id: Long?) {
-            val receivedTool: ToolRealm? = viewModelTools.getSingleTool(id)
-            receivedTool?.let {
-                val toolToAdd = ItemRealm(it.toolName, it.numberOfTools)
-                viewModelGarden.addToolToList(toolToAdd)
-            }
+            viewModelMainTools.deleteItemFromList(id)
         }
 
         companion object {
@@ -383,8 +429,17 @@ sealed class GardenFragmentHolder {
 
         }
 
-        override fun onChangeNumberOfItems(noItems: Int, position: Int) {
-            viewModelGarden.updateNumberOfMachines(noItems, position)
+        override fun onChangeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
+            val maxValue: Int = viewModelMachines.findMaxValueOf(itemName)
+
+            PickNumberDialog(
+                currentValue,
+                maxValue,
+                object : PickNumberDialog.OnChosenNumberListener {
+                    override fun onChosenNumber(chosenNumber: Int) {
+                        viewModelGarden.updateNumberOfMachines(chosenNumber, position)
+                    }
+                }).show(childFragmentManager, null)
         }
 
         override fun onPushItemClick(id: Long?) {
@@ -405,6 +460,7 @@ sealed class GardenFragmentHolder {
                 fragment.arguments = MachineViewModel.toBundle(gardenID)
                 return fragment
             }
+
         }
 
     }
@@ -460,8 +516,17 @@ sealed class GardenFragmentHolder {
                 })
         }
 
-        override fun onChangeNumberOfItems(noItems: Int, position: Int) {
-            viewModelGarden.updateNumberOfProperties(noItems, position)
+        override fun onChangeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
+            val maxValue: Int = viewModelProperties.findMaxValueOf(itemName)
+
+            PickNumberDialog(
+                currentValue,
+                maxValue,
+                object : PickNumberDialog.OnChosenNumberListener {
+                    override fun onChosenNumber(chosenNumber: Int) {
+                        viewModelGarden.updateNumberOfProperties(chosenNumber, position)
+                    }
+                }).show(childFragmentManager, null)
         }
 
         override fun onDeleteItemClick(id: Long?) {
@@ -569,7 +634,9 @@ sealed class GardenFragmentHolder {
             ManHoursViewModel.fromBundle(requireArguments())
         }
         private val viewModel: ManHoursViewModel by viewModels {
-            GardenViewModelFactory(gardenID)
+            GardenViewModelFactory(
+                gardenID
+            )
         }
         private lateinit var workersList: RealmResults<WorkerRealm>
 
@@ -617,9 +684,10 @@ sealed class GardenFragmentHolder {
             binding.materialButtonAddWorkers.setOnClickListener {
                 SheetAssignWorkerFragment(
                     workersList,
-                    object : SheetAssignWorkerFragment.OnGetListOfWorkersFullNameListener {
+                    object :
+                        SheetAssignWorkerFragment.OnGetListOfWorkersFullNameListener {
                         override fun onGetListOfWorkersFullName(listOfWorkersFullName: List<String>) {
-                            viewModel.addListOfWorkersFullName(listOfWorkersFullName)
+                            viewModel.addListOfWorkersFullNames(listOfWorkersFullName)
                         }
                     }).show(childFragmentManager, null)
             }
@@ -631,7 +699,8 @@ sealed class GardenFragmentHolder {
             binding.materialButtonAddManHours.setOnClickListener {
                 SheetManHoursFragment(
                     viewModel.getWorkersFullNames(),
-                    object : SheetManHoursFragment.OnGetListOfWorkedHoursWithPickedDate {
+                    object :
+                        SheetManHoursFragment.OnGetListOfWorkedHoursWithPickedDate {
                         override fun onGetListOfWorkedHoursWithPickedDate(
                             listOfWorkedHours: List<Double>,
                             date: Date
@@ -660,7 +729,9 @@ sealed class GardenFragmentHolder {
         }
 
         private val viewModel: PhotosViewModel by viewModels {
-            GardenViewModelFactory(gardenID)
+            GardenViewModelFactory(
+                gardenID
+            )
         }
 
         private var uniquePhotoName: String = ""
@@ -694,7 +765,7 @@ sealed class GardenFragmentHolder {
 
         private fun observePhotosListFromDb() {
             viewModel.getItemsList()?.observe(viewLifecycleOwner, Observer { listOfPicturesPaths ->
-                if (listOfPicturesPaths.size == MAX_NUMBER_OF_POSSIBLE_PICTURES){
+                if (listOfPicturesPaths.size == MAX_NUMBER_OF_POSSIBLE_PICTURES) {
                     binding.materialButtonTakePhoto.isEnabled = false
                 }
 
