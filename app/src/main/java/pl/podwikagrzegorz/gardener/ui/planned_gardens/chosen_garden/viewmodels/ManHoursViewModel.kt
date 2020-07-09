@@ -3,8 +3,10 @@ package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import io.realm.RealmList
 import io.realm.RealmResults
+import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
 import pl.podwikagrzegorz.gardener.data.daos.WorkerDAO
 import pl.podwikagrzegorz.gardener.data.realm.ManHoursMapRealm
 import pl.podwikagrzegorz.gardener.data.realm.ManHoursRealm
@@ -12,68 +14,39 @@ import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
 import pl.podwikagrzegorz.gardener.data.realm.asLiveList
 import java.util.*
 
-class ManHoursViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
-
+class ManHoursViewModel(gardenID: Long) : ViewModel() {
+    private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
     private val workerDAO = WorkerDAO()
 
-    private val _mapOfWorkedHours: MutableLiveData<RealmList<ManHoursMapRealm>>? =
-        gardenRealm?.mapOfWorkedHours?.asLiveList()
-
-    val mapOfWorkedHours: LiveData<RealmList<ManHoursMapRealm>>? = _mapOfWorkedHours
+    private val _mapOfWorkedHours: MutableLiveData<RealmList<ManHoursMapRealm>> =
+        gardenComponentsDAO.getLiveMapOfManHours()
+    val mapOfWorkedHours: LiveData<RealmList<ManHoursMapRealm>>
+        get() = _mapOfWorkedHours
 
     fun getWorkersFullNames(): List<String>
-        = _mapOfWorkedHours?.value?.map { it.workerFullName } ?: mutableListOf()
+        = _mapOfWorkedHours.value?.map { it.workerFullName } ?: mutableListOf()
 
-
-    fun getWorkersResults(): RealmResults<WorkerRealm> =
+    fun getReceivedWorkers(): RealmResults<WorkerRealm> =
         workerDAO.getRealmResults()
 
-    override fun onCleared() {
-        workerDAO.closeRealm()
-        realm.close()
-        super.onCleared()
-    }
-
     fun addListOfWorkersFullNames(listOfWorkersFullNames: List<String>) {
-        realm.executeTransaction {
-
-
-            for (name in listOfWorkersFullNames) {
-                val tmpListOfWorkedHours = _mapOfWorkedHours?.value
-
-                tmpListOfWorkedHours?.let { list ->
-                    val isCurrentlyInList = list.find { it.workerFullName == name }
-
-                    if (isCurrentlyInList == null)
-                        list.add(ManHoursMapRealm(name))
-                }
-
-            }
-
-            refreshLiveDataList()
-        }
+        gardenComponentsDAO.addListOfWorkersFullNames(listOfWorkersFullNames)
+        refreshLiveDataList()
     }
 
     fun addListOfWorkedHoursWithPickedDate(listOfWorkedHours: List<Double>, date: Date) {
-        realm.executeTransaction {
-            for (index in listOfWorkedHours.indices) {
-                if (listOfWorkedHours[index] != 0.0) {
-                    _mapOfWorkedHours?.value?.get(index)?.listOfManHours?.add(
-                        ManHoursRealm(
-                            date,
-                            listOfWorkedHours[index]
-                        )
-                    )
-
-                }
-            }
-
-            refreshLiveDataList()
-        }
+        gardenComponentsDAO.addListOfWorkedHoursWithPickedDate(listOfWorkedHours, date)
+        refreshLiveDataList()
     }
 
     private fun refreshLiveDataList() {
-        _mapOfWorkedHours?.postValue(_mapOfWorkedHours.value)
+        _mapOfWorkedHours.postValue(_mapOfWorkedHours.value)
+    }
+
+    override fun onCleared() {
+        workerDAO.closeRealm()
+        gardenComponentsDAO.closeRealm()
+        super.onCleared()
     }
 
 

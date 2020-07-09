@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -24,7 +24,9 @@ class SingleItemAdapter(
             layoutInflater, R.layout.mcv_single_item,
             parent, false
         )
-        return SingleItemHolder(binding)
+        return SingleItemHolder(
+            binding
+        )
     }
 
     override fun getItemCount(): Int = listOfResults.size

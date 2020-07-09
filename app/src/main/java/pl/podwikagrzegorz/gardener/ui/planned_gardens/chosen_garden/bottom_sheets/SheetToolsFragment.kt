@@ -16,14 +16,14 @@ import pl.podwikagrzegorz.gardener.databinding.BottomSheetAssignWorkerBinding
 
 class SheetToolsFragment(
     listOfToolNames: List<String>,
-    private val listener : OnGetListOfPickedToolsListener
+    private val listener : OnGetListOfPickedItemsListener
 ) : BottomSheetDialogFragment() {
 
     private lateinit var binding: BottomSheetAssignWorkerBinding
     private val adapter = SheetToolsAdapter(listOfToolNames)
 
-    interface OnGetListOfPickedToolsListener {
-        fun onGetListOfPickedTools(listOfPickedTools: List<Boolean>)
+    interface OnGetListOfPickedItemsListener {
+        fun onGetListOfPickedItems(listOfPickedItems: List<Boolean>)
     }
 
     override fun onCreateView(
@@ -68,7 +68,7 @@ class SheetToolsFragment(
     private fun setAddToolsButtonListener() {
         binding.materialButtonConfirmAddingWorkers.setOnClickListener {
             val listOfPickedTools = adapter.listOfCheckedTools
-            listener.onGetListOfPickedTools(listOfPickedTools)
+            listener.onGetListOfPickedItems(listOfPickedTools)
             dismiss()
         }
     }

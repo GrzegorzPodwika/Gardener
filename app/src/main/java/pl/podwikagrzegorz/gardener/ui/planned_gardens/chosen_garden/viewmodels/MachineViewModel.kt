@@ -3,41 +3,48 @@ package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import io.realm.RealmList
+import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
 import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
-import pl.podwikagrzegorz.gardener.data.realm.asLiveList
 
-class MachineViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
-    private val listOfMachines: MutableLiveData<RealmList<ItemRealm>>? =
-        gardenRealm?.listOfMachines?.asLiveList()
+class MachineViewModel(gardenID: Long) : ViewModel() {
+    private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
 
-    fun getMachinesList() :  LiveData<RealmList<ItemRealm>>? = listOfMachines
+    private val _listOfMachines: MutableLiveData<RealmList<ItemRealm>> =
+        gardenComponentsDAO.getLiveListOfMachines()
+    val listOfMachines: LiveData<RealmList<ItemRealm>>
+        get() = _listOfMachines
 
-    fun addMachineToList(machine: ItemRealm) {
-        realm.executeTransaction {
-            gardenRealm?.listOfMachines?.add(machine)
-        }
+    fun addListOfPickedMachines(listOfPickedMachines: List<ItemRealm>) {
+        gardenComponentsDAO.addListOfPickedMachines(listOfPickedMachines)
         refreshLiveDataList()
     }
 
-    override fun deleteItemFromList(id: Long?) {
-        if (id != null) {
-            realm.executeTransaction {
-                gardenRealm?.listOfMachines?.removeAt(id.toInt())
-            }
+    fun reverseFlagOnMachine(position: Int) {
+        gardenComponentsDAO.reverseFlagOnMachine(position)
+        refreshLiveDataList()
+    }
+
+    fun updateNumberOfMachines(noItems: Int, position: Int) {
+        gardenComponentsDAO.updateNumberOfProperMachine(noItems, position)
+        refreshLiveDataList()
+    }
+
+    fun deleteItemFromList(id: Long?) {
+        id?.let {
+            gardenComponentsDAO.deleteMachineFromList(it)
             refreshLiveDataList()
         }
     }
 
     private fun refreshLiveDataList() {
-        listOfMachines?.postValue(listOfMachines.value)
+        _listOfMachines.postValue(_listOfMachines.value)
     }
 
-    fun updateNumberOfMachines(noItems: Int, position: Int) {
-        realm.executeTransaction{
-            gardenRealm?.listOfMachines?.get(position)?.numberOfItems = noItems
-        }
-        refreshLiveDataList()
+    override fun onCleared() {
+        gardenComponentsDAO.closeRealm()
+        super.onCleared()
     }
 
     companion object {

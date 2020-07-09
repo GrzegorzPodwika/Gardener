@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:paddingStart="?android:attr/expandableListPreferredChildPaddingLeft"
         android:textAppearance="?attr/textAppearanceSubtitle2"
-        android:text="20.06.2020" />
+        android:hint="@string/date_hint" />
 
     <TextView
         android:id="@+id/expanded_list_hours"
@@ -25,6 +25,6 @@
         android:layout_marginStart="@dimen/keyline_4"
         android:layout_marginEnd="@dimen/keyline_4"
         android:textAppearance="?attr/textAppearanceSubtitle2"
-        android:text="10.5" />
+        android:hint="@string/hint_double" />
 </LinearLayout>
 </layout>

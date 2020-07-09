@@ -4,9 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmResults
+import io.realm.Sort
 import io.realm.kotlin.where
-import pl.podwikagrzegorz.gardener.data.pojo.Machine
-import pl.podwikagrzegorz.gardener.data.realm.MachineMapper
 import pl.podwikagrzegorz.gardener.data.realm.MachineModule
 import pl.podwikagrzegorz.gardener.data.realm.MachineRealm
 import pl.podwikagrzegorz.gardener.data.realm.asLiveData
@@ -49,6 +48,8 @@ class MachineDAO : DAO<MachineRealm> {
         return realm.where<MachineRealm>().findAllAsync().asLiveData()
     }
 
+    fun findMaxValueOf(itemName: String): Int? =
+        realm.where<MachineRealm>().equalTo("machineName", itemName).findFirst()?.numberOfMachines
 
     override fun closeRealm() {
         realm.close()

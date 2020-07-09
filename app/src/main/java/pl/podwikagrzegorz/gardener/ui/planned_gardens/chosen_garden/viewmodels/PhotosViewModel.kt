@@ -3,22 +3,30 @@ package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import io.realm.RealmList
-import pl.podwikagrzegorz.gardener.data.realm.asLiveList
+import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
 
-class PhotosViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
+class PhotosViewModel(gardenID: Long) : ViewModel() {
+    private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
 
-    private val listOfPicturesPaths: MutableLiveData<RealmList<String>>? =
-        gardenRealm?.listOfPicturesPaths?.asLiveList()
+    private val _listOfPicturesPaths: MutableLiveData<RealmList<String>> =
+        gardenComponentsDAO.getLiveListOfPicturesPaths()
+    val listOfPicturesPaths : LiveData<RealmList<String>>
+        get() = _listOfPicturesPaths
 
-    override fun getItemsList(): LiveData<RealmList<String>>? = listOfPicturesPaths
+    fun addPictureToList(path: String) {
+        gardenComponentsDAO.addPictureToList(path)
+        refreshLiveDataList()
+    }
 
-    override fun addItemToList(item: String) {
-        realm.executeTransaction {
-            val list = listOfPicturesPaths?.value
-            list?.add(item)
-            listOfPicturesPaths?.postValue(listOfPicturesPaths.value)
-        }
+    private fun refreshLiveDataList() {
+        _listOfPicturesPaths.postValue(_listOfPicturesPaths.value)
+    }
+
+    override fun onCleared() {
+        gardenComponentsDAO.closeRealm()
+        super.onCleared()
     }
 
     companion object {

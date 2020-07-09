@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.data.daos.ToolDAO
-import pl.podwikagrzegorz.gardener.data.pojo.Tool
 import pl.podwikagrzegorz.gardener.data.realm.ToolRealm
 
 class ToolsChildViewModel : ViewModel() {
@@ -18,14 +17,15 @@ class ToolsChildViewModel : ViewModel() {
     val listOfTools: LiveData<RealmResults<ToolRealm>>
         get() = _listOfTools
 
-    fun getListOfToolsAsRealmResults() =
-        toolDAO.getRealmResults()
-
-    fun getSingleTool(id: Long?): ToolRealm? = id?.let { toolDAO.getItemById(it) }
-
     fun addTool(tool: ToolRealm) {
         toolDAO.insertItem(tool)
     }
+
+    fun getListOfToolsAsRealmResults() =
+        toolDAO.getRealmResults()
+
+    fun findMaxValueOf(itemName: String): Int =
+        toolDAO.findMaxValueOf(itemName) ?: GardenerApp.MAX_NUMBER_OF_MACHINES
 
     fun deleteTool(id: Long?) {
         id?.let { toolDAO.deleteItem(id) }
@@ -36,12 +36,5 @@ class ToolsChildViewModel : ViewModel() {
         super.onCleared()
     }
 
-    fun findMaxValueOf(itemName: String): Int {
-        val searchedMachine = _listOfTools.value?.find {
-            it.toolName == itemName
-        }
-
-        return searchedMachine?.numberOfTools ?: GardenerApp.MAX_NUMBER_OF_MACHINES
-    }
 
 }

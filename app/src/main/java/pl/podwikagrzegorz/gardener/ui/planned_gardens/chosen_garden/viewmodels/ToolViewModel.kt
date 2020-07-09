@@ -8,7 +8,6 @@ import io.realm.RealmList
 import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
 import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
 
-//TODO (Zastanowic sie jak wyswietlac te dane Z Tool, Machine itd. i przechowywac)
 class ToolViewModel(gardenID: Long) : ViewModel() {
     private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
 
@@ -17,8 +16,8 @@ class ToolViewModel(gardenID: Long) : ViewModel() {
     val listOfTools: LiveData<RealmList<ItemRealm>>
         get() = _listOfTools
 
-    fun addListOfPickedTools(listOfItemRealm: List<ItemRealm>) {
-        gardenComponentsDAO.addListOfPickedTools(listOfItemRealm)
+    fun addListOfPickedTools(listOfPickedTools: List<ItemRealm>) {
+        gardenComponentsDAO.addListOfPickedTools(listOfPickedTools)
         refreshLiveDataList()
     }
 
@@ -32,8 +31,8 @@ class ToolViewModel(gardenID: Long) : ViewModel() {
         refreshLiveDataList()
     }
 
-    fun changeFlagToOpposite(position: Int) {
-        gardenComponentsDAO.changeFlagToOpposite(position)
+    fun reverseFlagOnTool(position: Int) {
+        gardenComponentsDAO.reverseFlagOnTool(position)
         refreshLiveDataList()
     }
 

@@ -27,6 +27,10 @@ import pl.podwikagrzegorz.gardener.databinding.*
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.MachinesChildViewModel
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.PropertiesChildViewModel
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.ToolsChildViewModel
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.AddedItemAdapter
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.ExpandableListAdapter
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.PickNumberDialog
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SingleItemAdapter
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetAssignWorkerFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetManHoursFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetToolsFragment
@@ -149,7 +153,9 @@ sealed class GardenFragmentHolder {
             viewModelGarden.listOfDescriptions
                 .observe(viewLifecycleOwner, Observer {
                     binding.recyclerViewSingleItems.adapter =
-                        SingleItemAdapter(it).apply { setListener(this@DescriptionFragment) }
+                        SingleItemAdapter(
+                            it
+                        ).apply { setListener(this@DescriptionFragment) }
 
                 })
         }
@@ -238,7 +244,10 @@ sealed class GardenFragmentHolder {
         private fun observeListOfNotes() {
             viewModelGarden.listOfNotes
                 .observe(viewLifecycleOwner, Observer {
-                    binding.recyclerViewSingleItems.adapter = SingleItemAdapter(it).apply { setListener(this@NoteFragment) }
+                    binding.recyclerViewSingleItems.adapter =
+                        SingleItemAdapter(
+                            it
+                        ).apply { setListener(this@NoteFragment) }
                 })
         }
 
@@ -284,7 +293,7 @@ sealed class GardenFragmentHolder {
 
     //Class No4 - Tools
     class ToolFragment : Fragment(), OnDeleteItemListener {
-        private lateinit var recViewBinding: FragmentToolsInViewpagerBinding
+        private lateinit var binding: FragmentToolsInViewpagerBinding
         private val gardenID: Long by lazy {
             ToolViewModel.fromBundle(requireArguments())
         }
@@ -301,22 +310,22 @@ sealed class GardenFragmentHolder {
             viewModelReceivedTools.getListOfToolsAsRealmResults()
         }
 
-        private val receivedToolsAsStringList = mutableListOf<String>()
-        private lateinit var adapter : AddedItemAdapter
+        private val receivedToolNames = mutableListOf<String>()
+        private lateinit var adapter: AddedItemAdapter
 
         override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View? {
-            recViewBinding = DataBindingUtil.inflate(
+            binding = DataBindingUtil.inflate(
                 inflater,
                 R.layout.fragment_tools_in_viewpager,
                 container,
                 false
             )
 
-            return recViewBinding.root
+            return binding.root
         }
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -329,43 +338,40 @@ sealed class GardenFragmentHolder {
         }
 
         private fun presetRecyclerView() {
-            recViewBinding.recyclerViewAddedTools.layoutManager =
+            binding.recyclerViewAddedTools.layoutManager =
                 LinearLayoutManager(requireContext())
         }
 
         private fun mapReceivedToolsIntoNames() {
-            receivedTools.forEach { receivedToolsAsStringList.add(it.toolName) }
+            receivedTools.forEach { receivedToolNames.add(it.toolName) }
         }
 
         private fun observeListOfAddedTools() {
             viewModelMainTools.listOfTools
                 .observe(viewLifecycleOwner, Observer {
                     adapter = AddedItemAdapter(it, this)
-                    recViewBinding.recyclerViewAddedTools.adapter = adapter
+                    binding.recyclerViewAddedTools.adapter = adapter
                 })
         }
 
         private fun setOnAddToolsButtonListener() {
-            recViewBinding.materialButtonAddTools.setOnClickListener {
+            binding.materialButtonAddTools.setOnClickListener {
                 SheetToolsFragment(
-                    receivedToolsAsStringList,
-                    object : SheetToolsFragment.OnGetListOfPickedToolsListener {
-                        override fun onGetListOfPickedTools(listOfPickedTools: List<Boolean>) {
-                            addListOfPickedToolsToMainList(listOfPickedTools)
+                    receivedToolNames,
+                    object : SheetToolsFragment.OnGetListOfPickedItemsListener {
+                        override fun onGetListOfPickedItems(listOfPickedItems: List<Boolean>) {
+                            addListOfPickedToolsToMainList(listOfPickedItems)
                         }
                     }
                 ).show(childFragmentManager, null)
             }
         }
 
-
-
-        //TODO zrobic aby dodawalo cala liste a nie tylko po jednej pozycji
-        private fun addListOfPickedToolsToMainList(listOfPickedTools: List<Boolean>) {
+        private fun addListOfPickedToolsToMainList(listOfPickedItems: List<Boolean>) {
             val listOfItemRealm = mutableListOf<ItemRealm>()
 
-            for (index in listOfPickedTools.indices) {
-                if (listOfPickedTools[index]) {
+            for (index in listOfPickedItems.indices) {
+                if (listOfPickedItems[index]) {
                     receivedTools[index]?.let {
                         val toolToAdd = ItemRealm(it.toolName, it.numberOfTools)
                         listOfItemRealm.add(toolToAdd)
@@ -382,7 +388,8 @@ sealed class GardenFragmentHolder {
             PickNumberDialog(
                 currentValue,
                 maxValue,
-                object : PickNumberDialog.OnChosenNumberListener {
+                object :
+                    PickNumberDialog.OnChosenNumberListener {
                     override fun onChosenNumber(chosenNumber: Int) {
                         viewModelMainTools.updateNumberOfTools(chosenNumber, position)
                     }
@@ -394,13 +401,7 @@ sealed class GardenFragmentHolder {
         }
 
         override fun onChangeFlagToOpposite(position: Int) {
-            viewModelMainTools.changeFlagToOpposite(position)
-        }
-
-        override fun onDestroyView() {
-            super.onDestroyView()
-/*            val listOfActiveTools = adapter.listOfActiveTools
-            viewModelMainTools.updateListOfActiveTools(listOfActiveTools)*/
+            viewModelMainTools.reverseFlagOnTool(position)
         }
 
         companion object {
@@ -413,21 +414,27 @@ sealed class GardenFragmentHolder {
         }
     }
 
-    //TODO clean CODE!!!!!!
     //Class No5 - Machines
-    class MachineFragment : Fragment(), OnDeleteItemListener, OnPushItemListener {
-        private lateinit var recViewBinding: FragmentToolDividedVerticalBinding
+    class MachineFragment : Fragment(), OnDeleteItemListener {
+        private lateinit var binding: FragmentToolsInViewpagerBinding
         private val gardenID: Long by lazy {
             MachineViewModel.fromBundle(requireArguments())
         }
-        private val viewModelGarden: MachineViewModel by viewModels {
+        private val viewModelMainMachines: MachineViewModel by viewModels {
             GardenViewModelFactory(
                 gardenID
             )
         }
-        private val viewModelMachines: MachinesChildViewModel by lazy {
+        private val viewModelReceivedMachines: MachinesChildViewModel by lazy {
             ViewModelProvider(this).get(MachinesChildViewModel::class.java)
         }
+
+        private val receivedMachines: RealmResults<MachineRealm> by lazy {
+            viewModelReceivedMachines.getListOfMachinesAsRealmResults()
+        }
+
+        private val receivedMachineNames = mutableListOf<String>()
+        private lateinit var adapter: AddedItemAdapter
 
         override fun onCreateView(
             inflater: LayoutInflater,
@@ -435,60 +442,91 @@ sealed class GardenFragmentHolder {
             savedInstanceState: Bundle?
         ): View? {
 
-            recViewBinding = DataBindingUtil.inflate(
+            binding = DataBindingUtil.inflate(
                 inflater,
-                R.layout.fragment_tool_divided_vertical,
+                R.layout.fragment_tools_in_viewpager,
                 container,
                 false
             )
 
-            return recViewBinding.root
+            return binding.root
         }
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
 
-            viewModelMachines.listOfMachines
-                .observe(viewLifecycleOwner, Observer { receivedMachines ->
-                    recViewBinding.recyclerViewReceivedTools.also {
-                        it.layoutManager = LinearLayoutManager(requireContext())
-                        it.adapter = ReceivedMachinesAdapter(receivedMachines, this)
-                    }
-                })
+            presetRecyclerView()
+            mapReceivedMachinesIntoNames()
+            observeListOfAddedMachines()
+            setOnAddMachinesButtonListener()
+        }
 
-            viewModelGarden.getMachinesList()
-                ?.observe(viewLifecycleOwner, Observer { machinesList ->
-                    recViewBinding.recyclerViewAddedTools.also {
-                        it.layoutManager = LinearLayoutManager(requireContext())
-                        it.adapter = AddedItemAdapter(machinesList, this)
-                    }
-                })
+        private fun presetRecyclerView() {
+            binding.recyclerViewAddedTools.layoutManager =
+                LinearLayoutManager(requireContext())
+        }
 
+        private fun mapReceivedMachinesIntoNames() {
+            receivedMachines.forEach { receivedMachineNames.add(it.machineName) }
+        }
+
+        private fun observeListOfAddedMachines() {
+            viewModelMainMachines.listOfMachines
+                .observe(viewLifecycleOwner, Observer {
+                    adapter = AddedItemAdapter(it, this)
+                    binding.recyclerViewAddedTools.adapter = adapter
+                })
+        }
+
+        private fun setOnAddMachinesButtonListener() {
+            binding.materialButtonAddTools.text = getString(R.string.equipment)
+            binding.materialButtonAddTools.setOnClickListener {
+                SheetToolsFragment(
+                    receivedMachineNames,
+                    object : SheetToolsFragment.OnGetListOfPickedItemsListener {
+                        override fun onGetListOfPickedItems(listOfPickedItems: List<Boolean>) {
+                            addListOfPickedMachinesToMainList(listOfPickedItems)
+                        }
+                    }
+                ).show(childFragmentManager, null)
+            }
+        }
+
+        private fun addListOfPickedMachinesToMainList(listOfPickedItems: List<Boolean>) {
+            val listOfItemRealm = mutableListOf<ItemRealm>()
+
+            for (index in listOfPickedItems.indices) {
+                if (listOfPickedItems[index]) {
+                    receivedMachines[index]?.let {
+                        val machineToAdd = ItemRealm(it.machineName, it.numberOfMachines)
+                        listOfItemRealm.add(machineToAdd)
+                    }
+                }
+            }
+
+            viewModelMainMachines.addListOfPickedMachines(listOfItemRealm)
         }
 
         override fun onChangeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
-            val maxValue: Int = viewModelMachines.findMaxValueOf(itemName)
+            val maxValue: Int = viewModelReceivedMachines.findMaxValueOf(itemName)
 
             PickNumberDialog(
                 currentValue,
                 maxValue,
-                object : PickNumberDialog.OnChosenNumberListener {
+                object :
+                    PickNumberDialog.OnChosenNumberListener {
                     override fun onChosenNumber(chosenNumber: Int) {
-                        viewModelGarden.updateNumberOfMachines(chosenNumber, position)
+                        viewModelMainMachines.updateNumberOfMachines(chosenNumber, position)
                     }
                 }).show(childFragmentManager, null)
         }
 
-        override fun onPushItemClick(id: Long?) {
-            val receivedMachine: MachineRealm? = viewModelMachines.getSingleMachine(id)
-            receivedMachine?.let {
-                val machineToAdd = ItemRealm(it.machineName, it.numberOfMachines)
-                viewModelGarden.addMachineToList(machineToAdd)
-            }
+        override fun onChangeFlagToOpposite(position: Int) {
+            viewModelMainMachines.reverseFlagOnMachine(position)
         }
 
         override fun onDeleteItemClick(id: Long?) {
-            viewModelGarden.deleteItemFromList(id)
+            viewModelMainMachines.deleteItemFromList(id)
         }
 
         companion object {
@@ -503,79 +541,118 @@ sealed class GardenFragmentHolder {
     }
 
     //Class No6 - Properties
-    class PropertyFragment : Fragment(), OnDeleteItemListener, OnPushItemListener {
+    class PropertyFragment : Fragment(), OnDeleteItemListener {
 
-        private lateinit var recViewBinding: FragmentToolDividedVerticalBinding
+        private lateinit var binding: FragmentToolsInViewpagerBinding
         private val gardenID: Long by lazy {
             PropertyViewModel.fromBundle(requireArguments())
         }
-        private val viewModelGarden: PropertyViewModel by viewModels {
+        private val viewModelMainProperties: PropertyViewModel by viewModels {
             GardenViewModelFactory(
                 gardenID
             )
         }
-        private val viewModelProperties: PropertiesChildViewModel by lazy {
+        private val viewModelReceivedProperties: PropertiesChildViewModel by lazy {
             ViewModelProvider(this).get(PropertiesChildViewModel::class.java)
         }
+        private val receivedProperties: RealmResults<PropertyRealm> by lazy {
+            viewModelReceivedProperties.getListOfPropertiesAsRealmResults()
+        }
+
+        private val receivedPropertyNames = mutableListOf<String>()
+        private lateinit var adapter: AddedItemAdapter
 
         override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View? {
-            recViewBinding = DataBindingUtil.inflate(
+            binding = DataBindingUtil.inflate(
                 inflater,
-                R.layout.fragment_tool_divided_vertical,
+                R.layout.fragment_tools_in_viewpager,
                 container,
                 false
             )
 
-            return recViewBinding.root
+            return binding.root
         }
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
 
-            viewModelProperties.listOfProperties
-                .observe(viewLifecycleOwner, Observer { receivedProperties ->
-                    recViewBinding.recyclerViewReceivedTools.also {
-                        it.layoutManager = LinearLayoutManager(requireContext())
-                        it.adapter = ReceivedPropertiesAdapter(receivedProperties, this)
-                    }
-                })
+            presetRecyclerView()
+            mapReceivedPropertiesIntoNames()
+            observeListOfAddedProperties()
+            setOnAddPropertiesButtonListener()
+        }
 
-            viewModelGarden.getPropertiesList()
-                ?.observe(viewLifecycleOwner, Observer { propertiesList ->
-                    recViewBinding.recyclerViewAddedTools.also {
-                        it.layoutManager = LinearLayoutManager(requireContext())
-                        it.adapter = AddedItemAdapter(propertiesList, this)
-                    }
+        private fun presetRecyclerView() {
+            binding.recyclerViewAddedTools.layoutManager =
+                LinearLayoutManager(requireContext())
+        }
+
+        private fun mapReceivedPropertiesIntoNames() {
+            receivedProperties.forEach { receivedPropertyNames.add(it.propertyName) }
+        }
+
+        private fun observeListOfAddedProperties() {
+            viewModelMainProperties.listOfProperties
+                .observe(viewLifecycleOwner, Observer {
+                    adapter = AddedItemAdapter(it, this)
+                    binding.recyclerViewAddedTools.adapter = adapter
                 })
         }
 
+        private fun setOnAddPropertiesButtonListener() {
+            binding.materialButtonAddTools.text = getString(R.string.others)
+            binding.materialButtonAddTools.setOnClickListener {
+                SheetToolsFragment(
+                    receivedPropertyNames,
+                    object : SheetToolsFragment.OnGetListOfPickedItemsListener {
+                        override fun onGetListOfPickedItems(listOfPickedItems: List<Boolean>) {
+                            addListOfPickedPropertiesToMainList(listOfPickedItems)
+                        }
+                    }
+                ).show(childFragmentManager, null)
+            }
+        }
+
+        private fun addListOfPickedPropertiesToMainList(listOfPickedItems: List<Boolean>) {
+            val listOfItemRealm = mutableListOf<ItemRealm>()
+
+            for (index in listOfPickedItems.indices) {
+                if (listOfPickedItems[index]) {
+                    receivedProperties[index]?.let {
+                        val propertyToAdd = ItemRealm(it.propertyName, it.numberOfProperties)
+                        listOfItemRealm.add(propertyToAdd)
+                    }
+                }
+            }
+
+            viewModelMainProperties.addListOfPickedProperties(listOfItemRealm)
+        }
+
+
         override fun onChangeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
-            val maxValue: Int = viewModelProperties.findMaxValueOf(itemName)
+            val maxValue: Int = viewModelReceivedProperties.findMaxValueOf(itemName)
 
             PickNumberDialog(
                 currentValue,
                 maxValue,
-                object : PickNumberDialog.OnChosenNumberListener {
+                object :
+                    PickNumberDialog.OnChosenNumberListener {
                     override fun onChosenNumber(chosenNumber: Int) {
-                        viewModelGarden.updateNumberOfProperties(chosenNumber, position)
+                        viewModelMainProperties.updateNumberOfProperties(chosenNumber, position)
                     }
                 }).show(childFragmentManager, null)
         }
 
         override fun onDeleteItemClick(id: Long?) {
-            viewModelGarden.deleteItemFromList(id)
+            viewModelMainProperties.deleteItemFromList(id)
         }
 
-        override fun onPushItemClick(id: Long?) {
-            val receivedProperty: PropertyRealm? = viewModelProperties.getSingleProperty(id)
-            receivedProperty?.let {
-                val propertyToAdd = ItemRealm(it.propertyName, it.numberOfProperties)
-                viewModelGarden.addPropertyToList(propertyToAdd)
-            }
+        override fun onChangeFlagToOpposite(position: Int) {
+            viewModelMainProperties.reverseFlagOnProperty(position)
         }
 
         companion object {
@@ -630,7 +707,10 @@ sealed class GardenFragmentHolder {
 
         private fun observeListOfShopping() {
             viewModelGarden.listOfShopping.observe(viewLifecycleOwner, Observer {
-                binding.recyclerViewSingleItems.adapter = SingleItemAdapter(it).apply { setListener(this@ShoppingFragment) }
+                binding.recyclerViewSingleItems.adapter =
+                    SingleItemAdapter(
+                        it
+                    ).apply { setListener(this@ShoppingFragment) }
             })
         }
 
@@ -673,7 +753,6 @@ sealed class GardenFragmentHolder {
     }
 
     //Class No8 - Man hours
-    //TODO("Zajac sie kolejnymi fragmentem Man hours aby ExpandableList dzialala jak nalezy
     class ManHoursFragment : Fragment() {
 
         private lateinit var binding: ExpandableListsOfManHoursBinding
@@ -704,16 +783,15 @@ sealed class GardenFragmentHolder {
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
 
-            setExpandableListAdapter()
+            observeMapOfWorkedHours()
             setOnAddWorkerButtonListener()
             setOnAddManHoursButtonListener()
         }
 
-        private fun setExpandableListAdapter() {
+        private fun observeMapOfWorkedHours() {
             val expandableList = binding.expandableListView
 
-
-            viewModel.mapOfWorkedHours?.observe(
+            viewModel.mapOfWorkedHours.observe(
                 viewLifecycleOwner,
                 Observer { mapOfWorkedHours ->
                     expandableList.setAdapter(
@@ -721,13 +799,12 @@ sealed class GardenFragmentHolder {
                             requireContext(), mapOfWorkedHours
                         )
                     )
-
                 })
         }
 
         private fun setOnAddWorkerButtonListener() {
+            workersList = viewModel.getReceivedWorkers()
 
-            workersList = viewModel.getWorkersResults()
             binding.materialButtonAddWorkers.setOnClickListener {
                 SheetAssignWorkerFragment(
                     workersList,
@@ -741,7 +818,6 @@ sealed class GardenFragmentHolder {
         }
 
         private fun setOnAddManHoursButtonListener() {
-            //val workersFullNames = viewModel.getWorkersFullNames()
 
             binding.materialButtonAddManHours.setOnClickListener {
                 SheetManHoursFragment(
@@ -767,9 +843,8 @@ sealed class GardenFragmentHolder {
         }
     }
 
-    //TODO adapter do zdjec itd.
+    // Photos
     class PhotosFragment : Fragment() {
-
         private lateinit var binding: FragmentPhotosBinding
         private val gardenID: Long by lazy {
             PhotosViewModel.fromBundle(requireArguments())
@@ -781,17 +856,15 @@ sealed class GardenFragmentHolder {
             )
         }
 
-        private var uniquePhotoName: String = ""
-
         private val fileProviderPath: File by lazy {
             requireContext().filesDir
         }
 
-        //private val
-
         private val targetWidth: Int =
             GardenerApp.res.getDimensionPixelSize(R.dimen.image_size_small)
+
         private val targetHeight: Int = targetWidth
+        private var uniquePhotoName: String = ""
 
         override fun onCreateView(
             inflater: LayoutInflater,
@@ -811,50 +884,51 @@ sealed class GardenFragmentHolder {
         }
 
         private fun observePhotosListFromDb() {
-            viewModel.getItemsList()?.observe(viewLifecycleOwner, Observer { listOfPicturesPaths ->
-                if (listOfPicturesPaths.size == MAX_NUMBER_OF_POSSIBLE_PICTURES) {
-                    binding.materialButtonTakePhoto.isEnabled = false
-                }
+            viewModel.listOfPicturesPaths.observe(
+                viewLifecycleOwner,
+                Observer { listOfPicturesPaths ->
+                    if (listOfPicturesPaths.size == MAX_NUMBER_OF_POSSIBLE_PICTURES) {
+                        binding.materialButtonTakePhoto.isEnabled = false
+                    }
 
-                setReceivedPhotos(listOfPicturesPaths)
-            })
+                    setReceivedPhotos(listOfPicturesPaths)
+                })
         }
 
-        private fun setReceivedPhotos(listOfPicturesPaths: RealmList<String>?) {
-            listOfPicturesPaths?.let {
+        private fun setReceivedPhotos(listOfPicturesPaths: RealmList<String>) {
 
-                for (index in it.indices) {
-                    val absolutePath = getAbsolutePathFrom(it[index]!!)
-                    val scaledBitmap = getScaledBitmap(absolutePath)
+            for (index in listOfPicturesPaths.indices) {
+                val absolutePath = getAbsolutePathFrom(listOfPicturesPaths[index]!!)
+                val scaledBitmap = getScaledBitmap(absolutePath)
 
-                    when (index) {
-                        0 -> binding.imageViewPhoto0.setImageBitmap(scaledBitmap)
+                when (index) {
+                    0 -> binding.imageViewPhoto0.setImageBitmap(scaledBitmap)
 
-                        1 -> binding.imageViewPhoto1.setImageBitmap(scaledBitmap)
+                    1 -> binding.imageViewPhoto1.setImageBitmap(scaledBitmap)
 
-                        2 -> binding.imageViewPhoto2.setImageBitmap(scaledBitmap)
+                    2 -> binding.imageViewPhoto2.setImageBitmap(scaledBitmap)
 
-                        3 -> binding.imageViewPhoto3.setImageBitmap(scaledBitmap)
+                    3 -> binding.imageViewPhoto3.setImageBitmap(scaledBitmap)
 
-                        4 -> binding.imageViewPhoto4.setImageBitmap(scaledBitmap)
+                    4 -> binding.imageViewPhoto4.setImageBitmap(scaledBitmap)
 
-                        5 -> binding.imageViewPhoto5.setImageBitmap(scaledBitmap)
+                    5 -> binding.imageViewPhoto5.setImageBitmap(scaledBitmap)
 
-                        6 -> binding.imageViewPhoto6.setImageBitmap(scaledBitmap)
+                    6 -> binding.imageViewPhoto6.setImageBitmap(scaledBitmap)
 
-                        7 -> binding.imageViewPhoto7.setImageBitmap(scaledBitmap)
+                    7 -> binding.imageViewPhoto7.setImageBitmap(scaledBitmap)
 
-                        8 -> binding.imageViewPhoto8.setImageBitmap(scaledBitmap)
+                    8 -> binding.imageViewPhoto8.setImageBitmap(scaledBitmap)
 
-                        9 -> binding.imageViewPhoto9.setImageBitmap(scaledBitmap)
+                    9 -> binding.imageViewPhoto9.setImageBitmap(scaledBitmap)
 
-                        10 -> binding.imageViewPhoto10.setImageBitmap(scaledBitmap)
+                    10 -> binding.imageViewPhoto10.setImageBitmap(scaledBitmap)
 
-                        11 -> binding.imageViewPhoto11.setImageBitmap(scaledBitmap)
+                    11 -> binding.imageViewPhoto11.setImageBitmap(scaledBitmap)
 
-                    }
                 }
             }
+
         }
 
         private fun getAbsolutePathFrom(fileName: String): String =
@@ -917,8 +991,7 @@ sealed class GardenFragmentHolder {
             super.onActivityResult(requestCode, resultCode, data)
 
             if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
-                viewModel.addItemToList(uniquePhotoName)
-
+                viewModel.addPictureToList(uniquePhotoName)
             }
         }
 

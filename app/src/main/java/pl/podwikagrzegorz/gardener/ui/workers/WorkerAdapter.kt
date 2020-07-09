@@ -8,8 +8,6 @@ import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
 import pl.podwikagrzegorz.gardener.databinding.McvSingleItemBinding
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.SingleItemAdapter
-import pl.podwikagrzegorz.gardener.ui.price_list.NoteAdapter
 import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
 class WorkerAdapter(

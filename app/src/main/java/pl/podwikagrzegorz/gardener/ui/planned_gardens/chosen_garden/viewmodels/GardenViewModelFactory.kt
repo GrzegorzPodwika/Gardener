@@ -42,11 +42,6 @@ class GardenViewModelFactory(private val gardenID: Long) : ViewModelProvider.New
                     gardenID
                 ) as T
 
-            modelClass.isAssignableFrom(PicturesPathsViewModel::class.java) ->
-                PicturesPathsViewModel(
-                    gardenID
-                ) as T
-
             modelClass.isAssignableFrom(ManHoursViewModel::class.java) ->
                 ManHoursViewModel(
                     gardenID
@@ -63,3 +58,9 @@ class GardenViewModelFactory(private val gardenID: Long) : ViewModelProvider.New
 
     }
 }
+
+/*
+modelClass.isAssignableFrom(PicturesPathsViewModel::class.java) ->
+PicturesPathsViewModel(
+gardenID
+) as T*/

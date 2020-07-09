@@ -3,42 +3,50 @@ package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import io.realm.RealmList
+import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
 import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
-import pl.podwikagrzegorz.gardener.data.realm.asLiveList
 
-class PropertyViewModel(gardenID: Long) : AbstractGardenViewModel(gardenID) {
-    private val listOfProperties: MutableLiveData<RealmList<ItemRealm>>? =
-        gardenRealm?.listOfProperties?.asLiveList()
+class PropertyViewModel(gardenID: Long) : ViewModel() {
+    private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
 
-    fun getPropertiesList() :  LiveData<RealmList<ItemRealm>>? = listOfProperties
+    private val _listOfProperties: MutableLiveData<RealmList<ItemRealm>> =
+        gardenComponentsDAO.getLiveListOfProperties()
+    val listOfProperties : LiveData<RealmList<ItemRealm>>
+        get() = _listOfProperties
 
-    fun addPropertyToList(property: ItemRealm) {
-        realm.executeTransaction {
-            gardenRealm?.listOfProperties?.add(property)
-            refreshLiveDataList()
-        }
+    fun addListOfPickedProperties(listOfItemRealm: List<ItemRealm>) {
+        gardenComponentsDAO.addListOfPickedProperties(listOfItemRealm)
+        refreshLiveDataList()
     }
 
-    override fun deleteItemFromList(id: Long?) {
-        if (id != null) {
-            realm.executeTransaction {
-                gardenRealm?.listOfProperties?.removeAt(id.toInt())
-                refreshLiveDataList()
-            }
+    fun updateNumberOfProperties(noItems: Int, position: Int) {
+        gardenComponentsDAO.updateNumberOfProperty(noItems, position)
+        refreshLiveDataList()
+    }
+
+    fun reverseFlagOnProperty(position: Int) {
+        gardenComponentsDAO.reverseFlagOnProperty(position)
+        refreshLiveDataList()
+    }
+
+    fun deleteItemFromList(id: Long?) {
+        id?.let {
+            gardenComponentsDAO.deletePropertyFromList(it)
+            refreshLiveDataList()
         }
     }
 
     private fun refreshLiveDataList() {
-        listOfProperties?.postValue(listOfProperties.value)
+        _listOfProperties.postValue(_listOfProperties.value)
     }
 
-    fun updateNumberOfProperties(noItems: Int, position: Int) {
-        realm.executeTransaction{
-            gardenRealm?.listOfProperties?.get(position)?.numberOfItems = noItems
-            refreshLiveDataList()
-        }
+    override fun onCleared() {
+        gardenComponentsDAO.closeRealm()
+        super.onCleared()
     }
+
 
     companion object {
         private const val GARDEN_ID = "GARDEN_ID"

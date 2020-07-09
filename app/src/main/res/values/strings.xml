@@ -115,6 +115,13 @@
     <string name="sample_text">Sample text</string>
     <string name="start_end_date">Start date — End date</string>
     <string name="to_make_in_future">In preparation</string>
+    <string name="list_of_workers">List of workers:</string>
+    <string name="enter_worker_name_surname">Enter worker full name</string>
+    <string name="hint_name">John Smith</string>
+    <string name="hour">h</string>
+    <string name="hint_double">10.5</string>
+    <string name="may_key">Map key:</string>
+    <string name="working_days">- working days</string>
 
 
 </resources>

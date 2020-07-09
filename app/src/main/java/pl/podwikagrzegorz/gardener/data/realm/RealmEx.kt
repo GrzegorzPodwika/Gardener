@@ -9,4 +9,3 @@ import pl.podwikagrzegorz.gardener.data.daos.*
 
 fun <T: RealmModel> RealmResults<T>.asLiveData() = RealmLiveData<T>(this)
 fun <T> RealmList<T>.asLiveList() = MutableLiveData(this)
-fun <T> List<T>.asLiveList() = MutableLiveData(this)

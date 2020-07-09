@@ -19,7 +19,7 @@
         android:layout_marginTop="@dimen/keyline_2"
         android:layout_marginEnd="@dimen/keyline_2"
         android:layout_marginBottom="@dimen/keyline_2"
-        android:text="Zatwierdź"
+        android:text="@string/confirm"
         android:layout_gravity="end"/>
 
 </LinearLayout>

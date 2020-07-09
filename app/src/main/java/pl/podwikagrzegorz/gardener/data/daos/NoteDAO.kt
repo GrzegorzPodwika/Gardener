@@ -5,12 +5,9 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmResults
 import io.realm.kotlin.where
-import pl.podwikagrzegorz.gardener.data.pojo.Note
-import pl.podwikagrzegorz.gardener.data.realm.NoteMapper
 import pl.podwikagrzegorz.gardener.data.realm.NoteModule
 import pl.podwikagrzegorz.gardener.data.realm.NoteRealm
 import pl.podwikagrzegorz.gardener.data.realm.asLiveData
-import pl.podwikagrzegorz.gardener.ui.price_list.PriceListViewModel
 
 class NoteDAO : DAO<NoteRealm> {
     private val realm: Realm

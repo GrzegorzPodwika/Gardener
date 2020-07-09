@@ -61,6 +61,9 @@ class ToolDAO : DAO<ToolRealm> {
         return nextId
     }
 
+    fun findMaxValueOf(itemName: String): Int?
+        = realm.where<ToolRealm>().equalTo("toolName", itemName).findFirst()?.numberOfTools
+
     init {
         val realmConfig = RealmConfiguration.Builder()
             .name(REALM_TOOL_NAME)

@@ -13,28 +13,29 @@
             android:id="@+id/calendar"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_margin="@dimen/keyline_2"
             android:layout_weight="1"
-            app:mcv_headerTextAppearance="?attr/textAppearanceHeadline5"
-            app:mcv_weekDayTextAppearance="?attr/textAppearanceSubtitle1"
             app:mcv_dateTextAppearance="?attr/textAppearanceSubtitle1"
             app:mcv_firstDayOfWeek="monday"
+            app:mcv_headerTextAppearance="?attr/textAppearanceHeadline5"
             app:mcv_monthLabels="@array/month_names"
             app:mcv_selectionMode="range"
             app:mcv_showOtherDates="decorated_disabled"
-            app:mcv_weekDayLabels="@array/week_names" />
+            app:mcv_weekDayLabels="@array/week_names"
+            app:mcv_weekDayTextAppearance="?attr/textAppearanceSubtitle1" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/keyline_2"
+            android:layout_marginStart="@dimen/keyline_4"
             android:layout_marginTop="@dimen/keyline_4"
-            android:text="Legenda:"
+            android:text="@string/may_key"
             android:textAppearance="?attr/textAppearanceHeadline5" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_marginStart="@dimen/keyline_2"
+            android:layout_marginStart="@dimen/keyline_4"
             android:layout_marginTop="@dimen/keyline_2"
             android:layout_marginBottom="@dimen/keyline_7">
 
@@ -49,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/keyline_2"
-                android:text=" - dni pracy"
+                android:text="@string/working_days"
                 android:textAppearance="?attr/textAppearanceBody1" />
         </LinearLayout>
 

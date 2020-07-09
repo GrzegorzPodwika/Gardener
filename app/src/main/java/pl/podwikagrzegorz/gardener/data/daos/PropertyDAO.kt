@@ -5,12 +5,9 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmResults
 import io.realm.kotlin.where
-import pl.podwikagrzegorz.gardener.data.pojo.Property
-import pl.podwikagrzegorz.gardener.data.realm.PropertyMapper
 import pl.podwikagrzegorz.gardener.data.realm.PropertyModule
 import pl.podwikagrzegorz.gardener.data.realm.PropertyRealm
 import pl.podwikagrzegorz.gardener.data.realm.asLiveData
-import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.PropertiesChildViewModel
 
 class PropertyDAO : DAO<PropertyRealm> {
     private val realm: Realm
@@ -51,6 +48,9 @@ class PropertyDAO : DAO<PropertyRealm> {
 
     override fun getLiveRealmResults(): MutableLiveData<RealmResults<PropertyRealm>>
         = realm.where<PropertyRealm>().findAllAsync().asLiveData()
+
+    fun findMaxValueOf(itemName: String): Int? =
+        realm.where<PropertyRealm>().equalTo("propertyName", itemName).findFirst()?.numberOfProperties
 
     private fun generateId(): Long {
         val maxValue = realm.where<PropertyRealm>().max(ID)

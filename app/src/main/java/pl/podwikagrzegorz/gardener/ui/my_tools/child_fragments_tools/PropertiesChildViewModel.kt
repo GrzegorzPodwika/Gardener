@@ -20,7 +20,12 @@ class PropertiesChildViewModel : ViewModel() {
         propertyDAO.insertItem(property)
     }
 
-    fun getSingleProperty(id: Long?): PropertyRealm? = id?.let { propertyDAO.getItemById(id) }
+    fun getListOfPropertiesAsRealmResults(): RealmResults<PropertyRealm> =
+        propertyDAO.getRealmResults()
+
+    fun findMaxValueOf(itemName: String): Int =
+        propertyDAO.findMaxValueOf(itemName) ?: GardenerApp.MAX_NUMBER_OF_MACHINES
+
 
     fun deleteProperty(id: Long?) {
         id?.let { propertyDAO.deleteItem(id) }
@@ -29,14 +34,6 @@ class PropertiesChildViewModel : ViewModel() {
     override fun onCleared() {
         propertyDAO.closeRealm()
         super.onCleared()
-    }
-
-    fun findMaxValueOf(itemName: String): Int {
-        val searchedProperty = _listOfProperties.value?.find {
-            it.propertyName == itemName
-        }
-
-        return searchedProperty?.numberOfProperties ?: GardenerApp.MAX_NUMBER_OF_MACHINES
     }
 
 }

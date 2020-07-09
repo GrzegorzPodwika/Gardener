@@ -16,13 +16,15 @@ open class MachinesChildViewModel : ViewModel() {
     val listOfMachines: LiveData<RealmResults<MachineRealm>>
         get() = _listOfMachines
 
+    fun getListOfMachinesAsRealmResults(): RealmResults<MachineRealm> =
+        machineDAO.getRealmResults()
 
     fun addMachine(machine: MachineRealm) {
         machineDAO.insertItem(machine)
     }
 
-    fun getSingleMachine(id: Long?): MachineRealm? =
-        id?.let { machineDAO.getItemById(id) }
+    fun findMaxValueOf(itemName: String): Int =
+        machineDAO.findMaxValueOf(itemName) ?: GardenerApp.MAX_NUMBER_OF_MACHINES
 
     fun deleteMachine(id: Long?) {
         id?.let { machineDAO.deleteItem(id) }
@@ -31,14 +33,6 @@ open class MachinesChildViewModel : ViewModel() {
     override fun onCleared() {
         machineDAO.closeRealm()
         super.onCleared()
-    }
-
-    fun findMaxValueOf(itemName: String): Int {
-        val searchedMachine = _listOfMachines.value?.find {
-            it.machineName == itemName
-        }
-
-        return searchedMachine?.numberOfMachines ?: GardenerApp.MAX_NUMBER_OF_MACHINES
     }
 
 }

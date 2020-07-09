@@ -16,9 +16,7 @@ open class GardenRealm(
     var listOfProperties: RealmList<ItemRealm> = RealmList(),
 
     var listOfShopping: RealmList<String> = RealmList(),
-
     var mapOfWorkedHours: RealmList<ManHoursMapRealm> = RealmList(),
-
     var listOfPicturesPaths: RealmList<String> = RealmList()
 ) : RealmObject() {
 

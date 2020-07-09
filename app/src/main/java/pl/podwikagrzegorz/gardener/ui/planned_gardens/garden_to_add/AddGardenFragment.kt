@@ -21,7 +21,6 @@ import pl.podwikagrzegorz.gardener.extensions.isDefault
 import pl.podwikagrzegorz.gardener.maps.MapsActivity
 import java.io.File
 
-//TODO poruszanie sie miedzy fragmentami
 class AddGardenFragment : Fragment(), DatePickerFragment.OnDateSelectedListener {
 
     private lateinit var gardenBinding: FragmentAddGardenBinding
