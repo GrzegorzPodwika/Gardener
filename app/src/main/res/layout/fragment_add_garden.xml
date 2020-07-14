@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fragment_container_add_garden"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,30 +19,30 @@
             android:gravity="center_vertical"
             android:text="@string/garden_title"
             android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textColor="?attr/colorOnSurface"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/keyline_4"
+            android:hint="@string/hint_garden_title"
+            app:endIconMode="clear_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textInputEditText_garden_title"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords"
-                android:hint="@string/hint_garden_title" />
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="?attr/colorOnSurface" />
 
         </com.google.android.material.textfield.TextInputLayout>
-
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/materialTextView2"
@@ -51,31 +52,32 @@
             android:gravity="center_vertical"
             android:text="@string/phone"
             android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textColor="?attr/colorOnSurface"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout2"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="120dp"
+            android:id="@+id/textInputLayout_phone_number"
+            android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/keyline_4"
+            android:hint="@string/hint_phone_number"
             android:layout_marginTop="@dimen/keyline_4"
             android:layout_marginEnd="16dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="9"
+            app:helperTextEnabled="true"
             app:layout_constraintStart_toEndOf="@+id/materialTextView2"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textInputEditText_phone_number"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/keyline_4"
-                android:gravity="center"
-                android:hint="@string/hint_phone_number"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:inputType="number"
-                android:maxLength="9" />
+                android:maxLength="9"
+                android:paddingEnd="@dimen/keyline_4"
+                android:textAppearance="?attr/textAppearanceSubtitle1" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -83,32 +85,35 @@
             android:id="@+id/materialTextView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:text="@string/choose_start_end_date"
             android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textColor="?attr/colorOnSurface"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/materialTextView2" />
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout_phone_number" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/materialButton_start_garden_date"
+            android:id="@+id/materialButton_pick_garden_date_range"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/keyline_4"
-            android:text="@string/start_date"
+            android:text="@string/menu_calendar"
+            app:icon="@drawable/ic_calendar_v2"
+            app:iconGravity="end"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView3" />
 
-        <com.google.android.material.button.MaterialButton
+<!--        <com.google.android.material.button.MaterialButton
             android:id="@+id/materialButton_end_garden_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/keyline_4"
             android:layout_marginTop="@dimen/keyline_4"
             android:text="@string/end_date"
-            app:layout_constraintStart_toEndOf="@+id/materialButton_start_garden_date"
-            app:layout_constraintTop_toBottomOf="@+id/materialTextView3" />
+            app:layout_constraintStart_toEndOf="@+id/materialButton_pick_garden_date_range"
+            app:layout_constraintTop_toBottomOf="@+id/materialTextView3" />-->
 
 
         <com.google.android.material.textview.MaterialTextView
@@ -119,7 +124,8 @@
             android:layout_marginEnd="32dp"
             android:gravity="center"
             android:hint="@string/date_hint"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textColor="?attr/colorOnSurface"
             app:layout_constraintEnd_toStartOf="@+id/shapeableImageView_garden_or_service"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/switchMaterial_garden_or_service" />
@@ -133,6 +139,7 @@
             android:gravity="center_vertical"
             android:text="@string/garden"
             android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="?attr/colorOnSurface"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView3" />
 
@@ -154,6 +161,7 @@
             android:gravity="center_vertical"
             android:text="@string/choose_workplace"
             android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textColor="?attr/colorOnSurface"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView_picked_period" />
 
@@ -163,6 +171,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/locate"
+            app:icon="@drawable/ic_locate"
+            app:iconGravity="end"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView5" />

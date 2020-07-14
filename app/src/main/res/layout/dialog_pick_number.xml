@@ -24,6 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/keyline_2"
+            app:icon="@drawable/ic_confirm"
+            app:iconGravity="end"
             android:text="@string/confirm" />
     </LinearLayout>
 </layout>

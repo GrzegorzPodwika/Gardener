@@ -24,6 +24,8 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="@dimen/keyline_2"
         android:layout_marginBottom="@dimen/keyline_2"
+        app:iconGravity="end"
+        app:icon="@drawable/ic_time"
         android:text="@string/working_hours" />
 
     <com.google.android.material.button.MaterialButton
@@ -34,7 +36,9 @@
         android:layout_alignParentBottom="true"
         android:layout_marginStart="@dimen/keyline_2"
         android:layout_marginBottom="@dimen/keyline_2"
-        android:text="@string/workers" />
+        android:text="@string/workers"
+        app:icon="@drawable/ic_group"
+        app:iconGravity="end"/>
 
 </RelativeLayout>
 </layout>

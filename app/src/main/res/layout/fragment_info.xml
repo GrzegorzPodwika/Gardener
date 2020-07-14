@@ -10,6 +10,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:textAppearance="?attr/textAppearanceHeadline5"
+        android:textColor="?attr/colorOnSurface"
         android:text="@string/created_by_info" />
 
 </FrameLayout>

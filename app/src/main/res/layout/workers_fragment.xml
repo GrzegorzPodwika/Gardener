@@ -17,6 +17,7 @@
             android:layout_marginStart="@dimen/keyline_2"
             android:layout_marginEnd="@dimen/keyline_2"
             android:text="@string/list_of_workers"
+            android:textColor="?attr/colorOnSurface"
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

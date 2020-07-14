@@ -7,15 +7,12 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/custom_mcv_height"
         android:layout_margin="@dimen/keyline_2"
-        app:strokeColor="@color/colorSummer"
-        android:elevation="@dimen/keyline_2"
-        app:strokeWidth="1dp">
+>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/keyline_2"
-            >
+            android:padding="@dimen/keyline_2">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/materialTextView_garden_title"
@@ -53,7 +50,7 @@
                 android:layout_marginTop="@dimen/keyline_4"
                 android:text="@string/hint_phone_number"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
-                android:textColor="@color/colorAccent"
+                android:textColor="?attr/colorAccent"
                 app:layout_constraintStart_toEndOf="@+id/materialTextView6"
                 app:layout_constraintTop_toBottomOf="@+id/materialTextView_garden_title" />
 
@@ -73,6 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/date_hint"
+                android:textColor="?attr/colorAccent"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialTextView7" />

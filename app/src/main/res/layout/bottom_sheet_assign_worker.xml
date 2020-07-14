@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:map="http://schemas.android.com/tools">
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -18,6 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/keyline_2"
         android:layout_marginEnd="@dimen/keyline_2"
+        map:icon="@drawable/ic_confirm"
+        map:iconGravity="end"
         android:layout_marginBottom="@dimen/keyline_2"
         android:text="@string/confirm"
         android:layout_gravity="end"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -19,6 +19,8 @@
             android:layout_alignParentBottom="true"
             android:layout_marginEnd="@dimen/keyline_5"
             android:layout_marginBottom="@dimen/keyline_2"
+            app:icon="@drawable/ic_tools"
+            app:iconGravity="end"
             android:text="@string/tools" />
     </RelativeLayout>
 </layout>

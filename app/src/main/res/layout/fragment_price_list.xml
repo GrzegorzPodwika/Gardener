@@ -18,8 +18,8 @@
             android:layout_alignParentEnd="true"
             android:layout_marginStart="@dimen/keyline_1"
             android:layout_marginTop="@dimen/keyline_2"
-            android:layout_marginBottom="@dimen/keyline_2"
-            android:layout_marginEnd="@dimen/keyline_1" />
+            android:layout_marginEnd="@dimen/keyline_1"
+            android:layout_marginBottom="@dimen/keyline_2" />
 
         <LinearLayout
             android:id="@+id/linLayout_price_list"
@@ -28,7 +28,10 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:background="?attr/colorPrimary">
+            android:background="?attr/colorPrimary"
+            android:paddingStart="@dimen/keyline_1"
+            android:paddingEnd="@dimen/keyline_1">
+
 
             <EditText
                 android:id="@+id/editText_service"
@@ -36,11 +39,12 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="4dp"
                 android:layout_weight="1"
-                android:inputType="textCapSentences"
-                android:textColor="@color/colorWhite"
                 android:gravity="center_vertical"
+                android:inputType="textCapSentences"
                 android:paddingStart="@dimen/keyline_1"
-                android:paddingEnd="@dimen/keyline_1" />
+                android:paddingEnd="@dimen/keyline_1"
+                android:textColor="@color/white_50" />
+
 
             <EditText
                 android:id="@+id/editText_price_of_service"
@@ -50,9 +54,9 @@
                 android:layout_weight="0.4"
                 android:gravity="center_vertical"
                 android:maxLength="9"
-                android:textColor="@color/colorWhite"
                 android:paddingStart="@dimen/keyline_1"
-                android:paddingEnd="@dimen/keyline_1" />
+                android:paddingEnd="@dimen/keyline_1"
+                android:textColor="@color/white_50" />
 
             <ImageButton
                 android:id="@+id/imageButton_add_service"

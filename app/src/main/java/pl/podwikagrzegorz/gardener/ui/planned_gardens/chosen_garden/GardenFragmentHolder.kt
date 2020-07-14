@@ -55,6 +55,7 @@ sealed class GardenFragmentHolder {
                 gardenID
             )
         }
+        private lateinit var receivedBasicGarden: BasicGardenRealm
 
         override fun onCreateView(
             inflater: LayoutInflater,
@@ -72,22 +73,21 @@ sealed class GardenFragmentHolder {
 
             loadViewsWithBasicInfoAboutGarden()
             setOnCallToClientButtonListener()
+            setOnNavigateToClientButtonListener()
         }
 
         private fun loadViewsWithBasicInfoAboutGarden() {
-            val basicGarden = viewModelGarden.getBasicGarden()
+            receivedBasicGarden = viewModelGarden.getBasicGarden()
 
-            if (basicGarden != null) {
-                gardenBinding.textViewGardenTitle.text = basicGarden.gardenTitle
-                gardenBinding.textViewPhoneNumber.text = basicGarden.phoneNumber.toString()
-                gardenBinding.textViewPlannedPeriod.text = basicGarden.period!!.getPeriodAsString()
+            gardenBinding.textViewGardenTitle.text = receivedBasicGarden.gardenTitle
+            gardenBinding.textViewPhoneNumber.text = receivedBasicGarden.phoneNumber.toString()
+            gardenBinding.textViewPlannedPeriod.text = receivedBasicGarden.period!!.getPeriodAsString()
 
-                gardenBinding.imageViewPickedLocalization.setImageDrawable(
-                    Drawable.createFromPath(
-                        basicGarden.snapshotPath
-                    )
+            gardenBinding.imageViewPickedLocalization.setImageDrawable(
+                Drawable.createFromPath(
+                    receivedBasicGarden.snapshotPath
                 )
-            }
+            )
         }
 
         private fun setOnCallToClientButtonListener() {
@@ -95,6 +95,22 @@ sealed class GardenFragmentHolder {
                 val phoneNumber = gardenBinding.textViewPhoneNumber.text.toString()
                 val implicitIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${phoneNumber}"))
                 startActivity(implicitIntent)
+            }
+        }
+
+        private fun setOnNavigateToClientButtonListener() {
+            gardenBinding.materialButtonNavigate.setOnClickListener {
+                val latitude = receivedBasicGarden.latitude
+                val longitude = receivedBasicGarden.longitude
+                val packageManager = requireContext().packageManager
+
+                val gmmIntentUri =
+                    Uri.parse("google.navigation:q=$latitude,$longitude")
+                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                mapIntent.setPackage("com.google.android.apps.maps")
+                mapIntent.resolveActivity(packageManager)?.let {
+                    startActivity(mapIntent)
+                }
             }
         }
 
@@ -480,6 +496,7 @@ sealed class GardenFragmentHolder {
 
         private fun setOnAddMachinesButtonListener() {
             binding.materialButtonAddTools.text = getString(R.string.equipment)
+            binding.materialButtonAddTools.icon = GardenerApp.res.getDrawable(R.drawable.ic_equipment, null)
             binding.materialButtonAddTools.setOnClickListener {
                 SheetToolsFragment(
                     receivedMachineNames,
@@ -605,6 +622,7 @@ sealed class GardenFragmentHolder {
 
         private fun setOnAddPropertiesButtonListener() {
             binding.materialButtonAddTools.text = getString(R.string.others)
+            binding.materialButtonAddTools.icon = GardenerApp.res.getDrawable(R.drawable.ic_canister, null)
             binding.materialButtonAddTools.setOnClickListener {
                 SheetToolsFragment(
                     receivedPropertyNames,

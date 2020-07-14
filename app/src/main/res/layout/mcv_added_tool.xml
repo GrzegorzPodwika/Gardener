@@ -9,9 +9,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/mcv_added_tool"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:strokeColor="@color/red_600"
-            app:strokeWidth="@dimen/mcv_stroke_width">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -28,6 +28,9 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.OutputStream
 
+//TODO 1. wyszukiwarka, znajdowanie danej miejscowosci jesli sie da
+// 2. FragmentAddGarden zmienic zolty FAB na normalny button
+// 3. add isActive attr to the rest of variables in GardenRealm
 class MapsActivity : AppCompatActivity(),
     OnMapReadyCallback,
     OnMyLocationButtonClickListener,
@@ -35,7 +38,9 @@ class MapsActivity : AppCompatActivity(),
     OnCameraIdleListener {
 
     private lateinit var mMap: GoogleMap
-    private lateinit var takeSnapshotButton: MaterialButton
+    private val takeSnapshotButton: MaterialButton by lazy {
+        findViewById<MaterialButton>(R.id.materialButton_take_snapshot)
+    }
     private var currentCameraPosition: CameraPosition? = null
     private var snapshotFilePath: String = ""
     private var mPermissionDenied = false
@@ -61,19 +66,13 @@ class MapsActivity : AppCompatActivity(),
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        enableMyLocation()
         goToDefaultCoordinates()
 
         mMap.setOnMyLocationButtonClickListener(this)
         mMap.setOnCameraIdleListener(this)
-
         setOnMyMapClickListener()
-
-        enableMyLocation()
-
-        takeSnapshotButton = findViewById(R.id.materialButton_take_snapshot)
-        takeSnapshotButton.setOnClickListener {
-            takeSnapshot()
-        }
+        setOnTakeSnapshotButtonListener()
     }
 
     private fun enableMyLocation() {
@@ -91,9 +90,39 @@ class MapsActivity : AppCompatActivity(),
             mMap.isMyLocationEnabled = true
     }
 
-    private fun takeSnapshot() {
+    private fun goToDefaultCoordinates() {
+        val cracowPosition =
+            CameraPosition.Builder().target(defaultCoordinates)
+                .zoom(12.5f)
+                .bearing(0f)
+                .tilt(25f)
+                .build()
+
+/*        mMap.addMarker(
+            MarkerOptions().position(defaultCoordinates).title("Marker in Cracow")
+        )*/
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cracowPosition))
+    }
+
+    private fun setOnMyMapClickListener() {
+        mMap.setOnMapClickListener { latLng ->
+            val markerOptions = MarkerOptions()
+            markerOptions.position(latLng)
+
+            mMap.clear()
+            mMap.addMarker(markerOptions)
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.5F))
+        }
+    }
+
+    private fun setOnTakeSnapshotButtonListener() {
+        takeSnapshotButton.setOnClickListener {
+            setOnSnapshotReadyCallback()
+        }
+    }
+
+    private fun setOnSnapshotReadyCallback() {
         mMap.snapshot { bitmap ->
-            val b = bitmap
 
             snapshotFilePath = "${System.currentTimeMillis()}.png"
             val outputStream: OutputStream?
@@ -101,7 +130,7 @@ class MapsActivity : AppCompatActivity(),
             try {
                 outputStream = openFileOutput(snapshotFilePath, Context.MODE_PRIVATE)
 
-                b.compress(Bitmap.CompressFormat.PNG, 90, outputStream)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 70, outputStream)
                 outputStream.flush()
                 outputStream.close()
             } catch (e: FileNotFoundException) {
@@ -175,43 +204,20 @@ class MapsActivity : AppCompatActivity(),
 
     }
 
-    private fun setOnMyMapClickListener() {
-        mMap.setOnMapClickListener { latLng ->
-            val markerOptions = MarkerOptions()
 
-            markerOptions.position(latLng)
 
-            mMap.clear()
 
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
-
-            mMap.addMarker(markerOptions)
-        }
-    }
-
-    private fun goToDefaultCoordinates() {
-        val KRAKOW =
-            CameraPosition.Builder().target(defaultCoordinates)
-                .zoom(12.5f)
-                .bearing(0f)
-                .tilt(25f)
-                .build()
-
-        mMap.addMarker(
-            MarkerOptions().position(defaultCoordinates).title("Marker in Krakow")
-        )
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(KRAKOW))
-    }
 
 
     override fun onMyLocationButtonClick(): Boolean {
-        if (currentCameraPosition != null) {
+/*        if (currentCameraPosition != null) {
             val currentLatLng: LatLng = currentCameraPosition!!.target
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16f))
         }
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mMap.cameraPosition.target, 16f))*/
 
         return false
     }
+
 
     override fun onCameraIdle() {
         currentCameraPosition = mMap.cameraPosition

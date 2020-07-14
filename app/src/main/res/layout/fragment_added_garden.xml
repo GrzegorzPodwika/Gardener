@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,6 +15,7 @@
             android:layout_height="wrap_content"
             android:text="@string/sample_name_surname"
             android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textColor="?attr/colorOnSurface"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,7 +26,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="@string/phone"
-            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textColor="?attr/colorOnSurface"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView_garden_title" />
 
@@ -35,6 +38,8 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="22dp"
             android:text="@string/call"
+            app:icon="@drawable/ic_call"
+            app:iconGravity="end"
             app:layout_constraintStart_toEndOf="@+id/textView_phone_number"
             app:layout_constraintTop_toBottomOf="@+id/textView_garden_title" />
 
@@ -43,9 +48,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="30dp"
             android:hint="@string/hint_phone_number"
             android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textColor="?attr/colorSecondaryVariant"
             app:layout_constraintStart_toEndOf="@+id/materialTextView4"
             app:layout_constraintTop_toBottomOf="@+id/textView_garden_title" />
 
@@ -53,12 +59,13 @@
             android:id="@+id/materialTextView8"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="24dp"
             android:text="@string/planned_start_end_date"
             android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textColor="?attr/colorOnSurface"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView_phone_number" />
+            app:layout_constraintTop_toBottomOf="@+id/materialButton_call_to_client" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textView_planned_period"
@@ -66,7 +73,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="@string/date_hint"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textColor="?attr/colorSecondaryVariant"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView8" />
@@ -75,12 +83,24 @@
             android:id="@+id/materialTextView9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="32dp"
             android:text="@string/workplace_location"
             android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textColor="?attr/colorOnSurface"
             app:layout_constraintBottom_toTopOf="@+id/imageView_picked_localization"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/materialButton_navigate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/navigate"
+            app:icon="@drawable/ic_navigate"
+            app:iconGravity="end"
+            app:layout_constraintBottom_toTopOf="@+id/imageView_picked_localization"
+            app:layout_constraintStart_toEndOf="@+id/materialTextView9" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imageView_picked_localization"
@@ -92,5 +112,6 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:srcCompat="@drawable/ic_street_map" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

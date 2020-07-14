@@ -121,6 +121,8 @@
         android:layout_marginTop="@dimen/keyline_7"
         android:layout_below="@id/linearLayout_second_row"
         android:layout_centerInParent="true"
+        app:iconGravity="end"
+        app:icon="@drawable/ic_take_photo"
         />
 
     <com.google.android.material.button.MaterialButton
@@ -131,6 +133,8 @@
         android:layout_marginEnd="@dimen/keyline_4"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        app:icon="@drawable/ic_exit"
+        app:iconGravity="end"
         android:text="@string/jobs_finished" />
 </RelativeLayout>
 </layout>

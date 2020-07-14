@@ -68,7 +68,6 @@ class AddedItemAdapter(
         private fun checkIfTextViewShouldBeCrossed(isActive: Boolean) {
             if (isActive) {
                 binding.mcvAddedTool.foreground = null
-                binding.mcvAddedTool.foreground = defaultMCVForeground
                 enableButtonAndNumberPicker()
             } else {
                 binding.mcvAddedTool.foreground = strikeThroughForeground
@@ -97,8 +96,6 @@ class AddedItemAdapter(
     companion object {
         private val strikeThroughForeground =
             GardenerApp.res.getDrawable(R.drawable.stroke_foreground, null)
-        private val defaultMCVForeground =
-            GardenerApp.res.getDrawable(R.drawable.mcv_foreground, null)
 
     }
 }

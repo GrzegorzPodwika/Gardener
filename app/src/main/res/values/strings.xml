@@ -88,7 +88,7 @@
 
     <!--Toast messages-->
     <string name="empty_garden_title">Enter title of garden!</string>
-    <string name="empty_phone_number">Enter client\'s phone!</string>
+    <string name="empty_phone_number">Enter correct client\'s phone!</string>
     <string name="default_period">Enter start and end date!</string>
     <string name="none_taken_snapshot">Locate work place!</string>
     <string name="fill_all_fields">Fill up all fields!</string>
@@ -122,6 +122,8 @@
     <string name="hint_double">10.5</string>
     <string name="may_key">Map key:</string>
     <string name="working_days">- working days</string>
+    <string name="error">Number too short</string>
+    <string name="navigate">Navigate</string>
 
 
 </resources>

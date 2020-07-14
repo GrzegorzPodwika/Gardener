@@ -26,7 +26,6 @@
         <!--selection controls.-->
         <item name="colorPrimary">@color/green_400</item>
         <item name="colorPrimaryVariant">@color/green_600</item>
-
         <item name="colorSecondary">@color/yellow_300</item>
         <item name="colorSecondaryVariant">@color/yellow_500</item>
         <!--colorBackground appears behind scrollable content and is used for the default window-->
@@ -34,6 +33,7 @@
         <!--and menus. colorError is used to indicate an error state for components such as-->
         <!--text fields.-->
         <item name="android:colorBackground">@color/white_50</item>
+        <item name="android:textColor">@color/colorWhite</item>
         <item name="colorSurface">@color/white_50</item>
         <item name="colorError">@color/red_600</item>
         <!--"On" colors define how text, icons and strokes are colored in relation to the surface-->
@@ -67,6 +67,9 @@
         <item name="navigationViewStyle">@style/Widget.MyTheme.NavigationView</item>
         <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.PrimarySurface</item>
         <item name="imageButtonStyle">@style/Base.Widget.AppCompat.ImageButton.style</item>
+        <item name="materialCardViewStyle">@style/MyMaterialCardView</item>
+        <item name="bottomNavigationStyle">@style/MyBottomNavigationStyle</item>
+        <item name="materialButtonStyle">@style/MyMaterialButtonStyle</item>
     </style>
 
     <style name="Base.Theme.MaterialThemeBuilder" parent="Theme.MaterialComponents.DayNight.NoActionBar">

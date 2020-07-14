@@ -90,7 +90,7 @@
 
     <!--Toast messages-->
     <string name="empty_garden_title">Wprowadź nazwę ogrodu!</string>
-    <string name="empty_phone_number">Wprowadź telefon zleceniodawcy!</string>
+    <string name="empty_phone_number">Wprowadź poprawny telefon zleceniodawcy!</string>
     <string name="default_period">Wprowadź datę rozpoczęcia i zakończenia pracy!</string>
     <string name="none_taken_snapshot">Zlokalizuj miejsce pracy!</string>
     <string name="fill_all_fields">Wypełnij wszystkie pola!</string>
@@ -125,6 +125,8 @@
     <string name="hint_double">10.5</string>
     <string name="may_key">Legenda:</string>
     <string name="working_days">- dni pracy</string>
+    <string name="error">Numer za krótki</string>
+    <string name="navigate">Nawiguj</string>
 
 
 </resources>

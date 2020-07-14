@@ -28,6 +28,8 @@
         android:layout_height="wrap_content"
         android:text="@string/confirm"
         android:layout_marginEnd="@dimen/keyline_4"
+        app:icon="@drawable/ic_confirm"
+        app:iconGravity="end"
         android:layout_marginTop="@dimen/keyline_2"
         android:layout_marginBottom="@dimen/keyline_2"
         android:layout_gravity="end"/>

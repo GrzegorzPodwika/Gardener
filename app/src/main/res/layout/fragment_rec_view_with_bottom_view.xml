@@ -33,6 +33,7 @@
                 android:inputType="textCapSentences"
                 android:gravity="center_vertical"
                 android:paddingStart="@dimen/keyline_2"
+                android:textColor="@color/white_50"
                 android:paddingEnd="@dimen/keyline_1" />
 
 

@@ -73,6 +73,7 @@ class CalendarFragment : Fragment() {
             dates.add(firstDay.asCalendarDay())
             firstDay.add(Calendar.DAY_OF_MONTH, 1)
         } while (firstDay.time.before(lastDay.time))
+        dates.add(firstDay.asCalendarDay())
 
         return dates
     }
