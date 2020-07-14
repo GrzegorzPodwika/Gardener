@@ -25,7 +25,7 @@
         android:paddingStart="@dimen/keyline_1"
         android:paddingEnd="@dimen/keyline_1"
         android:hint="@string/hint_name"
-        android:inputType="text" />
+        android:inputType="textCapWords" />
 
     <RelativeLayout
         android:layout_width="match_parent"

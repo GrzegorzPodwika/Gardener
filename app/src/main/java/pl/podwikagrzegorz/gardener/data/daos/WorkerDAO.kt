@@ -39,7 +39,7 @@ class WorkerDAO : DAO<WorkerRealm> {
         realm.where<WorkerRealm>().equalTo(ID, id).findFirst()
 
     override fun getRealmResults(): RealmResults<WorkerRealm> =
-        realm.where<WorkerRealm>().findAllAsync()
+        realm.where<WorkerRealm>().findAll()
 
     override fun getLiveRealmResults(): MutableLiveData<RealmResults<WorkerRealm>> =
         realm.where<WorkerRealm>().findAllAsync().asLiveData()

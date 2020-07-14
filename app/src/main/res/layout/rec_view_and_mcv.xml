@@ -33,6 +33,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/keyline_1"
                 android:layout_weight="1"
+                android:inputType="textCapSentences"
                 android:gravity="center_vertical"
                 android:paddingStart="@dimen/keyline_2"
                 android:paddingEnd="@dimen/keyline_1" />

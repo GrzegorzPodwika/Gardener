@@ -17,6 +17,7 @@ class ShoppingViewModel(gardenID: Long) : ViewModel() {
 
     fun addShoppingNoteToList(shoppingNote: String) {
         gardenComponentsDAO.addShoppingNoteToList(shoppingNote)
+        refreshLiveDataList()
     }
 
      fun deleteShoppingNoteFromList(id: Long?) {

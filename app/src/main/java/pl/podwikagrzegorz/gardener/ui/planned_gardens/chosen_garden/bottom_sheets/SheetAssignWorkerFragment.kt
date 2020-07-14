@@ -17,7 +17,7 @@ import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
 import pl.podwikagrzegorz.gardener.databinding.BottomSheetAssignWorkerBinding
 
 class SheetAssignWorkerFragment(
-    private val workersList: RealmResults<WorkerRealm>,
+    workersList: RealmResults<WorkerRealm>,
     private val listener: OnGetListOfWorkersFullNameListener
 ) :
     BottomSheetDialogFragment() {
