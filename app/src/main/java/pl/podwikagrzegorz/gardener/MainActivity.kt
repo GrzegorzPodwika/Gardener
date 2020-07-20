@@ -16,7 +16,6 @@ import androidx.navigation.ui.*
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import kotlinx.android.synthetic.main.app_bar_main.*
 
-//TODO clean codu, refactor layoutow, moze unit tests? testowanie na fizycznym, wyladnienie interfejsu
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private val navController by lazy { findNavController(R.id.nav_host_fragment) }
@@ -39,9 +38,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setupNavigation()
         setupViews()
 
-        (application as GardenerApp).preferenceRepository.nightModeLive.observe(this, Observer { nightMode ->
-            nightMode?.let { delegate.localNightMode = it }
-        })
+        (application as GardenerApp).preferenceRepository.nightModeLive.observe(
+            this,
+            Observer { nightMode ->
+                nightMode?.let { delegate.localNightMode = it }
+            })
     }
 
     private fun setupNavigation() {
@@ -56,7 +57,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
 
-            if (destination.id == R.id.nav_add_garden) {
+            if (destination.id == R.id.nav_add_garden
+                || destination.id == R.id.nav_map_fragment
+                || destination.id == R.id.nav_garden_view_pager_fragment) {
                 toolbar.visibility = View.GONE
             } else {
                 toolbar.visibility = View.VISIBLE

@@ -9,7 +9,7 @@ import pl.podwikagrzegorz.gardener.data.realm.*
 import java.util.*
 import kotlin.NoSuchElementException
 
-class GardenComponentsDAO(private val gardenID: Long) {
+class GardenComponentsDAO(gardenID: Long) {
     private val realm: Realm
     private val gardenRealm: GardenRealm
 
@@ -20,7 +20,15 @@ class GardenComponentsDAO(private val gardenID: Long) {
     // Description
     fun addDescriptionToList(description: String) {
         realm.executeTransaction {
-            gardenRealm.listOfDescriptions.add(description)
+            gardenRealm.listOfDescriptions.add(ActiveStringRealm(description))
+        }
+    }
+
+    fun reverseFlagOnDescription(position: Int) {
+        realm.executeTransaction {
+            gardenRealm.listOfDescriptions[position]?.apply {
+                isActive = !isActive
+            }
         }
     }
 
@@ -30,13 +38,21 @@ class GardenComponentsDAO(private val gardenID: Long) {
         }
     }
 
-    fun getLiveListOfDescriptions(): MutableLiveData<RealmList<String>> =
+    fun getLiveListOfDescriptions(): MutableLiveData<RealmList<ActiveStringRealm>> =
         gardenRealm.listOfDescriptions.asLiveList()
 
     //Notes
     fun addNoteToList(note: String) {
         realm.executeTransaction {
-            gardenRealm.listOfNotes.add(note)
+            gardenRealm.listOfNotes.add(ActiveStringRealm(note))
+        }
+    }
+
+    fun reverseFlagOnNote(position: Int) {
+        realm.executeTransaction {
+            gardenRealm.listOfNotes[position]?.apply {
+                isActive = !isActive
+            }
         }
     }
 
@@ -46,7 +62,7 @@ class GardenComponentsDAO(private val gardenID: Long) {
         }
     }
 
-    fun getLiveListOfNotes(): MutableLiveData<RealmList<String>> =
+    fun getLiveListOfNotes(): MutableLiveData<RealmList<ActiveStringRealm>> =
         gardenRealm.listOfNotes.asLiveList()
 
     //Tools
@@ -151,7 +167,15 @@ class GardenComponentsDAO(private val gardenID: Long) {
     // Shopping
     fun addShoppingNoteToList(shoppingNote: String) {
         realm.executeTransaction {
-            gardenRealm.listOfShopping.add(shoppingNote)
+            gardenRealm.listOfShopping.add(ActiveStringRealm(shoppingNote))
+        }
+    }
+
+    fun reverseFlagOnShoppingNote(position: Int) {
+        realm.executeTransaction {
+            gardenRealm.listOfShopping[position]?.apply {
+                isActive = !isActive
+            }
         }
     }
 
@@ -161,7 +185,7 @@ class GardenComponentsDAO(private val gardenID: Long) {
         }
     }
 
-    fun getLiveListOfShopping(): MutableLiveData<RealmList<String>> =
+    fun getLiveListOfShopping(): MutableLiveData<RealmList<ActiveStringRealm>> =
         gardenRealm.listOfShopping.asLiveList()
 
 
@@ -213,6 +237,7 @@ class GardenComponentsDAO(private val gardenID: Long) {
     fun closeRealm() {
         realm.close()
     }
+
 
     init {
         val realmConfig = RealmConfiguration.Builder()

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_gravity="top"
+            android:layout_marginStart="@dimen/keyline_2"
+            android:layout_marginTop="@dimen/keyline_2"
+            android:layout_marginEnd="60dp"
+            android:background="@drawable/white_border"
+            android:elevation="@dimen/keyline_1">
+
+            <ImageView
+                android:id="@+id/imageView_search"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/keyline_2"
+                android:clickable="false"
+
+                android:src="@drawable/ic_search" />
+
+            <EditText
+                android:id="@+id/editText_search_location"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/keyline_2"
+                android:layout_toEndOf="@id/imageView_search"
+                android:background="@null"
+                android:textColor="@color/colorBlack"
+                android:hint="@string/hint_enter_address"
+                android:imeOptions="actionSearch"
+                android:paddingStart="@dimen/keyline_2"
+                android:paddingEnd="@dimen/keyline_2" />
+        </RelativeLayout>
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".maps.MapsFragment" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/materialButton_take_snapshot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/keyline_2"
+            android:text="@string/confirm"
+            map:icon="@drawable/ic_confirm"
+            map:iconGravity="end" />
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

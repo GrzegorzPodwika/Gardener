@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -6,17 +6,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.realm.RealmList
 import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
+import pl.podwikagrzegorz.gardener.data.realm.ActiveStringRealm
 
 class ShoppingViewModel(gardenID: Long) : ViewModel() {
     private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
 
-    private val _listOfShopping: MutableLiveData<RealmList<String>> =
+    private val _listOfShopping: MutableLiveData<RealmList<ActiveStringRealm>> =
         gardenComponentsDAO.getLiveListOfShopping()
-    val listOfShopping: LiveData<RealmList<String>>
+    val listOfShopping: LiveData<RealmList<ActiveStringRealm>>
         get() = _listOfShopping
 
     fun addShoppingNoteToList(shoppingNote: String) {
         gardenComponentsDAO.addShoppingNoteToList(shoppingNote)
+        refreshLiveDataList()
+    }
+
+    fun reverseFlagOnShoppingNote(position: Int) {
+        gardenComponentsDAO.reverseFlagOnShoppingNote(position)
         refreshLiveDataList()
     }
 

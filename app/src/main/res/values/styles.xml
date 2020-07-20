@@ -50,6 +50,7 @@
 
     <style name="MyMaterialButtonStyle" parent="Widget.MaterialComponents.Button">
         <item name="android:textColor">@color/colorWhite</item>
+        <item name="iconTint">@color/colorWhite</item>
     </style>
 
 </resources>

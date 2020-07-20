@@ -8,20 +8,28 @@ open class GardenRealm(
     @PrimaryKey
     var id: Long = 0,
     var basicGarden: BasicGardenRealm? = BasicGardenRealm(),
-    var listOfDescriptions: RealmList<String> = RealmList(),
-    var listOfNotes: RealmList<String> = RealmList(),
+    var listOfDescriptions: RealmList<ActiveStringRealm> = RealmList(),
+    var listOfNotes: RealmList<ActiveStringRealm> = RealmList(),
 
     var listOfTools: RealmList<ItemRealm> = RealmList(),
     var listOfMachines: RealmList<ItemRealm> = RealmList(),
     var listOfProperties: RealmList<ItemRealm> = RealmList(),
 
-    var listOfShopping: RealmList<String> = RealmList(),
+    var listOfShopping: RealmList<ActiveStringRealm> = RealmList(),
     var mapOfWorkedHours: RealmList<ManHoursMapRealm> = RealmList(),
     var listOfPicturesPaths: RealmList<String> = RealmList()
 ) : RealmObject() {
 
     fun cascadeDelete() {
         basicGarden?.cascadeDelete()
+
+        for (activeString in listOfDescriptions) {
+            activeString.deleteFromRealm()
+        }
+
+        for (activeString in listOfNotes) {
+            activeString.deleteFromRealm()
+        }
 
         for (item : ItemRealm in listOfTools){
             item.deleteFromRealm()
@@ -35,10 +43,16 @@ open class GardenRealm(
             item.deleteFromRealm()
         }
 
+        for (activeString in listOfShopping) {
+            activeString.deleteFromRealm()
+        }
+
         for (index in mapOfWorkedHours.indices.reversed()){
             val map = mapOfWorkedHours[index]
             map?.cascadeDelete()
         }
+
+        // TODO delete already taken pictures
 
         deleteFromRealm()
     }

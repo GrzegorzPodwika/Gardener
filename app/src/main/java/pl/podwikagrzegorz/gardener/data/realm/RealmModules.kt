@@ -17,7 +17,7 @@ class PropertyModule
 @RealmModule(classes = [BasicGardenRealm::class, PeriodRealm::class])
 class BasicGardenModule
 
-@RealmModule(classes = [GardenRealm::class, BasicGardenRealm::class, PeriodRealm::class, ManHoursMapRealm::class, ManHoursRealm::class, ItemRealm::class])
+@RealmModule(classes = [GardenRealm::class, BasicGardenRealm::class, PeriodRealm::class, ManHoursMapRealm::class, ManHoursRealm::class, ItemRealm::class, ActiveStringRealm::class])
 class GardenModule
 
 @RealmModule(classes = [WorkerRealm::class])

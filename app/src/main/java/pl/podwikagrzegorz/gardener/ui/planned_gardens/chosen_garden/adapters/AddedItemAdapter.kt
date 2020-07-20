@@ -17,11 +17,6 @@ class AddedItemAdapter(
     private val listener: OnDeleteItemListener
 ) : RecyclerView.Adapter<AddedItemAdapter.AddedItemHolder>() {
 
-    private val _listOfActiveTools: MutableList<Boolean> = mutableListOf()
-    val listOfActiveTools : List<Boolean>
-        get() = _listOfActiveTools
-
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddedItemHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding: McvAddedToolBinding =
@@ -36,6 +31,9 @@ class AddedItemAdapter(
         val item = listOfItems[position]
         holder.bind(item)
 
+        holder.binding.textViewAddedTool.setOnClickListener {
+            listener.onChangeFlagToOpposite(position)
+        }
         holder.binding.textViewNumbOfTools.setOnClickListener {
             listener.onChangeNumberOfItems(item?.numberOfItems ?: 0, position, item?.itemName ?: "")
         }
@@ -44,12 +42,6 @@ class AddedItemAdapter(
             listener.onDeleteItemClick(position.toLong())
         }
 
-        holder.binding.textViewAddedTool.setOnClickListener {
-            listener.onChangeFlagToOpposite(position)
-/*            _listOfActiveTools[position] = !_listOfActiveTools[position]
-            holder.checkIfTextViewShouldBeCrossed(_listOfActiveTools[position])*/
-
-        }
     }
 
 
@@ -85,12 +77,6 @@ class AddedItemAdapter(
             binding.imageButtonToolToDelete.isEnabled = false
         }
 
-    }
-
-    init {
-        for (item in listOfItems) {
-            _listOfActiveTools.add(item.isActive)
-        }
     }
 
     companion object {

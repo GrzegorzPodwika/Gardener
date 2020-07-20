@@ -105,17 +105,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView3" />
 
-<!--        <com.google.android.material.button.MaterialButton
-            android:id="@+id/materialButton_end_garden_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/keyline_4"
-            android:layout_marginTop="@dimen/keyline_4"
-            android:text="@string/end_date"
-            app:layout_constraintStart_toEndOf="@+id/materialButton_pick_garden_date_range"
-            app:layout_constraintTop_toBottomOf="@+id/materialTextView3" />-->
-
-
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/materialTextView_picked_period"
             android:layout_width="0dp"
@@ -185,19 +174,23 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:scaleType="centerCrop"
-            app:layout_constraintBottom_toTopOf="@+id/fab_confirm_adding_garden"
+            app:layout_constraintBottom_toTopOf="@id/materialButton_confirm_adding_garden"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialButton_locate_garden"
             app:srcCompat="@drawable/ic_street_map" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_confirm_adding_garden"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/materialButton_confirm_adding_garden"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/confirm"
+            app:iconGravity="end"
+            app:icon="@drawable/ic_confirm"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_add" />
+            app:layout_constraintEnd_toEndOf="parent" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

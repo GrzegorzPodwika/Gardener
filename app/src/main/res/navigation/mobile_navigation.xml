@@ -11,38 +11,6 @@
         android:label="@string/menu_planned_gardens"
         tools:layout="@layout/fragment_planned_gardens">
 
-        <argument
-            android:name="flowGardenTitle"
-            app:argType="string"
-            android:defaultValue="Brak tytułu" />
-
-        <argument
-            android:name="flowPhoneNumber"
-            app:argType="integer"
-            android:defaultValue="123456789"/>
-
-        <argument
-            android:name="flowPeriod"
-            app:nullable="true"
-            app:argType="pl.podwikagrzegorz.gardener.data.pojo.Period"
-            android:defaultValue="@null"/>
-        <argument
-            android:name="flowIsGarden"
-            app:argType="boolean"
-            android:defaultValue="true"/>
-        <argument
-            android:name="flowSnapshotPath"
-            app:argType="string"
-            android:defaultValue="none"/>
-        <argument
-            android:name="flowLatitude"
-            app:argType="float"
-            android:defaultValue="0.0"/>
-        <argument
-            android:name="flowLongitude"
-            app:argType="float"
-            android:defaultValue="0.0"/>
-
         <action
             android:id="@+id/action_planned_gardens_to_add_garden"
             app:destination="@id/nav_add_garden"
@@ -50,25 +18,57 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_nav_planned_gardens_to_nav_garden_view_pager_fragment"
+            app:destination="@id/nav_garden_view_pager_fragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            />
     </fragment>
 
     <fragment
         android:id="@+id/nav_add_garden"
         android:name="pl.podwikagrzegorz.gardener.ui.planned_gardens.garden_to_add.AddGardenFragment"
         android:label="Dodaj ogród"
-        tools:layout="@layout/fragment_add_garden" >
+        tools:layout="@layout/fragment_add_garden">
+
 
         <action
-            android:id="@+id/action_add_garden_to_planned_gardens"
-            app:destination="@id/nav_planned_gardens" />
+            android:id="@+id/action_nav_add_garden_to_nav_map_fragment"
+            app:destination="@id/nav_map_fragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_map_fragment"
+        android:name="pl.podwikagrzegorz.gardener.maps.MapsFragment"
+        tools:layout="@layout/fragment_maps">
+
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/nav_garden_view_pager_fragment"
+        android:name="pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.GardenViewPagerFragment"
+        tools:layout="@layout/viewpager_garden">
+
+        <argument
+            android:name="flowGardenId"
+            app:argType="long"
+            android:defaultValue="0L"/>
     </fragment>
 
     <fragment
         android:id="@+id/nav_workers"
         android:name="pl.podwikagrzegorz.gardener.ui.workers.WorkersFragment"
         android:label="@string/workers"
-        tools:layout="@layout/workers_fragment"
-    />
+        tools:layout="@layout/workers_fragment" />
 
     <fragment
         android:id="@+id/nav_my_tools"

@@ -127,6 +127,7 @@
     <string name="working_days">- dni pracy</string>
     <string name="error">Numer za krótki</string>
     <string name="navigate">Nawiguj</string>
+    <string name="hint_enter_address">Wpisz adres, miasto lub kod pocztowy</string>
 
 
 </resources>

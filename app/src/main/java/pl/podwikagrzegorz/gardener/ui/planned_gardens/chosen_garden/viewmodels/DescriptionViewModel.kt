@@ -6,20 +6,26 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.realm.RealmList
 import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
+import pl.podwikagrzegorz.gardener.data.realm.ActiveStringRealm
 import pl.podwikagrzegorz.gardener.data.realm.asLiveList
 
 class DescriptionViewModel(gardenID: Long) : ViewModel() {
     private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
 
-    private val _listOfDescriptions: MutableLiveData<RealmList<String>> =
+    private val _listOfDescriptions: MutableLiveData<RealmList<ActiveStringRealm>> =
         gardenComponentsDAO.getLiveListOfDescriptions()
-    val listOfDescriptions: LiveData<RealmList<String>>
+    val listOfDescriptions: LiveData<RealmList<ActiveStringRealm>>
         get() = _listOfDescriptions
 
 
     fun addDescriptionToList(description: String) {
         gardenComponentsDAO.addDescriptionToList(description)
 
+        refreshLiveDataList()
+    }
+
+    fun reverseFlagOnDescription(position: Int) {
+        gardenComponentsDAO.reverseFlagOnDescription(position)
         refreshLiveDataList()
     }
 
@@ -30,13 +36,13 @@ class DescriptionViewModel(gardenID: Long) : ViewModel() {
         }
     }
 
+    private fun refreshLiveDataList() {
+        _listOfDescriptions.postValue(_listOfDescriptions.value)
+    }
+
     override fun onCleared() {
         gardenComponentsDAO.closeRealm()
         super.onCleared()
-    }
-
-    private fun refreshLiveDataList() {
-        _listOfDescriptions.postValue(_listOfDescriptions.value)
     }
 
     companion object {

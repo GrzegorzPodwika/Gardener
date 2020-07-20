@@ -6,13 +6,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.realm.RealmList
 import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
+import pl.podwikagrzegorz.gardener.data.realm.ActiveStringRealm
 
 class NoteViewModel(gardenID: Long) : ViewModel() {
     private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
 
-    private val _listOfNotes: MutableLiveData<RealmList<String>> =
+    private val _listOfNotes: MutableLiveData<RealmList<ActiveStringRealm>> =
         gardenComponentsDAO.getLiveListOfNotes()
-    val listOfNotes : LiveData<RealmList<String>>
+    val listOfNotes : LiveData<RealmList<ActiveStringRealm>>
         get() = _listOfNotes
 
 
@@ -22,6 +23,11 @@ class NoteViewModel(gardenID: Long) : ViewModel() {
     }
 
 
+    fun reverseFlagOnNote(position: Int) {
+        gardenComponentsDAO.reverseFlagOnNote(position)
+        refreshLiveDataList()
+    }
+
     fun deleteItemFromList(id: Long?) {
         id?.let {
             gardenComponentsDAO.deleteNoteFromList(it)
@@ -29,13 +35,13 @@ class NoteViewModel(gardenID: Long) : ViewModel() {
         }
     }
 
+    private fun refreshLiveDataList() {
+        _listOfNotes.postValue(_listOfNotes.value)
+    }
+
     override fun onCleared() {
         gardenComponentsDAO.closeRealm()
         super.onCleared()
-    }
-
-    private fun refreshLiveDataList() {
-        _listOfNotes.postValue(_listOfNotes.value)
     }
 
 
