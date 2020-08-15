@@ -1,44 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
 
-    <ExpandableListView
-        android:id="@+id/expandableListView"
+    <data>
+        <variable
+            name="manHoursViewModel"
+            type="pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.ManHoursViewModel" />
+    </data>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="0.75dp"
-        android:layout_above="@id/materialButton_add_man_hours"
-        android:paddingBottom="@dimen/keyline_5"
-        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft" />
+        android:layout_height="match_parent">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/materialButton_add_man_hours"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="@dimen/keyline_2"
-        android:layout_marginBottom="@dimen/keyline_2"
-        app:iconGravity="end"
-        app:icon="@drawable/ic_time"
-        android:text="@string/working_hours" />
+        <ExpandableListView
+            android:id="@+id/expandableListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/materialButton_add_man_hours"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="0.75dp"
+            android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
+            android:layout_marginBottom="@dimen/keyline_4" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/materialButton_add_workers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/keyline_2"
-        android:layout_marginBottom="@dimen/keyline_2"
-        android:text="@string/workers"
-        app:icon="@drawable/ic_group"
-        app:iconGravity="end"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/materialButton_add_man_hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="@dimen/keyline_2"
+            android:layout_marginBottom="@dimen/keyline_2"
+            android:text="@string/working_hours"
+            app:icon="@drawable/ic_time"
+            app:iconGravity="end" />
 
-</RelativeLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/materialButton_add_workers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="@dimen/keyline_2"
+            android:layout_marginBottom="@dimen/keyline_2"
+            android:text="@string/workers"
+            app:icon="@drawable/ic_group"
+            app:iconGravity="end" />
+
+    </RelativeLayout>
 </layout>

@@ -3,51 +3,65 @@ package pl.podwikagrzegorz.gardener.data.daos
 import androidx.lifecycle.MutableLiveData
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import io.realm.RealmResults
 import io.realm.kotlin.where
+import pl.podwikagrzegorz.gardener.data.domain.Property
+import pl.podwikagrzegorz.gardener.data.domain.asListOfProperties
 import pl.podwikagrzegorz.gardener.data.realm.PropertyModule
 import pl.podwikagrzegorz.gardener.data.realm.PropertyRealm
-import pl.podwikagrzegorz.gardener.data.realm.asLiveData
+import pl.podwikagrzegorz.gardener.data.realm.asLiveList
+import timber.log.Timber
 
-class PropertyDAO : DAO<PropertyRealm> {
+class PropertyDAO : DAO<Property> {
     private val realm: Realm
+    var listener: OnExecuteTransactionListener? = null
 
-    override fun insertItem(item: PropertyRealm) {
+    override fun insertItem(item: Property) {
         val generatedNewId = generateId()
+        val propertyRealm = item.asPropertyRealm()
 
-        realm.executeTransactionAsync { bgRealm ->
-            item.id = generatedNewId
+        realm.executeTransactionAsync( { bgRealm ->
+            propertyRealm.id = generatedNewId
 
-            bgRealm.insert(item)
-        }
+            bgRealm.insert(propertyRealm)
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
-    override fun updateItem(item: PropertyRealm) {
-        realm.executeTransactionAsync { bgRealm ->
+    override fun updateItem(item: Property) {
+        realm.executeTransactionAsync ({ bgRealm ->
             val propertyRealm = bgRealm.where<PropertyRealm>().equalTo(ID, item.id).findFirst()
             propertyRealm?.propertyName = item.propertyName
             propertyRealm?.numberOfProperties = item.numberOfProperties
-        }
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
     override fun deleteItem(id: Long) {
-        realm.executeTransactionAsync { bgRealm ->
+        realm.executeTransactionAsync ({ bgRealm ->
             val result = bgRealm.where<PropertyRealm>().equalTo(ID, id).findFirst()
 
             result?.deleteFromRealm()
-        }
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
-    override fun getItemById(id: Long): PropertyRealm?
-            = realm.where<PropertyRealm>().equalTo(ID, id).findFirst()
+    override fun getItemById(id: Long): Property?
+            = realm.where<PropertyRealm>().equalTo(ID, id).findFirstAsync()?.asProperty()
 
+    override fun getDomainData(): List<Property> =
+        realm.where<PropertyRealm>().findAllAsync().asListOfProperties()
 
-    override fun getRealmResults(): RealmResults<PropertyRealm>
-        = realm.where<PropertyRealm>().findAllAsync()
-
-
-    override fun getLiveRealmResults(): MutableLiveData<RealmResults<PropertyRealm>>
-        = realm.where<PropertyRealm>().findAllAsync().asLiveData()
+    override fun getLiveDomainData(): MutableLiveData<List<Property>> =
+        getDomainData().asLiveList()
 
     fun findMaxValueOf(itemName: String): Int? =
         realm.where<PropertyRealm>().equalTo("propertyName", itemName).findFirst()?.numberOfProperties

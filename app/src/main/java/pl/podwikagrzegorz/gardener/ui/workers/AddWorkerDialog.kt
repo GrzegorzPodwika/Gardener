@@ -6,16 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.WorkerFragmentDialogBinding
 
 class AddWorkerDialog(
     private val listener: OnInputListener
 ) : DialogFragment() {
-    private lateinit var binding : WorkerFragmentDialogBinding
 
-    interface OnInputListener{
-        fun sendInput(workerFullName: String)
+    private lateinit var binding: WorkerFragmentDialogBinding
+    private val viewModel: AddWorkerViewModel by lazy {
+        ViewModelProvider(this).get(AddWorkerViewModel::class.java)
+    }
+
+    interface OnInputListener {
+        fun onSendWorkerFullName(workerFullName: String)
     }
 
     override fun onCreateView(
@@ -23,19 +29,49 @@ class AddWorkerDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.worker_fragment_dialog, container, false)
+        binding = WorkerFragmentDialogBinding.inflate(inflater, container, false)
+
+        setUpBindingWithViewModel()
+        observeData()
 
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        setOnCancelButtonListener()
-        setOnAddWorkerButtonListener()
+    private fun setUpBindingWithViewModel() {
+        binding.apply {
+            lifecycleOwner = viewLifecycleOwner
+            addWorkerViewModel = viewModel
+        }
     }
 
-    private fun setOnCancelButtonListener() {
+    private fun observeData() {
+        observeAddWorkerButton()
+        observeDismissButton()
+    }
+
+    private fun observeAddWorkerButton() {
+        viewModel.workerFullName.observe(viewLifecycleOwner, Observer { fullName ->
+            fullName?.let {
+                listener.onSendWorkerFullName(it)
+                viewModel.onAddWorkerComplete()
+                dismiss()
+            }
+        })
+    }
+
+    private fun observeDismissButton() {
+        viewModel.eventDismiss.observe(viewLifecycleOwner, Observer { hasClickedDismiss ->
+            if (hasClickedDismiss) {
+                dismiss()
+                viewModel.onDismissComplete()
+            }
+        })
+    }
+}
+
+/*            setOnCancelButtonListener()
+        setOnAddWorkerButtonListener()
+private fun setOnCancelButtonListener() {
         binding.buttonCancel.setOnClickListener {
             dialog?.dismiss()
         }
@@ -46,5 +82,4 @@ class AddWorkerDialog(
             listener.sendInput(binding.editTextWorkerName.text.toString())
             dialog?.dismiss()
         }
-    }
-}
+    }*/

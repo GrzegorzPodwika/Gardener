@@ -3,52 +3,70 @@ package pl.podwikagrzegorz.gardener.data.daos
 import androidx.lifecycle.MutableLiveData
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import io.realm.RealmResults
 import io.realm.kotlin.where
-import pl.podwikagrzegorz.gardener.data.realm.*
+import pl.podwikagrzegorz.gardener.data.domain.Worker
+import pl.podwikagrzegorz.gardener.data.domain.asListOfWorkers
+import pl.podwikagrzegorz.gardener.data.realm.WorkerModule
+import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
+import pl.podwikagrzegorz.gardener.data.realm.asLiveList
+import timber.log.Timber
 
-class WorkerDAO : DAO<WorkerRealm> {
+class WorkerDAO : DAO<Worker> {
     private val realm: Realm
+    var listener: OnExecuteTransactionListener? = null
 
-    override fun insertItem(item: WorkerRealm) {
+
+    override fun insertItem(item: Worker) {
         val generatedNewId = generateId()
 
-        realm.executeTransactionAsync { bgRealm ->
-            item.id = generatedNewId
+        realm.executeTransactionAsync({ bgRealm ->
+            val workerRealm = item.asWorkerRealm()
 
-            bgRealm.insert(item)
-        }
+            workerRealm.id = generatedNewId
+            bgRealm.insert(workerRealm)
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
-    override fun updateItem(item: WorkerRealm) {
-        realm.executeTransactionAsync { bgRealm ->
+    override fun updateItem(item: Worker) {
+        realm.executeTransactionAsync({ bgRealm ->
             val workerRealm = bgRealm.where<WorkerRealm>().equalTo(ID, item.id).findFirst()
             workerRealm?.name = item.name
             workerRealm?.surname = item.surname
-        }
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
     override fun deleteItem(id: Long) {
-        realm.executeTransactionAsync { bgRealm ->
+        realm.executeTransactionAsync({ bgRealm ->
             val result = bgRealm.where<WorkerRealm>().equalTo(ID, id).findFirst()
             result?.deleteFromRealm()
-        }
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
-    override fun getItemById(id: Long): WorkerRealm? =
-        realm.where<WorkerRealm>().equalTo(ID, id).findFirst()
+    override fun getItemById(id: Long): Worker? =
+        realm.where<WorkerRealm>().equalTo(ID, id).findFirstAsync()?.asWorker()
 
-    override fun getRealmResults(): RealmResults<WorkerRealm> =
-        realm.where<WorkerRealm>().findAll()
+    override fun getDomainData(): List<Worker> =
+        realm.where<WorkerRealm>().findAllAsync().asListOfWorkers()
 
-    override fun getLiveRealmResults(): MutableLiveData<RealmResults<WorkerRealm>> =
-        realm.where<WorkerRealm>().findAllAsync().asLiveData()
+    override fun getLiveDomainData(): MutableLiveData<List<Worker>> =
+        getDomainData().asLiveList()
 
 
     override fun closeRealm() {
         realm.close()
     }
-
 
     private fun generateId(): Long {
         val maxValue = realm.where<WorkerRealm>().max(ID)

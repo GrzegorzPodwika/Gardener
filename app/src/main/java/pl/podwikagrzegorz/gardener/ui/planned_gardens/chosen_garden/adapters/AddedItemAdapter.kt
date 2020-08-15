@@ -2,86 +2,68 @@ package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import io.realm.RealmList
-import pl.podwikagrzegorz.gardener.GardenerApp
-import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
+import pl.podwikagrzegorz.gardener.data.domain.Item
 import pl.podwikagrzegorz.gardener.databinding.McvAddedToolBinding
-import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
 //1 adapter for added data : Tool, Machine and Property values separately
 class AddedItemAdapter(
-    private val listOfItems: RealmList<ItemRealm>,
-    private val listener: OnDeleteItemListener
-) : RecyclerView.Adapter<AddedItemAdapter.AddedItemHolder>() {
+    private val listener: OnClickItemListener
+) : ListAdapter<Item, AddedItemAdapter.AddedItemHolder>(AddedItemDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddedItemHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val binding: McvAddedToolBinding =
-            DataBindingUtil.inflate(layoutInflater, R.layout.mcv_added_tool, parent, false)
-
-        return AddedItemHolder(binding)
+        return AddedItemHolder.from(parent)
     }
 
-    override fun getItemCount(): Int = listOfItems.size
-
     override fun onBindViewHolder(holder: AddedItemHolder, position: Int) {
-        val item = listOfItems[position]
-        holder.bind(item)
-
-        holder.binding.textViewAddedTool.setOnClickListener {
-            listener.onChangeFlagToOpposite(position)
-        }
-        holder.binding.textViewNumbOfTools.setOnClickListener {
-            listener.onChangeNumberOfItems(item?.numberOfItems ?: 0, position, item?.itemName ?: "")
-        }
-
-        holder.binding.imageButtonToolToDelete.setOnClickListener {
-            listener.onDeleteItemClick(position.toLong())
-        }
-
+        val item = getItem(position)
+        holder.bind(item, listener, position)
     }
 
 
     class AddedItemHolder(val binding: McvAddedToolBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(tool: ItemRealm?) {
-            tool?.let {
-                binding.textViewAddedTool.text = it.itemName
-                binding.textViewNumbOfTools.text = it.numberOfItems.toString()
+        fun bind(item: Item, listener: OnClickItemListener, position: Int) {
+            binding.item = item
+            setListenersToViews(item, listener, position)
+            binding.executePendingBindings()
+        }
 
-                checkIfTextViewShouldBeCrossed(it.isActive)
+        private fun setListenersToViews(item: Item, listener: OnClickItemListener, position: Int) {
+            binding.textViewAddedTool.setOnClickListener {
+                listener.onChangeFlagToOpposite(position)
+            }
+            binding.textViewNumbOfTools.setOnClickListener {
+                listener.onChangeNumberOfItems(item.numberOfItems, position, item.itemName)
+            }
+            binding.imageButtonToolToDelete.setOnClickListener {
+                listener.onClick(position.toLong())
             }
         }
 
-        private fun checkIfTextViewShouldBeCrossed(isActive: Boolean) {
-            if (isActive) {
-                binding.mcvAddedTool.foreground = null
-                enableButtonAndNumberPicker()
-            } else {
-                binding.mcvAddedTool.foreground = strikeThroughForeground
-                disableButtonAndNumberPicker()
+        companion object {
+            fun from(parent: ViewGroup): AddedItemHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = McvAddedToolBinding.inflate(layoutInflater, parent, false)
+
+                return AddedItemHolder(binding)
             }
         }
+    }
 
-        private fun enableButtonAndNumberPicker() {
-            binding.textViewNumbOfTools.isEnabled = true
-            binding.imageButtonToolToDelete.isEnabled = true
+    object AddedItemDiffCallback : DiffUtil.ItemCallback<Item>() {
+        override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {
+            return oldItem.itemName == newItem.itemName
         }
 
-        private fun disableButtonAndNumberPicker() {
-            binding.textViewNumbOfTools.isEnabled = false
-            binding.imageButtonToolToDelete.isEnabled = false
+        override fun areContentsTheSame(oldItem: Item, newItem: Item): Boolean {
+            return oldItem == newItem
         }
 
     }
 
-    companion object {
-        private val strikeThroughForeground =
-            GardenerApp.res.getDrawable(R.drawable.stroke_foreground, null)
-
-    }
 }

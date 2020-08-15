@@ -9,6 +9,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/materialButton_add_tools"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:layout_margin="@dimen/keyline_2" />
 
         <com.google.android.material.button.MaterialButton

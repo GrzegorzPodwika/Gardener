@@ -6,26 +6,26 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.databinding.ListMaterialcardviewBinding
 import pl.podwikagrzegorz.gardener.databinding.McvSingleToolBinding
-import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
+@Deprecated("Deprecated since I have switched from using straight realm data to domain data.")
 abstract class MyToolsAbstractAdapter <T>(
     open val itemRealmResults: RealmResults<T>,
-    open val listener: OnDeleteItemListener
+    open val listener: OnClickItemListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
 
-        val mcvSingleTool =
-            DataBindingUtil.inflate<McvSingleToolBinding>(inflater, R.layout.mcv_single_tool, parent, false)
+        val mcvSingleTool = McvSingleToolBinding.inflate(inflater, parent, false)
 
         return getViewHolder(mcvSingleTool, viewType)
     }
 
     override fun getItemCount(): Int = itemRealmResults.size
 
+    @Suppress("unchecked_cast")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (itemRealmResults[position] != null){
             (holder as Binder<T>).bind(itemRealmResults[position]!!, listener)
@@ -42,6 +42,6 @@ abstract class MyToolsAbstractAdapter <T>(
     abstract fun getViewHolder( binding: McvSingleToolBinding, viewType: Int):RecyclerView.ViewHolder
 
     internal interface Binder<T>{
-        fun bind(data: T, listener: OnDeleteItemListener)
+        fun bind(data: T, listener: OnClickItemListener)
     }
 }

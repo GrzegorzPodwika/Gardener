@@ -1,48 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
+    <data>
+
+        <variable
+            name="property"
+            type="pl.podwikagrzegorz.gardener.data.domain.Property" />
+        <variable
+            name="onClickListener"
+            type="pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener" />
+
+    </data>
+
     <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="@dimen/cardView_height"
-        android:layout_margin="@dimen/keyline_1">
+        android:layout_marginStart="@dimen/keyline_2"
+        android:layout_marginTop="@dimen/keyline_1"
+        android:layout_marginEnd="@dimen/keyline_2"
+        android:layout_marginBottom="@dimen/keyline_1">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/textView_service"
+                android:id="@+id/textView_property_name"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="0.7"
                 android:gravity="center_vertical"
                 android:paddingStart="@dimen/keyline_2"
-                android:paddingEnd="@dimen/keyline_2"
+                android:paddingEnd="@dimen/keyline_1"
+                android:text="@{property.propertyName}"
                 android:textAppearance="?attr/textAppearanceSubtitle1" />
 
             <TextView
-                android:id="@+id/textView_price_of_service"
+                android:id="@+id/textView_numb_of_properties"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/keyline_4"
-                android:layout_weight="0.4"
-                android:gravity="center_vertical"
+                android:layout_marginStart="@dimen/keyline_2"
+                android:layout_weight="0.3"
+                android:gravity="center"
                 android:paddingStart="@dimen/keyline_2"
+                android:text="@{String.valueOf(property.numberOfProperties)}"
                 android:paddingEnd="@dimen/keyline_2"
                 android:textAppearance="?attr/textAppearanceSubtitle1" />
 
             <ImageButton
-                android:id="@+id/imageButton_service_to_delete"
+                android:id="@+id/imageButton_property_to_delete"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/keyline_4"
                 android:layout_marginEnd="@dimen/keyline_2"
+                android:onClick="@{() -> onClickListener.onClick(property.id)}"
                 app:srcCompat="@drawable/ic_minus" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-
-
 </layout>

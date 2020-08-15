@@ -3,27 +3,51 @@ package pl.podwikagrzegorz.gardener.ui.price_list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.data.daos.NoteDAO
-import pl.podwikagrzegorz.gardener.data.realm.NoteRealm
+import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import pl.podwikagrzegorz.gardener.data.domain.Note
 
-open class PriceListViewModel : ViewModel() {
-    private val noteDAO = NoteDAO()
+class PriceListViewModel : ViewModel(), OnExecuteTransactionListener {
+    private val noteDAO = NoteDAO().apply { listener = this@PriceListViewModel }
 
-    private val _priceList: MutableLiveData<RealmResults<NoteRealm>> = noteDAO.getLiveRealmResults()
-    val priceList: LiveData<RealmResults<NoteRealm>>
+    private val _priceList: MutableLiveData<List<Note>> =
+        noteDAO.getLiveDomainData()
+    val priceList: LiveData<List<Note>>
         get() = _priceList
 
-    fun addNote(note: NoteRealm) {
-        noteDAO.insertItem(note)
+    private val _eventAddNote = MutableLiveData<Boolean>()
+    val eventAddNote : LiveData<Boolean>
+        get() = _eventAddNote
+
+    fun onAddNote(service: String, priceOfService: String) {
+        val newNote = Note(0, service, priceOfService)
+        noteDAO.insertItem(newNote)
+        _eventAddNote.value = true
     }
 
-    fun deleteNote(id: Long?) {
-        id?.let { noteDAO.deleteItem(it) }
+    fun onAddNoteComplete() {
+        _eventAddNote.value = false
+    }
+
+    fun deleteNote(id: Long) {
+        noteDAO.deleteItem(id)
+    }
+
+    override fun onAsyncTransactionSuccess() {
+        fetchFreshData()
+    }
+
+    private fun fetchFreshData() {
+        _priceList.value = noteDAO.getDomainData()
     }
 
     override fun onCleared() {
         noteDAO.closeRealm()
         super.onCleared()
+        //viewModelJob.cancel()
+    }
+
+    init {
+        _eventAddNote.value = false
     }
 }

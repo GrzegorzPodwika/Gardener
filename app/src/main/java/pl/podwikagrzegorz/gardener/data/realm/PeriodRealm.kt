@@ -1,7 +1,7 @@
 package pl.podwikagrzegorz.gardener.data.realm
 
 import io.realm.RealmObject
-import pl.podwikagrzegorz.gardener.data.pojo.Period
+import pl.podwikagrzegorz.gardener.data.domain.Period
 
 
 open class PeriodRealm(
@@ -22,4 +22,7 @@ open class PeriodRealm(
             endMonth,
             endYear
         )
+
+    fun asPeriod() : Period =
+        Period(startDay, startMonth, startYear, endDay, endMonth, endYear)
 }

@@ -1,5 +1,7 @@
 package pl.podwikagrzegorz.gardener.ui.my_tools
 
+import android.content.res.ColorStateList
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -8,6 +10,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.FragmentMyToolsBinding
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.MachinesChildFragment
@@ -23,10 +26,9 @@ class MyToolsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_my_tools, container, false)
-        val bottomNavView = binding.bottomNavigationTools
-        bottomNavView.setOnNavigationItemSelectedListener(navListener)
-        bottomNavView.itemIconTintList = null
+        binding = FragmentMyToolsBinding.inflate(inflater, container, false)
+
+        binding.bottomNavigationTools.setOnNavigationItemSelectedListener(navListener)
 
         childFragmentManager.beginTransaction().replace(
             R.id.tools_fragment_container,

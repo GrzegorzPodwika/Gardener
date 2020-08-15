@@ -4,29 +4,37 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.databinding.FragmentRecViewWithBottomViewBinding
+import pl.podwikagrzegorz.gardener.databinding.FragmentShoppingBinding
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SingleItemAdapter
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.GardenViewModelFactory
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.ShoppingViewModel
-import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
 //Class No7 - Shopping
-class ShoppingFragment : Fragment(), OnDeleteItemListener {
+class ShoppingFragment : Fragment() {
 
-    private lateinit var binding: FragmentRecViewWithBottomViewBinding
+    private lateinit var binding: FragmentShoppingBinding
     private val gardenID: Long by lazy {
         ShoppingViewModel.fromBundle(requireArguments())
     }
-    private val viewModelGarden: ShoppingViewModel by viewModels {
+    private val viewModel: ShoppingViewModel by viewModels {
         GardenViewModelFactory(
             gardenID
         )
+    }
+    private val shoppingAdapter: SingleItemAdapter by lazy {
+        SingleItemAdapter(object : OnClickItemListener {
+            override fun onClick(id: Long) {
+                deleteShoppingNoteFromDb(id)
+            }
+
+            override fun onChangeFlagToOpposite(position: Int) {
+                reverseFlagOnShoppingNote(position)
+            }
+        })
     }
 
     override fun onCreateView(
@@ -34,69 +42,58 @@ class ShoppingFragment : Fragment(), OnDeleteItemListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_rec_view_with_bottom_view,
-            container,
-            false
-        )
+        binding = FragmentShoppingBinding.inflate(inflater, container, false)
+
+        setUpViewModelWithBinding()
+        observeHasAddedShoppingNote()
+        observeListOfShopping()
 
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        presetRecyclerView()
-        observeListOfShopping()
-        setOnAddShoppingNoteButtonListener()
-    }
-
-    private fun presetRecyclerView() {
-        binding.recyclerViewSingleItems.layoutManager =
-            LinearLayoutManager(requireContext())
-    }
-
-    private fun observeListOfShopping() {
-        viewModelGarden.listOfShopping.observe(viewLifecycleOwner, Observer {
-            binding.recyclerViewSingleItems.adapter =
-                SingleItemAdapter(
-                    it
-                ).apply { setListener(this@ShoppingFragment) }
-        })
-    }
-
-    private fun setOnAddShoppingNoteButtonListener() {
-        binding.imageButtonAddItem.setOnClickListener {
-            insertNewShoppingNote()
+    private fun setUpViewModelWithBinding() {
+        binding.apply {
+            lifecycleOwner = viewLifecycleOwner
+            shoppingViewModel = viewModel
+            recyclerViewShoppingList.adapter = shoppingAdapter
+            userShoppingNote = ""
         }
     }
 
-    private fun insertNewShoppingNote() {
-        insertShoppingNoteToViewModel()
-        clearView()
-        setFocusToEditTextView()
+    private fun observeHasAddedShoppingNote() {
+       viewModel.eventOnAddedShoppingNote.observe(viewLifecycleOwner , Observer { hasAdded ->
+           if (hasAdded) {
+               cleanUp()
+           }
+       })
     }
 
-    private fun insertShoppingNoteToViewModel() {
-        val userShoppingNote: String = binding.editTextBotItemName.text.toString()
-        viewModelGarden.addShoppingNoteToList(userShoppingNote)
+    private fun cleanUp() {
+        clearView()
+        setFocusToEditTextView()
+        viewModel.onAddShoppingNoteComplete()
     }
 
     private fun clearView() {
-        binding.editTextBotItemName.text.clear()
+        binding.editTextShoppingNote.text.clear()
     }
 
     private fun setFocusToEditTextView() {
-        binding.editTextBotItemName.requestFocus()
+        binding.editTextShoppingNote.requestFocus()
     }
 
-    override fun onDeleteItemClick(id: Long?) {
-        viewModelGarden.deleteShoppingNoteFromList(id)
+    private fun observeListOfShopping() {
+        viewModel.listOfShopping.observe(viewLifecycleOwner, Observer { listOfShopping ->
+            shoppingAdapter.submitList(listOfShopping)
+        })
     }
 
-    override fun onChangeFlagToOpposite(position: Int) {
-        viewModelGarden.reverseFlagOnShoppingNote(position)
+    private fun deleteShoppingNoteFromDb(id: Long) {
+        viewModel.deleteShoppingNoteFromList(id)
+    }
+
+    private fun reverseFlagOnShoppingNote(position: Int) {
+        viewModel.reverseFlagOnShoppingNote(position)
     }
 
     companion object {

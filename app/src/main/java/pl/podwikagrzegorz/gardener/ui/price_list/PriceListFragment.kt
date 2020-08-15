@@ -4,84 +4,79 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.data.realm.NoteRealm
 import pl.podwikagrzegorz.gardener.databinding.FragmentPriceListBinding
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
-class PriceListFragment : Fragment(), OnDeleteItemListener {
+class PriceListFragment : Fragment() {
 
-    private lateinit var priceListBinding: FragmentPriceListBinding
-    private val priceListVM: PriceListViewModel by lazy {
-        ViewModelProvider(this).get(
-            PriceListViewModel::class.java
-        )
+    private lateinit var binding: FragmentPriceListBinding
+    private val viewModel: PriceListViewModel by lazy {
+        ViewModelProvider(this).get(PriceListViewModel::class.java)
+    }
+    private val noteAdapter: NoteAdapter by lazy {
+        NoteAdapter(object : OnClickItemListener {
+            override fun onClick(id: Long) {
+                viewModel.deleteNote(id)
+            }
+        })
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        priceListBinding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_price_list, container, false)
-        return priceListBinding.root
+        binding = FragmentPriceListBinding.inflate(inflater, container, false)
+
+        setUpBindingWithViewModel()
+        observeData()
+        return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        setOnAddServiceListener()
-        observeNoteData()
-    }
-
-    private fun setOnAddServiceListener() {
-        priceListBinding.imageButtonAddService.setOnClickListener {
-            insertServiceWithPrice()
+    private fun setUpBindingWithViewModel() {
+        binding.apply {
+            priceListViewModel = viewModel
+            lifecycleOwner = viewLifecycleOwner
+            recyclerViewPriceList.adapter = noteAdapter
         }
     }
 
-    private fun insertServiceWithPrice() {
-        addNote()
-        clearViews()
-        setFocusOnFirstEditText()
+    private fun observeData() {
+        observeAddNoteButton()
+        observeListOfNotes()
     }
 
-    private fun addNote() {
-        val note = NoteRealm(
-            0,
-            priceListBinding.editTextService.text.toString(),
-            priceListBinding.editTextPriceOfService.text.toString()
-        )
-        priceListVM.addNote(note)
+    private fun observeAddNoteButton() {
+        viewModel.eventAddNote.observe(viewLifecycleOwner, Observer { hasAdded ->
+            if (hasAdded) {
+                cleanUp()
+            }
+        })
+    }
+
+    private fun cleanUp() {
+        clearViews()
+        setFocusOnFirstEditText()
+        viewModel.onAddNoteComplete()
     }
 
     private fun clearViews() {
-        priceListBinding.editTextService.text.clear()
-        priceListBinding.editTextPriceOfService.text.clear()
+        binding.editTextService.text.clear()
+        binding.editTextPriceOfService.text.clear()
     }
 
     private fun setFocusOnFirstEditText() {
-        priceListBinding.editTextService.requestFocus()
+        binding.editTextService.requestFocus()
     }
 
-    private fun observeNoteData() {
-        priceListBinding.recyclerViewPriceList.layoutManager = LinearLayoutManager(requireContext())
-
-        priceListVM.priceList.observe(viewLifecycleOwner,
-            Observer { notes ->
-                priceListBinding.recyclerViewPriceList.also {
-                    it.adapter = NoteAdapter(notes, this)
-                }
-            })
+    private fun observeListOfNotes() {
+        viewModel.priceList.observe(viewLifecycleOwner, Observer { listOfNotes ->
+            noteAdapter.submitList(listOfNotes)
+        })
     }
 
-    override fun onDeleteItemClick(id: Long?) {
-        priceListVM.deleteNote(id)
-    }
 
     companion object {
         fun newInstance() = PriceListFragment()

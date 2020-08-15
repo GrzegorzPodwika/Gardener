@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:map="http://schemas.android.com/tools">
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_received_workers"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/materialButton_confirm_adding_workers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/keyline_2"
-        android:layout_marginEnd="@dimen/keyline_2"
-        map:icon="@drawable/ic_confirm"
-        map:iconGravity="end"
-        android:layout_marginBottom="@dimen/keyline_2"
-        android:text="@string/confirm"
-        android:layout_gravity="end"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_received_workers"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-</LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/materialButton_confirm_adding_workers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/keyline_2"
+            android:layout_marginEnd="@dimen/keyline_2"
+            android:layout_marginBottom="@dimen/keyline_2"
+            android:text="@string/confirm"
+            map:icon="@drawable/ic_confirm"
+            map:iconGravity="end" />
+
+    </LinearLayout>
 </layout>

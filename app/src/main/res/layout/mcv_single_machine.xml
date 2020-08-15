@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <variable
+            name="machine"
+            type="pl.podwikagrzegorz.gardener.data.domain.Machine" />
+
+        <variable
+            name="onClickListener"
+            type="pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cardView_height"
+        android:layout_marginTop="@dimen/keyline_1"
+        android:layout_marginBottom="@dimen/keyline_1"
+        android:layout_marginStart="@dimen/keyline_2"
+        android:layout_marginEnd="@dimen/keyline_2">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView_machine_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/keyline_2"
+                android:text="@{machine.machineName}"
+                android:paddingEnd="@dimen/keyline_1"
+                android:textAppearance="?attr/textAppearanceSubtitle1" />
+
+            <TextView
+                android:id="@+id/textView_numb_of_machines"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/keyline_2"
+                android:layout_weight="0.3"
+                android:gravity="center"
+                android:paddingStart="@dimen/keyline_2"
+                android:paddingEnd="@dimen/keyline_2"
+                android:text="@{String.valueOf(machine.numberOfMachines)}"
+                android:textAppearance="?attr/textAppearanceSubtitle1" />
+
+            <ImageButton
+                android:id="@+id/imageButton_machine_to_delete"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/keyline_4"
+                android:layout_marginEnd="@dimen/keyline_2"
+                android:onClick="@{() -> onClickListener.onClick(machine.id)}"
+                app:srcCompat="@drawable/ic_minus" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

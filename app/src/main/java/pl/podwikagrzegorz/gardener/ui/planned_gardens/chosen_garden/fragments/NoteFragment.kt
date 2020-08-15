@@ -4,29 +4,38 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.databinding.FragmentRecViewWithBottomViewBinding
+import pl.podwikagrzegorz.gardener.databinding.FragmentNotesBinding
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SingleItemAdapter
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.GardenViewModelFactory
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.NoteViewModel
-import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
 //Class No3 - Notes
-class NoteFragment : Fragment(), OnDeleteItemListener {
+class NoteFragment : Fragment() {
 
-    private lateinit var binding: FragmentRecViewWithBottomViewBinding
+    private lateinit var binding: FragmentNotesBinding
     private val gardenID: Long by lazy {
         NoteViewModel.fromBundle(requireArguments())
     }
-    private val viewModelGarden: NoteViewModel by viewModels {
+    private val viewModel: NoteViewModel by viewModels {
         GardenViewModelFactory(
             gardenID
         )
+    }
+
+    private val propertyAdapter: SingleItemAdapter by lazy {
+        SingleItemAdapter(object : OnClickItemListener {
+            override fun onClick(id: Long) {
+                deleteNoteFromDb(id)
+            }
+
+            override fun onChangeFlagToOpposite(position: Int) {
+                reverseFlagOnNote(position)
+            }
+        })
     }
 
     override fun onCreateView(
@@ -35,12 +44,7 @@ class NoteFragment : Fragment(), OnDeleteItemListener {
         savedInstanceState: Bundle?
     ): View? {
 
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_rec_view_with_bottom_view,
-            container,
-            false
-        )
+        binding = FragmentNotesBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -48,58 +52,56 @@ class NoteFragment : Fragment(), OnDeleteItemListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        presetRecyclerView()
+        setUpViewModelWithBinding()
+        observeHasAddedNote()
         observeListOfNotes()
-        setOnAddNoteButtonListener()
     }
 
-    private fun presetRecyclerView() {
-        binding.recyclerViewSingleItems.layoutManager =
-            LinearLayoutManager(requireContext())
-    }
-
-    private fun observeListOfNotes() {
-        viewModelGarden.listOfNotes
-            .observe(viewLifecycleOwner, Observer {
-                binding.recyclerViewSingleItems.adapter =
-                    SingleItemAdapter(
-                        it
-                    ).apply { setListener(this@NoteFragment) }
-            })
-    }
-
-    private fun setOnAddNoteButtonListener() {
-        binding.imageButtonAddItem.setOnClickListener {
-            insertUserNote()
+    private fun setUpViewModelWithBinding() {
+        binding.apply {
+            lifecycleOwner = viewLifecycleOwner
+            noteViewModel = viewModel
+            recyclerViewNoteList.adapter = propertyAdapter
+            userNote = ""
         }
     }
 
-    private fun insertUserNote() {
-        insertNoteToViewModel()
-        clearView()
-        setFocusToEditTextView()
-
+    private fun observeHasAddedNote() {
+        viewModel.eventOnAddedNote.observe(viewLifecycleOwner, Observer { hasAdded ->
+            if (hasAdded) {
+                cleanUp()
+            }
+        })
     }
 
-    private fun insertNoteToViewModel() {
-        val userNote: String = binding.editTextBotItemName.text.toString()
-        viewModelGarden.addNoteToList(userNote)
+    private fun cleanUp() {
+        clearView()
+        setFocusToEditTextView()
+        viewModel.onAddNoteComplete()
     }
 
     private fun clearView() {
-        binding.editTextBotItemName.text.clear()
+        binding.editTextNote.text.clear()
     }
 
     private fun setFocusToEditTextView() {
-        binding.editTextBotItemName.requestFocus()
+        binding.editTextNote.requestFocus()
     }
 
-    override fun onDeleteItemClick(id: Long?) {
-        viewModelGarden.deleteItemFromList(id)
+
+    private fun observeListOfNotes() {
+        viewModel.listOfNotes.observe(viewLifecycleOwner, Observer { listOfNotes ->
+            propertyAdapter.submitList(listOfNotes)
+        })
     }
 
-    override fun onChangeFlagToOpposite(position: Int) {
-        viewModelGarden.reverseFlagOnNote(position)
+
+    private fun deleteNoteFromDb(id: Long) {
+        viewModel.deleteItemFromList(id)
+    }
+
+    private fun reverseFlagOnNote(position: Int) {
+        viewModel.reverseFlagOnNote(position)
     }
 
     companion object {

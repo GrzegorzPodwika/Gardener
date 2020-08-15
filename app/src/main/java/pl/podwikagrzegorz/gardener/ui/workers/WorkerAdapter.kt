@@ -3,45 +3,56 @@ package pl.podwikagrzegorz.gardener.ui.workers
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.domain.Worker
 import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
 import pl.podwikagrzegorz.gardener.databinding.McvSingleItemBinding
-import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
+import pl.podwikagrzegorz.gardener.databinding.McvSingleWorkerBinding
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
 class WorkerAdapter(
-    private val noteRealmResults: RealmResults<WorkerRealm>,
-    private val listener: OnDeleteItemListener
-) : RecyclerView.Adapter<WorkerAdapter.WorkerHolder>() {
+    private val listener: OnClickItemListener
+) : ListAdapter<Worker, WorkerAdapter.WorkerHolder>(WorkerDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkerHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = DataBindingUtil.inflate<McvSingleItemBinding>(
-            layoutInflater, R.layout.mcv_single_item,
-            parent, false
-        )
-        return WorkerHolder(binding)
+        return WorkerHolder.from(parent)
     }
-
-    override fun getItemCount(): Int =
-        noteRealmResults.size
 
     override fun onBindViewHolder(holder: WorkerHolder, position: Int) {
-        holder.bind(noteRealmResults[position])
-
-        holder.binding.imageButtonItemToDelete.setOnClickListener{
-            listener.onDeleteItemClick(noteRealmResults[position]?.id)
-        }
+        val worker = getItem(position)
+        holder.bind(worker, listener)
     }
 
-    class WorkerHolder(val binding: McvSingleItemBinding) :
+    class WorkerHolder private constructor(private val binding: McvSingleWorkerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(worker: WorkerRealm?) {
-            worker?.let {
-                binding.textViewItemName.text = it.getFullName()
+        fun bind(worker: Worker, listener: OnClickItemListener) {
+            binding.worker = worker
+            binding.onClickListener = listener
+            binding.executePendingBindings()
+        }
+
+        companion object {
+            fun from(parent: ViewGroup): WorkerHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = McvSingleWorkerBinding
+                    .inflate(layoutInflater, parent, false)
+                return WorkerHolder(binding)
             }
         }
     }
+
+    class WorkerDiffCallback : DiffUtil.ItemCallback<Worker>() {
+        override fun areItemsTheSame(oldItem: Worker, newItem: Worker): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Worker, newItem: Worker): Boolean {
+            return oldItem == newItem
+        }
+    }
 }
+

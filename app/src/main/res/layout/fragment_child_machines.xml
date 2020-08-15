@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
+    <data>
+
+        <variable
+            name="machinesChildViewModel"
+            type="pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.MachinesChildViewModel" />
+
+        <variable
+            name="machineName"
+            type="String" />
+
+        <variable
+            name="numbOfMachinesAsString"
+            type="String" />
+    </data>
+
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -8,17 +23,19 @@
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_my_tools"
+            android:id="@+id/recycler_view_my_machines"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/linLayout_tools"
+            android:layout_above="@id/linLayout_machines"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_margin="@dimen/keyline_1" />
+            android:layout_margin="@dimen/keyline_1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
 
         <LinearLayout
-            android:id="@+id/linLayout_tools"
+            android:id="@+id/linLayout_machines"
             android:layout_width="match_parent"
             android:layout_height="@dimen/mcv_height"
             android:layout_alignParentStart="true"
@@ -27,7 +44,7 @@
             android:background="?attr/colorPrimary">
 
             <EditText
-                android:id="@+id/editText_my_tools_name_add"
+                android:id="@+id/editText_machine_name_add"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/keyline_1"
@@ -36,10 +53,11 @@
                 android:inputType="textCapSentences"
                 android:paddingStart="@dimen/keyline_2"
                 android:paddingEnd="@dimen/keyline_1"
+                android:text="@={machineName}"
                 android:textColor="@color/white_50" />
 
             <EditText
-                android:id="@+id/editText_price_of_tool"
+                android:id="@+id/editText_price_of_machine"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/keyline_4"
@@ -48,15 +66,17 @@
                 android:inputType="number"
                 android:paddingStart="@dimen/keyline_1"
                 android:paddingEnd="@dimen/keyline_1"
+                android:text="@={numbOfMachinesAsString}"
                 android:textColor="@color/white_50" />
 
             <ImageButton
-                android:id="@+id/imageButton_add_tool"
+                android:id="@+id/imageButton_add_machine"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/keyline_4"
                 android:layout_marginEnd="@dimen/keyline_3"
+                android:onClick="@{() -> machinesChildViewModel.onAddMachine(machineName, numbOfMachinesAsString) }"
                 app:srcCompat="@drawable/ic_add" />
         </LinearLayout>
 

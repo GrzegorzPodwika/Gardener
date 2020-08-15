@@ -25,6 +25,8 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
+            app:itemIconTint="@color/bnv_tab_item_foreground"
+            app:itemTextColor="@color/bnv_tab_item_foreground"
             app:labelVisibilityMode="labeled"
             app:menu="@menu/my_tools_menu" />
 

@@ -16,6 +16,10 @@ import androidx.navigation.ui.*
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import kotlinx.android.synthetic.main.app_bar_main.*
 
+/*TODO jak zwykle clean codu
+*  laczenie z INTERNETEM czyli kurs z firebase
+*  jednoczenie codelaby od Google'a
+* */
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private val navController by lazy { findNavController(R.id.nav_host_fragment) }

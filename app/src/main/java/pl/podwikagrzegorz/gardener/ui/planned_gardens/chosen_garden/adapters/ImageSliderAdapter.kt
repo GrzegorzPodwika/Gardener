@@ -16,9 +16,7 @@ class ImageSliderAdapter(
 ) : SliderViewAdapter<ImageSliderAdapter.ImageSliderHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup?): ImageSliderHolder {
-        val layoutInflater = LayoutInflater.from(context)
-        val binding : SingleImageBinding = DataBindingUtil.inflate(layoutInflater, R.layout.single_image, parent, false)
-        return ImageSliderHolder(binding)
+        return ImageSliderHolder.from(context, parent)
     }
 
     override fun getCount(): Int =
@@ -28,11 +26,20 @@ class ImageSliderAdapter(
         viewHolder?.bind(listOfPicturePaths[position])
     }
 
-    class ImageSliderHolder(val binding: SingleImageBinding) :
+    class ImageSliderHolder private constructor(val binding: SingleImageBinding) :
         SliderViewAdapter.ViewHolder(binding.root) {
 
-        fun bind(absolutePicturePath: String) {
-            binding.imageViewTakenPhoto.load(File(absolutePicturePath))
+        fun bind(uniqueSnapshotName: String) {
+            binding.uniqueImageName = uniqueSnapshotName
+            binding.executePendingBindings()
+        }
+
+        companion object {
+            fun from(context: Context, parent: ViewGroup?) : ImageSliderHolder {
+                val layoutInflater = LayoutInflater.from(context)
+                val binding = SingleImageBinding.inflate(layoutInflater, parent, false)
+                return ImageSliderHolder(binding)
+            }
         }
     }
 }

@@ -4,40 +4,48 @@ import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.realm.RealmList
+import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
-import pl.podwikagrzegorz.gardener.data.realm.ActiveStringRealm
-import pl.podwikagrzegorz.gardener.data.realm.asLiveList
+import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import pl.podwikagrzegorz.gardener.data.domain.ActiveString
 
-class DescriptionViewModel(gardenID: Long) : ViewModel() {
-    private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
+class DescriptionViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListener {
+    private val gardenComponentsDAO =
+        GardenComponentsDAO(gardenID).apply { listener = this@DescriptionViewModel }
 
-    private val _listOfDescriptions: MutableLiveData<RealmList<ActiveStringRealm>> =
+    private val _listOfDescriptions: MutableLiveData<List<ActiveString>> =
         gardenComponentsDAO.getLiveListOfDescriptions()
-    val listOfDescriptions: LiveData<RealmList<ActiveStringRealm>>
+    val listOfDescriptions: LiveData<List<ActiveString>>
         get() = _listOfDescriptions
 
+    private val _eventOnAddedDescription = MutableLiveData<Boolean>()
+    val eventOnAddedDescription: LiveData<Boolean>
+        get() = _eventOnAddedDescription
 
-    fun addDescriptionToList(description: String) {
+
+    fun onAddDescription(description: String) {
         gardenComponentsDAO.addDescriptionToList(description)
+        _eventOnAddedDescription.value = true
+    }
 
-        refreshLiveDataList()
+    fun onAddDescriptionComplete() {
+        _eventOnAddedDescription.value = false
     }
 
     fun reverseFlagOnDescription(position: Int) {
         gardenComponentsDAO.reverseFlagOnDescription(position)
-        refreshLiveDataList()
     }
 
-    fun deleteDescriptionFromList(id: Long?) {
-        id?.let {
-            gardenComponentsDAO.deleteDescriptionFromList(it)
-            refreshLiveDataList()
-        }
+    fun deleteDescriptionFromList(id: Long) {
+        gardenComponentsDAO.deleteDescriptionFromList(id)
     }
 
-    private fun refreshLiveDataList() {
-        _listOfDescriptions.postValue(_listOfDescriptions.value)
+    override fun onTransactionSuccess() {
+        fetchFreshData()
+    }
+
+    private fun fetchFreshData() {
+        _listOfDescriptions.value = gardenComponentsDAO.getListOfDescriptions()
     }
 
     override fun onCleared() {

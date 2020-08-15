@@ -4,28 +4,28 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.daos.MachineDAO
+import pl.podwikagrzegorz.gardener.data.domain.Machine
 import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
-import pl.podwikagrzegorz.gardener.data.realm.MachineRealm
 import pl.podwikagrzegorz.gardener.databinding.FragmentToolsInViewpagerBinding
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.MachinesChildViewModel
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.AddedItemAdapter
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.PickNumberDialog
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetToolsFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.GardenViewModelFactory
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.MachineViewModel
-import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
+// TODO ogarnac MAchineFragment, ManHours..ToolFragment @see - ToolFramgnet9
 //Class No5 - Machines
-class MachineFragment : Fragment(), OnDeleteItemListener {
+class MachineFragment : Fragment() {
+
     private lateinit var binding: FragmentToolsInViewpagerBinding
     private val gardenID: Long by lazy {
         MachineViewModel.fromBundle(requireArguments())
@@ -35,15 +35,25 @@ class MachineFragment : Fragment(), OnDeleteItemListener {
             gardenID
         )
     }
-    private val viewModelReceivedMachines: MachinesChildViewModel by lazy {
-        ViewModelProvider(this).get(MachinesChildViewModel::class.java)
-    }
 
-    private val receivedMachines: RealmResults<MachineRealm> by lazy {
-        viewModelReceivedMachines.getListOfMachinesAsRealmResults()
-    }
-
+    private lateinit var receivedMachines: List<Machine>
     private val receivedMachineNames = mutableListOf<String>()
+
+    private val machineAdapter: AddedItemAdapter by lazy {
+        AddedItemAdapter(object : OnClickItemListener {
+            override fun onClick(id: Long) {
+                deleteMachineFromDb(id)
+            }
+
+            override fun onChangeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
+                changeNumberOfItems(currentValue, position, itemName)
+            }
+
+            override fun onChangeFlagToOpposite(position: Int) {
+                changeFlagToOpposite(position)
+            }
+        })
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,29 +61,23 @@ class MachineFragment : Fragment(), OnDeleteItemListener {
         savedInstanceState: Bundle?
     ): View? {
 
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_tools_in_viewpager,
-            container,
-            false
-        )
+        binding = FragmentToolsInViewpagerBinding.inflate(inflater, container, false)
+
+        setUpBinding()
+        presetAddMachineButton()
+        fetchReceivedMachines()
+        mapReceivedMachinesIntoNames()
+        setOnAddMachineButtonListener()
+        observeListOfAddedMachines()
 
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        presetRecyclerView()
-        presetAddMachineButton()
-        setOnAddMachineButtonListener()
-        mapReceivedMachinesIntoNames()
-        observeListOfAddedMachines()
-    }
-
-    private fun presetRecyclerView() {
-        binding.recyclerViewAddedTools.layoutManager =
-            LinearLayoutManager(requireContext())
+    private fun setUpBinding() {
+        binding.apply {
+            lifecycleOwner = viewLifecycleOwner
+            recyclerViewAddedTools.adapter = machineAdapter
+        }
     }
 
     private fun presetAddMachineButton() {
@@ -82,8 +86,18 @@ class MachineFragment : Fragment(), OnDeleteItemListener {
             GardenerApp.res.getDrawable(R.drawable.ic_equipment, null)
     }
 
-    private fun setOnAddMachineButtonListener() {
 
+    private fun fetchReceivedMachines() {
+        val machineDAO = MachineDAO()
+        receivedMachines = machineDAO.getDomainData()
+        machineDAO.closeRealm()
+    }
+
+    private fun mapReceivedMachinesIntoNames() {
+        receivedMachines.forEach { receivedMachineNames.add(it.machineName) }
+    }
+
+    private fun setOnAddMachineButtonListener() {
         binding.materialButtonAddTools.setOnClickListener {
             SheetToolsFragment(
                 receivedMachineNames,
@@ -101,29 +115,27 @@ class MachineFragment : Fragment(), OnDeleteItemListener {
 
         for (index in listOfPickedItems.indices) {
             if (listOfPickedItems[index]) {
-                receivedMachines[index]?.let {
-                    val machineToAdd = ItemRealm(it.machineName, it.numberOfMachines)
-                    listOfItemRealm.add(machineToAdd)
-                }
+                val machineToAdd = ItemRealm(receivedMachines[index].machineName, receivedMachines[index].numberOfMachines)
+                listOfItemRealm.add(machineToAdd)
             }
         }
 
         viewModelMainMachines.addListOfPickedMachines(listOfItemRealm)
     }
 
-    private fun mapReceivedMachinesIntoNames() {
-        receivedMachines.forEach { receivedMachineNames.add(it.machineName) }
-    }
-
     private fun observeListOfAddedMachines() {
-        viewModelMainMachines.listOfMachines
-            .observe(viewLifecycleOwner, Observer {
-                binding.recyclerViewAddedTools.adapter = AddedItemAdapter(it, this)
+        viewModelMainMachines.listOfMachines.observe(viewLifecycleOwner, Observer {listOfAddedMachines ->
+                machineAdapter.submitList(listOfAddedMachines)
             })
     }
 
-    override fun onChangeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
-        val maxValue: Int = viewModelReceivedMachines.findMaxValueOf(itemName)
+    private fun deleteMachineFromDb(id: Long) {
+        viewModelMainMachines.deleteItemFromList(id)
+    }
+
+    private fun changeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
+        val seekingMachine = receivedMachines.find { it.machineName == itemName }
+        val maxValue: Int = seekingMachine?.numberOfMachines ?: GardenerApp.MAX_NUMBER_OF_MACHINES
 
         PickNumberDialog(
             currentValue,
@@ -136,12 +148,8 @@ class MachineFragment : Fragment(), OnDeleteItemListener {
             }).show(childFragmentManager, null)
     }
 
-    override fun onChangeFlagToOpposite(position: Int) {
+    private fun changeFlagToOpposite(position: Int) {
         viewModelMainMachines.reverseFlagOnMachine(position)
-    }
-
-    override fun onDeleteItemClick(id: Long?) {
-        viewModelMainMachines.deleteItemFromList(id)
     }
 
     companion object {

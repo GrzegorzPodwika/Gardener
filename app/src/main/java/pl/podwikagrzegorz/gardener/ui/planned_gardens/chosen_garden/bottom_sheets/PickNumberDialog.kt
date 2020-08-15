@@ -25,15 +25,12 @@ class PickNumberDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_pick_number, container, false)
-        return binding.root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        binding = DialogPickNumberBinding.inflate(inflater, container, false)
 
         presetNumberPicker()
         setOnPickNumberButtonListener()
+
+        return binding.root
     }
 
     private fun presetNumberPicker() {

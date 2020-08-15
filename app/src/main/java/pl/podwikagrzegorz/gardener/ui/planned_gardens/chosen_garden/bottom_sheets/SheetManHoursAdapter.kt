@@ -18,15 +18,7 @@ class SheetManHoursAdapter(
         get() = _listOfWorkedHours
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ManHoursHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val binding: BottomSheetSingleItemBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.bottom_sheet_single_item,
-            parent,
-            false
-        )
-
-        return ManHoursHolder(binding)
+        return ManHoursHolder.from(parent)
     }
 
     override fun getItemCount(): Int = workersFullNames.size
@@ -43,11 +35,23 @@ class SheetManHoursAdapter(
         }
     }
 
-    class ManHoursHolder(val binding: BottomSheetSingleItemBinding) :
+    class ManHoursHolder private constructor(val binding: BottomSheetSingleItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(fullName: String) {
             binding.textViewWorkerName.text = fullName
+        }
+
+        companion object {
+            fun from(parent: ViewGroup) : ManHoursHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = BottomSheetSingleItemBinding.inflate(
+                    layoutInflater,
+                    parent,
+                    false
+                )
+                return ManHoursHolder(binding)
+            }
         }
     }
 

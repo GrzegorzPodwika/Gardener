@@ -13,32 +13,20 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.domain.Worker
 import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
 import pl.podwikagrzegorz.gardener.databinding.BottomSheetAssignWorkerBinding
 
 class SheetAssignWorkerFragment(
-    workersList: RealmResults<WorkerRealm>,
+    private val workersList: List<Worker>,
     private val listener: OnGetListOfWorkersFullNameListener
-) :
-    BottomSheetDialogFragment() {
+) : BottomSheetDialogFragment() {
+
     private lateinit var binding: BottomSheetAssignWorkerBinding
-    private val adapter =
-        SheetAssignWorkerAdapter(
-            workersList
-        )
+    private val adapter = SheetAssignWorkerAdapter()
 
     interface OnGetListOfWorkersFullNameListener {
         fun onGetListOfWorkersFullName(listOfWorkersFullName: List<String>)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.bottom_sheet_assign_worker, container, false)
-        return binding.root
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -58,15 +46,28 @@ class SheetAssignWorkerFragment(
         return bottomSheetDialog
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = BottomSheetAssignWorkerBinding.inflate(inflater, container, false)
 
+        setUpBinding()
         setRecViewWithReceivedWorkers()
         setAddWorkersButton()
+
+        return binding.root
+    }
+
+    private fun setUpBinding() {
+        binding.apply {
+            lifecycleOwner = this@SheetAssignWorkerFragment
+        }
     }
 
     private fun setRecViewWithReceivedWorkers() {
-        binding.recyclerViewReceivedWorkers.layoutManager = LinearLayoutManager(requireContext())
+        adapter.initAndSubmitList(workersList)
         binding.recyclerViewReceivedWorkers.adapter = adapter
     }
 

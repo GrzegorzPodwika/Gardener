@@ -8,6 +8,7 @@ import android.widget.DatePicker
 import androidx.fragment.app.DialogFragment
 import java.util.*
 
+@Deprecated("Replaced by MaterialDatePicker")
 class DatePickerFragment(
     private val isRequireStartDate: Boolean,
     private val listener: OnDateSelectedListener

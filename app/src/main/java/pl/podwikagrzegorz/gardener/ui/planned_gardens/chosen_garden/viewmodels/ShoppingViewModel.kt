@@ -4,37 +4,45 @@ import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.realm.RealmList
 import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
-import pl.podwikagrzegorz.gardener.data.realm.ActiveStringRealm
+import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import pl.podwikagrzegorz.gardener.data.domain.ActiveString
 
-class ShoppingViewModel(gardenID: Long) : ViewModel() {
-    private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
+class ShoppingViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListener {
+    private val gardenComponentsDAO = GardenComponentsDAO(gardenID).apply { listener = this@ShoppingViewModel }
 
-    private val _listOfShopping: MutableLiveData<RealmList<ActiveStringRealm>> =
+    private val _listOfShopping: MutableLiveData<List<ActiveString>> =
         gardenComponentsDAO.getLiveListOfShopping()
-    val listOfShopping: LiveData<RealmList<ActiveStringRealm>>
+    val listOfShopping: LiveData<List<ActiveString>>
         get() = _listOfShopping
 
-    fun addShoppingNoteToList(shoppingNote: String) {
+    private val _eventOnAddedShoppingNote = MutableLiveData<Boolean>()
+    val eventOnAddedShoppingNote: LiveData<Boolean>
+        get() = _eventOnAddedShoppingNote
+
+    fun onAddShoppingNote(shoppingNote: String) {
         gardenComponentsDAO.addShoppingNoteToList(shoppingNote)
-        refreshLiveDataList()
+        _eventOnAddedShoppingNote.value = true
+    }
+
+    fun onAddShoppingNoteComplete() {
+        _eventOnAddedShoppingNote.value = false
     }
 
     fun reverseFlagOnShoppingNote(position: Int) {
         gardenComponentsDAO.reverseFlagOnShoppingNote(position)
-        refreshLiveDataList()
     }
 
-     fun deleteShoppingNoteFromList(id: Long?) {
-        id?.let {
-            gardenComponentsDAO.deleteShoppingNoteFromList(it)
-            refreshLiveDataList()
-        }
+    fun deleteShoppingNoteFromList(id: Long) {
+        gardenComponentsDAO.deleteShoppingNoteFromList(id)
     }
 
-    private fun refreshLiveDataList() {
-        _listOfShopping.postValue(_listOfShopping.value)
+    override fun onTransactionSuccess() {
+        fetchFreshData()
+    }
+
+    private fun fetchFreshData() {
+        _listOfShopping.value = gardenComponentsDAO.getListOfShopping()
     }
 
     override fun onCleared() {

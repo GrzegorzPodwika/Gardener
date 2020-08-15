@@ -26,16 +26,6 @@ class SheetToolsFragment(
         fun onGetListOfPickedItems(listOfPickedItems: List<Boolean>)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.bottom_sheet_assign_worker, container, false)
-        return binding.root
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val bottomSheetDialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
 
@@ -53,15 +43,20 @@ class SheetToolsFragment(
         return bottomSheetDialog
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = BottomSheetAssignWorkerBinding.inflate(inflater, container, false)
 
         setRecViewWithReceivedTools()
         setAddToolsButtonListener()
+
+        return binding.root
     }
 
     private fun setRecViewWithReceivedTools() {
-        binding.recyclerViewReceivedWorkers.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewReceivedWorkers.adapter = adapter
     }
 

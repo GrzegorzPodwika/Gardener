@@ -6,40 +6,40 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.realm.RealmList
 import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
+import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import pl.podwikagrzegorz.gardener.data.domain.Item
 import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
 
-class MachineViewModel(gardenID: Long) : ViewModel() {
-    private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
+class MachineViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListener {
+    private val gardenComponentsDAO = GardenComponentsDAO(gardenID).apply { listener = this@MachineViewModel }
 
-    private val _listOfMachines: MutableLiveData<RealmList<ItemRealm>> =
+    private val _listOfMachines: MutableLiveData<List<Item>> =
         gardenComponentsDAO.getLiveListOfMachines()
-    val listOfMachines: LiveData<RealmList<ItemRealm>>
+    val listOfMachines: LiveData<List<Item>>
         get() = _listOfMachines
 
     fun addListOfPickedMachines(listOfPickedMachines: List<ItemRealm>) {
         gardenComponentsDAO.addListOfPickedMachines(listOfPickedMachines)
-        refreshLiveDataList()
     }
 
     fun reverseFlagOnMachine(position: Int) {
         gardenComponentsDAO.reverseFlagOnMachine(position)
-        refreshLiveDataList()
     }
 
     fun updateNumberOfMachines(noItems: Int, position: Int) {
         gardenComponentsDAO.updateNumberOfProperMachine(noItems, position)
-        refreshLiveDataList()
     }
 
-    fun deleteItemFromList(id: Long?) {
-        id?.let {
-            gardenComponentsDAO.deleteMachineFromList(it)
-            refreshLiveDataList()
-        }
+    fun deleteItemFromList(id: Long) {
+        gardenComponentsDAO.deleteMachineFromList(id)
     }
 
-    private fun refreshLiveDataList() {
-        _listOfMachines.postValue(_listOfMachines.value)
+    override fun onTransactionSuccess() {
+        fetchFreshData()
+    }
+
+    private fun fetchFreshData() {
+        _listOfMachines.value = gardenComponentsDAO.getListOfMachines()
     }
 
     override fun onCleared() {

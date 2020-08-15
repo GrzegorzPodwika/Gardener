@@ -3,47 +3,62 @@ package pl.podwikagrzegorz.gardener.data.daos
 import androidx.lifecycle.MutableLiveData
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import io.realm.RealmResults
 import io.realm.kotlin.where
+import pl.podwikagrzegorz.gardener.data.domain.Tool
+import pl.podwikagrzegorz.gardener.data.domain.asListOfTools
 import pl.podwikagrzegorz.gardener.data.realm.*
+import timber.log.Timber
 
-class ToolDAO : DAO<ToolRealm> {
+class ToolDAO: DAO<Tool> {
     private val realm: Realm
+    var listener: OnExecuteTransactionListener? = null
 
-    override fun insertItem(item: ToolRealm) {
+    override fun insertItem(item: Tool) {
         val generatedNewId = generateId()
+        val toolRealm = item.asToolRealm()
 
-        realm.executeTransactionAsync { bgRealm ->
-            item.id = generatedNewId
-            bgRealm.insert(item)
-        }
+        realm.executeTransactionAsync ({ bgRealm ->
+            toolRealm.id = generatedNewId
+            bgRealm.insert(toolRealm)
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
-    override fun updateItem(item: ToolRealm) {
-        realm.executeTransactionAsync { bgRealm ->
+    override fun updateItem(item: Tool) {
+        realm.executeTransactionAsync ({ bgRealm ->
             val toolRealm = bgRealm.where<ToolRealm>().equalTo(ID, item.id).findFirst()
             toolRealm?.toolName = item.toolName
             toolRealm?.numberOfTools = item.numberOfTools
-        }
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
     override fun deleteItem(id: Long) {
-        realm.executeTransactionAsync { bgRealm ->
+        realm.executeTransactionAsync ({ bgRealm ->
             val toolToDelete = bgRealm.where<ToolRealm>().equalTo(ID, id).findFirst()
             toolToDelete?.deleteFromRealm()
-        }
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
 
-    override fun getItemById(id: Long): ToolRealm? =
-        realm.where<ToolRealm>().equalTo(ID, id).findFirst()
+    override fun getItemById(id: Long): Tool? =
+        realm.where<ToolRealm>().equalTo(ID, id).findFirstAsync()?.asTool()
 
-    override fun getRealmResults(): RealmResults<ToolRealm>
-            = realm.where<ToolRealm>().findAllAsync()
+    override fun getDomainData(): List<Tool> =
+        realm.where<ToolRealm>().findAllAsync().asListOfTools()
 
-
-    override fun getLiveRealmResults(): MutableLiveData<RealmResults<ToolRealm>> =
-        realm.where<ToolRealm>().findAllAsync().asLiveData()
+    override fun getLiveDomainData(): MutableLiveData<List<Tool>> =
+        getDomainData().asLiveList()
 
 
     override fun closeRealm() {

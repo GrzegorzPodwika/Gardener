@@ -18,26 +18,13 @@ import java.util.*
 class SheetManHoursFragment(
     workersFullNames: List<String>,
     private val listener: OnGetListOfWorkedHoursWithPickedDate
-
 ) : BottomSheetDialogFragment() {
+
     private lateinit var binding: BottomSheetManHoursBinding
-    private val adapter =
-        SheetManHoursAdapter(
-            workersFullNames
-        )
+    private val adapter = SheetManHoursAdapter(workersFullNames)
 
     interface OnGetListOfWorkedHoursWithPickedDate {
         fun onGetListOfWorkedHoursWithPickedDate(listOfWorkedHours: List<Double>, date: Date)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.bottom_sheet_man_hours, container, false)
-        return binding.root
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -57,11 +44,16 @@ class SheetManHoursFragment(
         return bottomSheetDialog
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.bottom_sheet_man_hours, container, false)
         setRecViewWithCurrentlyWorking()
         setAddWorkedHoursButton()
+        return binding.root
     }
 
     private fun setRecViewWithCurrentlyWorking() {

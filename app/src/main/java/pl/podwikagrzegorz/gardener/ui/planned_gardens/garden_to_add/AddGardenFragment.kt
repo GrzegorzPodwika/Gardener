@@ -1,42 +1,34 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.garden_to_add
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.util.Pair
 import androidx.core.widget.addTextChangedListener
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
-import coil.api.load
 import com.google.android.material.datepicker.MaterialDatePicker
 import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.data.pojo.Period
 import pl.podwikagrzegorz.gardener.databinding.FragmentAddGardenBinding
-import pl.podwikagrzegorz.gardener.extensions.deleteCaptionedImage
-import pl.podwikagrzegorz.gardener.extensions.getAbsoluteFilePath
-import pl.podwikagrzegorz.gardener.extensions.getNavigationResult
-import pl.podwikagrzegorz.gardener.extensions.isDefault
-import java.io.File
-import java.util.*
+import pl.podwikagrzegorz.gardener.extensions.*
+import timber.log.Timber
 
-
+//TODO zintegrowac viewmodel z tym fraagmentem
 class AddGardenFragment : Fragment() {
 
-    private lateinit var gardenBinding: FragmentAddGardenBinding
-    private val datePickerBuilder = MaterialDatePicker.Builder.dateRangePicker()
-    private lateinit var materialDatePicker: MaterialDatePicker<Pair<Long, Long>>
+    private lateinit var binding: FragmentAddGardenBinding
+    private val viewModel : AddGardenViewModel by lazy {
+        ViewModelProvider(this).get(AddGardenViewModel::class.java)
+    }
 
-    private var snapshotUniqueName: String = ""
-    private var snapshotLatitude: Double = 0.0
-    private var snapshotLongitude: Double = 0.0
-    private val period = Period()
+    private val datePickerBuilder =
+        MaterialDatePicker.Builder.dateRangePicker().setTitleText("SELECT A DATE")
+    private val materialDatePicker: MaterialDatePicker<Pair<Long, Long>> = datePickerBuilder.build()
+
     private var isAddedGarden = false
     private var isTakenSnapshot = false
 
@@ -44,127 +36,77 @@ class AddGardenFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        gardenBinding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_add_garden, container, false)
-        presetDatePicker()
-        return gardenBinding.root
-    }
+        binding = FragmentAddGardenBinding.inflate(inflater, container, false)
 
-    private fun presetDatePicker() {
-        datePickerBuilder.setTitleText("SELECT A DATE")
-        materialDatePicker = datePickerBuilder.build()
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+        setUpBindingWithViewModel()
         observeArgsFromMapFragment()
         setOnPhoneNumberTextWatcher()
-        setOnDatePickerListener()
         setOnPickDatesButtonListener()
+        setOnChosenRangeComplete()
         setLocationButtonListener()
-        setGardenOrServiceSwitchListener()
         setConfirmAddingGardenButtonListener()
+
+        return binding.root
+    }
+
+    private fun setUpBindingWithViewModel() {
+        binding.apply {
+            lifecycleOwner = this@AddGardenFragment
+            addGardenViewModel = viewModel
+        }
     }
 
     private fun observeArgsFromMapFragment() {
         getNavigationResult<Double>(KEY_LATITUDE)?.observe(viewLifecycleOwner) { latitude ->
-            snapshotLatitude = latitude
+            viewModel.setLatitude(latitude)
         }
         getNavigationResult<Double>(KEY_LONGITUDE)?.observe(viewLifecycleOwner) { longitude ->
-            snapshotLongitude = longitude
+            viewModel.setLongitude(longitude)
         }
         getNavigationResult<String>(KEY_TAKEN_SNAPSHOT_NAME)?.observe(viewLifecycleOwner) { takenSnapshotName ->
             isTakenSnapshot = true
-            snapshotUniqueName = takenSnapshotName
-            setTakenSnapshotIntoImageView()
+            viewModel.setTakenSnapshotName(takenSnapshotName)
         }
     }
 
-    private fun setTakenSnapshotIntoImageView() {
-        val absolutePath = requireContext().getAbsoluteFilePath(snapshotUniqueName)
-
-        gardenBinding.shapeableImageViewPickedLocalization.load(File(absolutePath))
-    }
 
     private fun setOnPhoneNumberTextWatcher() {
-        gardenBinding.textInputEditTextPhoneNumber.addTextChangedListener {
-            if (it?.length != gardenBinding.textInputLayoutPhoneNumber.counterMaxLength) {
-                gardenBinding.textInputLayoutPhoneNumber.error = getString(R.string.error)
+        binding.textInputEditTextPhoneNumber.addTextChangedListener {
+            if (it?.length != binding.textInputLayoutPhoneNumber.counterMaxLength) {
+                binding.textInputLayoutPhoneNumber.error = getString(R.string.error)
             } else {
-                gardenBinding.textInputLayoutPhoneNumber.error = null
+                binding.textInputLayoutPhoneNumber.error = null
             }
         }
     }
 
-    private fun setOnDatePickerListener() {
+    private fun setOnPickDatesButtonListener() {
+        binding.materialButtonPickGardenDateRange.setOnClickListener {
+            materialDatePicker.show(childFragmentManager, null)
+        }
+    }
+
+    private fun setOnChosenRangeComplete() {
         materialDatePicker.addOnPositiveButtonClickListener {
             val startDayInMilliseconds = it.first
             val endDayInMilliseconds = it.second
 
             if (startDayInMilliseconds != null && endDayInMilliseconds != null) {
-                loadDatesIntoPeriodVariable(startDayInMilliseconds, endDayInMilliseconds)
+                viewModel.setPeriod(startDayInMilliseconds, endDayInMilliseconds)
             }
         }
     }
 
-    private fun loadDatesIntoPeriodVariable(
-        startDayInMilliseconds: Long,
-        endDayInMilliseconds: Long
-    ) {
-        val calendar = Calendar.getInstance()
-
-        calendar.timeInMillis = startDayInMilliseconds
-        period.startDay = calendar.get(Calendar.DAY_OF_MONTH)
-        period.startMonth =
-            calendar.get(Calendar.MONTH) + 1    // Calendar receives month from range 0-11
-        period.startYear = calendar.get(Calendar.YEAR)
-
-        calendar.timeInMillis = endDayInMilliseconds
-        period.endDay = calendar.get(Calendar.DAY_OF_MONTH)
-        period.endMonth = calendar.get(Calendar.MONTH) + 1
-        period.endYear = calendar.get(Calendar.YEAR)
-
-        updateDateTextView()
-    }
-
-    private fun updateDateTextView() {
-        gardenBinding.materialTextViewPickedPeriod.text = period.getPeriodAsString()
-    }
-
-    private fun setOnPickDatesButtonListener() {
-        gardenBinding.materialButtonPickGardenDateRange.setOnClickListener {
-            materialDatePicker.show(childFragmentManager, null)
-        }
-
-    }
-
     private fun setLocationButtonListener() {
-        gardenBinding.materialButtonLocateGarden.setOnClickListener {
+        binding.materialButtonLocateGarden.setOnClickListener {
             val navController = findNavController()
-
             val action = AddGardenFragmentDirections.actionNavAddGardenToNavMapFragment()
             navController.navigate(action)
         }
     }
 
-    private fun setGardenOrServiceSwitchListener() {
-        gardenBinding.switchMaterialGardenOrService.setOnCheckedChangeListener { button, isChecked ->
-            when (isChecked) {
-                true -> {
-                    gardenBinding.shapeableImageViewGardenOrService.setImageResource(R.drawable.ic_farm)
-                    button.setText(R.string.garden)
-                }
-                false -> {
-                    gardenBinding.shapeableImageViewGardenOrService.setImageResource(R.drawable.ic_lawn_mower)
-                    button.setText(R.string.service)
-                }
-            }
-        }
-    }
-
     private fun setConfirmAddingGardenButtonListener() {
-        gardenBinding.materialButtonConfirmAddingGarden.setOnClickListener {
+        binding.materialButtonConfirmAddingGarden.setOnClickListener {
             if (checkViewsAreFilledByUser()) {
                 setBundleAndNavigateToPreviousFragment()
             }
@@ -173,26 +115,24 @@ class AddGardenFragment : Fragment() {
 
     private fun checkViewsAreFilledByUser(): Boolean {
 
-        if (gardenBinding.textInputEditTextGardenTitle.text.toString().isEmpty()) {
+        if (viewModel.isGivenGardenTitleEmpty()) {
             val toastMessage = getString(R.string.empty_garden_title)
-            Toast.makeText(requireContext(), toastMessage, Toast.LENGTH_SHORT).show()
+            requireContext().toast(toastMessage)
             return false
         }
-        if (gardenBinding.textInputEditTextPhoneNumber.text.toString().isEmpty()
-            || gardenBinding.textInputEditTextPhoneNumber.text.toString().length != 9
-        ) {
+        if (viewModel.isGivenPhoneNumberIncorrect()) {
             val toastMessage = getString(R.string.empty_phone_number)
-            Toast.makeText(requireContext(), toastMessage, Toast.LENGTH_SHORT).show()
+            requireContext().toast(toastMessage)
             return false
         }
-        if (period.isDefault()) {
+        if (viewModel.isPeriodDefault()) {
             val toastMessage = getString(R.string.default_period)
-            Toast.makeText(requireContext(), toastMessage, Toast.LENGTH_SHORT).show()
+            requireContext().toast(toastMessage)
             return false
         }
-        if (snapshotUniqueName.isEmpty()) {
+        if (viewModel.isNoneTakenSnapshot()) {
             val toastMessage = getString(R.string.none_taken_snapshot)
-            Toast.makeText(requireContext(), toastMessage, Toast.LENGTH_SHORT).show()
+            requireContext().toast(toastMessage)
             return false
         }
 
@@ -202,40 +142,18 @@ class AddGardenFragment : Fragment() {
     private fun setBundleAndNavigateToPreviousFragment() {
         isAddedGarden = true
 
-        val bundle = prepareBundle()
+        val bundle = viewModel.prepareBundle()
         setFragmentResult(KEY_DATA_FROM_ADD_GARDEN_FRAGMENT, bundle)
         findNavController().navigateUp()
     }
-
-    private fun prepareBundle(): Bundle {
-        val bundle = Bundle()
-        bundle.putString(
-            REQUEST_GARDEN_TITLE,
-            gardenBinding.textInputEditTextGardenTitle.text.toString()
-        )
-        bundle.putInt(
-            REQUEST_PHONE_NUMBER,
-            gardenBinding.textInputEditTextPhoneNumber.text.toString().toInt()
-        )
-        bundle.putSerializable(REQUEST_PERIOD, period)
-        bundle.putBoolean(REQUEST_IS_GARDEN, gardenBinding.switchMaterialGardenOrService.isChecked)
-        bundle.putString(REQUEST_UNIQUE_SNAPSHOT_NAME, snapshotUniqueName)
-        bundle.putDouble(REQUEST_LATITUDE, snapshotLatitude)
-        bundle.putDouble(REQUEST_LONGITUDE, snapshotLongitude)
-        return bundle
-    }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
 
         if (!isAddedGarden && isTakenSnapshot) {
-            requireContext().getAbsoluteFilePath(snapshotUniqueName).deleteCaptionedImage()
-            Toast.makeText(
-                requireContext(),
-                "Image has been deleted! $isAddedGarden $isTakenSnapshot",
-                Toast.LENGTH_SHORT
-            ).show()
+            val uniqueSnapshotName = viewModel.uniqueSnapshotName
+            requireContext().getAbsoluteFilePath(uniqueSnapshotName).deleteCaptionedImage()
+            Timber.i("Image has been deleted! $isAddedGarden $isTakenSnapshot")
         }
     }
 

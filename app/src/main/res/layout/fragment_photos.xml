@@ -1,141 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
-        android:id="@+id/linearLayout_zero_row"
+    <data>
+
+        <variable
+            name="photosViewModel"
+            type="pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.PhotosViewModel" />
+
+        <variable
+            name="emptyString"
+            type="String" />
+
+        <variable
+            name="onClickListener"
+            type="pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener" />
+    </data>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
+        android:layout_height="match_parent">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView_photo0"
-            android:layout_width="@dimen/image_size_small"
-            android:layout_height="@dimen/image_size_small"
-            android:layout_margin="@dimen/keyline_tight"
-            app:srcCompat="@drawable/ic_add_image" />
+        <LinearLayout
+            android:id="@+id/linearLayout_zero_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView_photo1"
-            android:layout_width="@dimen/image_size_small"
-            android:layout_height="@dimen/image_size_small"
-            android:layout_margin="@dimen/keyline_tight"
-            app:srcCompat="@drawable/ic_add_image"/>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView_photo0"
+                android:layout_width="@dimen/image_size_small"
+                android:layout_height="@dimen/image_size_small"
+                android:layout_margin="@dimen/keyline_tight"
+                android:onClick="@{() -> onClickListener.onClick(0)}"
+                app:loadImageViaName="@{photosViewModel.listOfPicturesPaths.size() > 0 ? photosViewModel.listOfPicturesPaths.get(0) : emptyString }"
+                app:srcCompat="@drawable/ic_add_image" />
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView_photo2"
-            android:layout_width="@dimen/image_size_small"
-            android:layout_height="@dimen/image_size_small"
-            android:layout_margin="@dimen/keyline_tight"
-            app:srcCompat="@drawable/ic_add_image"/>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView_photo1"
+                android:layout_width="@dimen/image_size_small"
+                android:layout_height="@dimen/image_size_small"
+                android:layout_margin="@dimen/keyline_tight"
+                android:onClick="@{() -> onClickListener.onClick(1)}"
+                app:loadImageViaName="@{photosViewModel.listOfPicturesPaths.size() > 1 ? photosViewModel.listOfPicturesPaths.get(1) : emptyString }"
+                app:srcCompat="@drawable/ic_add_image" />
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView_photo3"
-            android:layout_width="@dimen/image_size_small"
-            android:layout_height="@dimen/image_size_small"
-            android:layout_margin="@dimen/keyline_tight"
-            app:srcCompat="@drawable/ic_add_image"/>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView_photo2"
+                android:layout_width="@dimen/image_size_small"
+                android:layout_height="@dimen/image_size_small"
+                android:layout_margin="@dimen/keyline_tight"
+                android:onClick="@{() -> onClickListener.onClick(2)}"
+                app:loadImageViaName="@{photosViewModel.listOfPicturesPaths.size() > 2 ? photosViewModel.listOfPicturesPaths.get(2) : emptyString }"
+                app:srcCompat="@drawable/ic_add_image" />
 
-    </LinearLayout>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView_photo3"
+                android:layout_width="@dimen/image_size_small"
+                android:layout_height="@dimen/image_size_small"
+                android:layout_margin="@dimen/keyline_tight"
+                android:onClick="@{() -> onClickListener.onClick(3)}"
+                app:loadImageViaName="@{photosViewModel.listOfPicturesPaths.size() > 3 ? photosViewModel.listOfPicturesPaths.get(3) : emptyString }"
+                app:srcCompat="@drawable/ic_add_image" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout_first_row"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/linearLayout_zero_row">
+        </LinearLayout>
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView_photo4"
-            android:layout_width="@dimen/image_size_small"
-            android:layout_height="@dimen/image_size_small"
-            android:layout_margin="@dimen/keyline_tight"
-            app:srcCompat="@drawable/ic_add_image"/>
+        <LinearLayout
+            android:id="@+id/linearLayout_first_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/linearLayout_zero_row">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView_photo5"
-            android:layout_width="@dimen/image_size_small"
-            android:layout_height="@dimen/image_size_small"
-            android:layout_margin="@dimen/keyline_tight"
-            app:srcCompat="@drawable/ic_add_image"/>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView_photo4"
+                android:layout_width="@dimen/image_size_small"
+                android:layout_height="@dimen/image_size_small"
+                android:layout_margin="@dimen/keyline_tight"
+                android:onClick="@{() -> onClickListener.onClick(4)}"
+                app:loadImageViaName="@{photosViewModel.listOfPicturesPaths.size() > 4 ? photosViewModel.listOfPicturesPaths.get(4) : emptyString }"
+                app:srcCompat="@drawable/ic_add_image" />
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView_photo6"
-            android:layout_width="@dimen/image_size_small"
-            android:layout_height="@dimen/image_size_small"
-            android:layout_margin="@dimen/keyline_tight"
-            app:srcCompat="@drawable/ic_add_image"/>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView_photo5"
+                android:layout_width="@dimen/image_size_small"
+                android:layout_height="@dimen/image_size_small"
+                android:layout_margin="@dimen/keyline_tight"
+                android:onClick="@{() -> onClickListener.onClick(5)}"
+                app:loadImageViaName="@{photosViewModel.listOfPicturesPaths.size() > 5 ? photosViewModel.listOfPicturesPaths.get(5) : emptyString }"
+                app:srcCompat="@drawable/ic_add_image" />
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView_photo7"
-            android:layout_width="@dimen/image_size_small"
-            android:layout_height="@dimen/image_size_small"
-            android:layout_margin="@dimen/keyline_tight"
-            app:srcCompat="@drawable/ic_add_image"/>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView_photo6"
+                android:layout_width="@dimen/image_size_small"
+                android:layout_height="@dimen/image_size_small"
+                android:layout_margin="@dimen/keyline_tight"
+                android:onClick="@{() -> onClickListener.onClick(6)}"
+                app:loadImageViaName="@{photosViewModel.listOfPicturesPaths.size() > 6 ? photosViewModel.listOfPicturesPaths.get(6) : emptyString }"
+                app:srcCompat="@drawable/ic_add_image" />
 
-    </LinearLayout>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView_photo7"
+                android:layout_width="@dimen/image_size_small"
+                android:layout_height="@dimen/image_size_small"
+                android:layout_margin="@dimen/keyline_tight"
+                android:onClick="@{() -> onClickListener.onClick(7)}"
+                app:loadImageViaName="@{photosViewModel.listOfPicturesPaths.size() > 7 ? photosViewModel.listOfPicturesPaths.get(7) : emptyString }"
+                app:srcCompat="@drawable/ic_add_image" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout_second_row"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/linearLayout_first_row">
+        </LinearLayout>
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/imageView_photo8"
-        android:layout_width="@dimen/image_size_small"
-        android:layout_height="@dimen/image_size_small"
-        android:layout_margin="@dimen/keyline_tight"
-        app:srcCompat="@drawable/ic_add_image"/>
+        <LinearLayout
+            android:id="@+id/linearLayout_second_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/linearLayout_first_row">
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/imageView_photo9"
-        android:layout_width="@dimen/image_size_small"
-        android:layout_height="@dimen/image_size_small"
-        android:layout_margin="@dimen/keyline_tight"
-        app:srcCompat="@drawable/ic_add_image"/>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView_photo8"
+                android:layout_width="@dimen/image_size_small"
+                android:layout_height="@dimen/image_size_small"
+                android:layout_margin="@dimen/keyline_tight"
+                android:onClick="@{() -> onClickListener.onClick(8)}"
+                app:loadImageViaName="@{photosViewModel.listOfPicturesPaths.size() > 8 ? photosViewModel.listOfPicturesPaths.get(8) : emptyString }"
+                app:srcCompat="@drawable/ic_add_image" />
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/imageView_photo10"
-        android:layout_width="@dimen/image_size_small"
-        android:layout_height="@dimen/image_size_small"
-        android:layout_margin="@dimen/keyline_tight"
-        app:srcCompat="@drawable/ic_add_image"/>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView_photo9"
+                android:layout_width="@dimen/image_size_small"
+                android:layout_height="@dimen/image_size_small"
+                android:layout_margin="@dimen/keyline_tight"
+                android:onClick="@{() -> onClickListener.onClick(9)}"
+                app:loadImageViaName="@{photosViewModel.listOfPicturesPaths.size() > 9 ? photosViewModel.listOfPicturesPaths.get(9) : emptyString }"
+                app:srcCompat="@drawable/ic_add_image" />
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/imageView_photo11"
-        android:layout_width="@dimen/image_size_small"
-        android:layout_height="@dimen/image_size_small"
-        android:layout_margin="@dimen/keyline_tight"
-        app:srcCompat="@drawable/ic_add_image"/>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView_photo10"
+                android:layout_width="@dimen/image_size_small"
+                android:layout_height="@dimen/image_size_small"
+                android:layout_margin="@dimen/keyline_tight"
+                android:onClick="@{() -> onClickListener.onClick(10)}"
+                app:loadImageViaName="@{photosViewModel.listOfPicturesPaths.size() > 10 ? photosViewModel.listOfPicturesPaths.get(10) : emptyString }"
+                app:srcCompat="@drawable/ic_add_image" />
 
-    </LinearLayout>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView_photo11"
+                android:layout_width="@dimen/image_size_small"
+                android:layout_height="@dimen/image_size_small"
+                android:layout_margin="@dimen/keyline_tight"
+                android:onClick="@{ () -> onClickListener.onClick(11)}"
+                app:loadImageViaName="@{photosViewModel.listOfPicturesPaths.size() > 11 ? photosViewModel.listOfPicturesPaths.get(11) : emptyString }"
+                app:srcCompat="@drawable/ic_add_image" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/materialButton_take_photo"
-        android:layout_width="wrap_content"
-        android:layout_height="80dp"
-        android:text="@string/make_photo"
-        android:layout_marginTop="@dimen/keyline_7"
-        android:layout_below="@id/linearLayout_second_row"
-        android:layout_centerInParent="true"
-        app:iconGravity="end"
-        app:icon="@drawable/ic_take_photo"
-        />
+        </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/materialButton_complete_garden"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/keyline_4"
-        android:layout_marginEnd="@dimen/keyline_4"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        app:icon="@drawable/ic_exit"
-        app:iconGravity="end"
-        android:text="@string/jobs_finished" />
-</RelativeLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/materialButton_take_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_below="@id/linearLayout_second_row"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="@dimen/keyline_7"
+            android:onClick="@{ () -> photosViewModel.onTakePhoto()}"
+            android:text="@string/make_photo"
+            app:icon="@drawable/ic_take_photo"
+            app:iconGravity="end"
+            app:visibility="@{photosViewModel.listOfPicturesPaths.size()}" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/materialButton_complete_garden"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="@dimen/keyline_4"
+            android:layout_marginBottom="@dimen/keyline_4"
+            android:text="@string/jobs_finished"
+            app:icon="@drawable/ic_exit"
+            app:iconGravity="end" />
+    </RelativeLayout>
 </layout>
 

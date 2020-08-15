@@ -3,6 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="priceListViewModel"
+            type="pl.podwikagrzegorz.gardener.ui.price_list.PriceListViewModel" />
+
+        <variable
+            name="service"
+            type="String" />
+
+        <variable
+            name="priceOfService"
+            type="String" />
+
+    </data>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,6 +34,7 @@
             android:layout_marginStart="@dimen/keyline_1"
             android:layout_marginTop="@dimen/keyline_2"
             android:layout_marginEnd="@dimen/keyline_1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:layout_marginBottom="@dimen/keyline_2" />
 
         <LinearLayout
@@ -43,6 +59,7 @@
                 android:inputType="textCapSentences"
                 android:paddingStart="@dimen/keyline_1"
                 android:paddingEnd="@dimen/keyline_1"
+                android:text="@={service}"
                 android:textColor="@color/white_50" />
 
 
@@ -54,6 +71,7 @@
                 android:layout_weight="0.4"
                 android:gravity="center_vertical"
                 android:maxLength="9"
+                android:text="@={priceOfService}"
                 android:paddingStart="@dimen/keyline_1"
                 android:paddingEnd="@dimen/keyline_1"
                 android:textColor="@color/white_50" />
@@ -65,6 +83,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/keyline_4"
                 android:layout_marginEnd="@dimen/keyline_2"
+                android:onClick="@{() -> priceListViewModel.onAddNote(service, priceOfService)}"
                 app:srcCompat="@drawable/ic_add" />
         </LinearLayout>
 

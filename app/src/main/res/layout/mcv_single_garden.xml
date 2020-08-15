@@ -3,11 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="basicGarden"
+            type="pl.podwikagrzegorz.gardener.data.domain.BasicGarden" />
+
+        <variable
+            name="onClickListener"
+            type="pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener" />
+    </data>
+
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="@dimen/custom_mcv_height"
-        android:layout_margin="@dimen/keyline_2"
->
+        android:onClick="@{() -> onClickListener.onClick(basicGarden.id)}"
+        android:layout_margin="@dimen/keyline_2">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -18,11 +29,12 @@
                 android:id="@+id/materialTextView_garden_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/sample_text"
+                android:text="@{basicGarden.gardenTitle}"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/sample_text" />
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/shapeableImageView_planned_garden"
@@ -30,7 +42,8 @@
                 android:layout_height="@dimen/image_size_small"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_farm" />
+                app:loadIconIfIsGarden="@{basicGarden.garden}"
+                tools:srcCompat="@drawable/ic_farm" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/materialTextView6"
@@ -48,7 +61,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/keyline_4"
                 android:layout_marginTop="@dimen/keyline_4"
-                android:text="@string/hint_phone_number"
+                tools:text="@string/hint_phone_number"
+                android:text="@{String.valueOf(basicGarden.phoneNumber)}"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:textColor="?attr/colorAccent"
                 app:layout_constraintStart_toEndOf="@+id/materialTextView6"
@@ -69,9 +83,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@string/date_hint"
-                android:textColor="?attr/colorAccent"
+                tools:text="@string/date_hint"
+                android:text="@{basicGarden.period.periodAsString}"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="?attr/colorAccent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/materialTextView7" />
 

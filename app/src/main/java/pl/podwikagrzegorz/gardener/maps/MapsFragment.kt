@@ -33,8 +33,10 @@ import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.FragmentMapsBinding
 import pl.podwikagrzegorz.gardener.extensions.getAbsoluteFilePath
 import pl.podwikagrzegorz.gardener.extensions.setNavigationResult
+import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.permissions.PermissionUtils
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.garden_to_add.AddGardenFragment
+import timber.log.Timber
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
@@ -45,7 +47,6 @@ class MapsFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnCameraIdleListener {
 
     private lateinit var binding: FragmentMapsBinding
-    //private lateinit var sharedViewModel : SharedViewModel
     private lateinit var map: GoogleMap
     private lateinit var geoCoder : Geocoder
 
@@ -169,9 +170,8 @@ class MapsFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     }
 
     private fun prepareActionAndNavigateToAddGardenFragment() {
-
+        Timber.i("Snasphot has been taken, name $uniqueSnapshotName")
         if (currentCameraPosition != null && uniqueSnapshotName.isNotEmpty()) {
-            //updateArgsInSharedViewModel()
             setTakenData()
             findNavController().popBackStack()
         }
@@ -198,8 +198,6 @@ class MapsFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     private fun geoLocate() {
         val searchPlace = binding.editTextSearchLocation.text.toString()
-/*        val convertedPlaceWithoutEscapeSign = searchPlace.replace("\n", "")
-        binding.editTextSearchLocation.setText(convertedPlaceWithoutEscapeSign)*/
 
         var listOfAddresses : List<Address> = mutableListOf()
 
@@ -211,7 +209,7 @@ class MapsFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
         if (listOfAddresses.size >= 0) {
             val searchedAddress = listOfAddresses[0]
-            Log.i("Map", "geoLocate: $searchedAddress")
+            Timber.i("Map geoLocate: $searchedAddress")
             moveToSearchedAddress(searchedAddress)
 
         }

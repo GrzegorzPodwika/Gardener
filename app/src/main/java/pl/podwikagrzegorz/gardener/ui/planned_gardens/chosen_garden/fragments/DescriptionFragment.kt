@@ -4,28 +4,36 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.databinding.FragmentRecViewWithBottomViewBinding
+import pl.podwikagrzegorz.gardener.databinding.FragmentDescriptionBinding
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SingleItemAdapter
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.DescriptionViewModel
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.GardenViewModelFactory
-import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
 
-class DescriptionFragment : Fragment(), OnDeleteItemListener {
+class DescriptionFragment : Fragment() {
 
-    private lateinit var binding: FragmentRecViewWithBottomViewBinding
+    private lateinit var binding: FragmentDescriptionBinding
     private val gardenID: Long by lazy {
         DescriptionViewModel.fromBundle(requireArguments())
     }
-    private val viewModelGarden: DescriptionViewModel by viewModels {
+    private val viewModel: DescriptionViewModel by viewModels {
         GardenViewModelFactory(
             gardenID
         )
+    }
+    private val descriptionAdapter: SingleItemAdapter by lazy {
+        SingleItemAdapter(object : OnClickItemListener {
+            override fun onClick(id: Long) {
+                deleteDescriptionFromDb(id)
+            }
+
+            override fun onChangeFlagToOpposite(position: Int) {
+                reverseFlagOnDescription(position)
+            }
+        })
     }
 
     override fun onCreateView(
@@ -34,70 +42,59 @@ class DescriptionFragment : Fragment(), OnDeleteItemListener {
         savedInstanceState: Bundle?
     ): View? {
 
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_rec_view_with_bottom_view,
-            container,
-            false
-        )
+        binding = FragmentDescriptionBinding.inflate(inflater, container, false)
+
+        setUpViewModelWithBinding()
+        observeIsAddedDescription()
+        observeListOfDescriptions()
+
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        presetRecyclerView()
-        observeListOfDescriptions()
-        setOnAddDescriptionButtonListener()
-    }
-
-    private fun presetRecyclerView() {
-        binding.recyclerViewSingleItems.layoutManager =
-            LinearLayoutManager(requireContext())
-    }
-
-    private fun observeListOfDescriptions() {
-        viewModelGarden.listOfDescriptions
-            .observe(viewLifecycleOwner, Observer {
-                binding.recyclerViewSingleItems.adapter =
-                    SingleItemAdapter(
-                        it
-                    ).apply { setListener(this@DescriptionFragment) }
-
-            })
-    }
-
-    private fun setOnAddDescriptionButtonListener() {
-        binding.imageButtonAddItem.setOnClickListener {
-            insertUserDescription()
+    private fun setUpViewModelWithBinding() {
+        binding.apply {
+            lifecycleOwner = viewLifecycleOwner
+            descriptionViewModel = viewModel
+            recyclerViewDescriptionList.adapter = descriptionAdapter
+            userDescription = ""
         }
     }
 
-    private fun insertUserDescription() {
-        insertDescriptionToViewModel()
-        clearView()
-        setFocusToEditTextView()
+    private fun observeIsAddedDescription() {
+        viewModel.eventOnAddedDescription.observe(viewLifecycleOwner, Observer { isAdded ->
+            if (isAdded) {
+                cleanUp()
+            }
+        })
     }
 
-    private fun insertDescriptionToViewModel() {
-        val userDescription: String = binding.editTextBotItemName.text.toString()
-        viewModelGarden.addDescriptionToList(userDescription)
+    private fun observeListOfDescriptions() {
+        viewModel.listOfDescriptions
+            .observe(viewLifecycleOwner, Observer { listOfDescriptions ->
+                descriptionAdapter.submitList(listOfDescriptions)
+            })
+    }
+
+    private fun cleanUp() {
+        clearView()
+        setFocusToEditTextView()
+        viewModel.onAddDescriptionComplete()
     }
 
     private fun clearView() {
-        binding.editTextBotItemName.text.clear()
+        binding.editTextDescriptionName.text.clear()
     }
 
     private fun setFocusToEditTextView() {
-        binding.editTextBotItemName.requestFocus()
+        binding.editTextDescriptionName.requestFocus()
     }
 
-    override fun onDeleteItemClick(id: Long?) {
-        viewModelGarden.deleteDescriptionFromList(id)
+    private fun deleteDescriptionFromDb(id: Long) {
+        viewModel.deleteDescriptionFromList(id)
     }
 
-    override fun onChangeFlagToOpposite(position: Int) {
-        viewModelGarden.reverseFlagOnDescription(position)
+    private fun reverseFlagOnDescription(position: Int) {
+        viewModel.reverseFlagOnDescription(position)
     }
 
     companion object {

@@ -2,66 +2,58 @@ package pl.podwikagrzegorz.gardener.ui.planned_gardens.basic_garden
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import io.realm.RealmResults
-import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.domain.BasicGarden
 
-import pl.podwikagrzegorz.gardener.data.realm.BasicGardenRealm
 import pl.podwikagrzegorz.gardener.databinding.McvSingleGardenBinding
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
 class BasicGardenAdapter(
-    private val basicGardenRealmResults: RealmResults<BasicGardenRealm>,
     private val listener: OnClickItemListener
-) : RecyclerView.Adapter<BasicGardenAdapter.BasicGardenHolder>() {
+) : ListAdapter<BasicGarden, BasicGardenAdapter.BasicGardenHolder>(BasicGardenDiffCallback) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)
-            : BasicGardenHolder {
-
-        val inflater = LayoutInflater.from(parent.context)
-        val binding = DataBindingUtil.inflate<McvSingleGardenBinding>(
-            inflater,
-            R.layout.mcv_single_garden,
-            parent,
-            false
-        )
-
-        return BasicGardenHolder(
-            binding
-        )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasicGardenHolder {
+        return BasicGardenHolder.from(parent)
     }
 
-    override fun getItemCount(): Int = basicGardenRealmResults.size
-
     override fun onBindViewHolder(holder: BasicGardenHolder, position: Int) {
-        val realmBasicGarden = basicGardenRealmResults[position]
+        val basicGarden = getItem(position)
+        holder.bind(basicGarden, listener)
+    }
 
-        realmBasicGarden?.apply {
-            holder.bind(this)
-            val gardenId = realmBasicGarden.id
+    class BasicGardenHolder private constructor(private val binding: McvSingleGardenBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-            holder.binding.root.setOnClickListener {
-                listener.onClickListener(gardenId)
-            }
-
-            holder.binding.root.setOnLongClickListener {
-                listener.onLongClickListener(gardenId)
+        fun bind(basicGarden: BasicGarden, listener: OnClickItemListener) {
+            binding.basicGarden = basicGarden
+            binding.onClickListener = listener
+            binding.root.setOnLongClickListener {
+                listener.onLongClick(basicGarden.id)
                 true
+            }
+            binding.executePendingBindings()
+        }
+
+        companion object {
+            fun from(parent: ViewGroup): BasicGardenHolder {
+                val inflater = LayoutInflater.from(parent.context)
+                val binding = McvSingleGardenBinding.inflate(inflater, parent, false)
+                return BasicGardenHolder(binding)
             }
         }
     }
 
-    class BasicGardenHolder(val binding: McvSingleGardenBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    object BasicGardenDiffCallback : DiffUtil.ItemCallback<BasicGarden>() {
+        override fun areItemsTheSame(oldItem: BasicGarden, newItem: BasicGarden): Boolean {
+            return oldItem.id == newItem.id
+        }
 
-        fun bind(garden: BasicGardenRealm) {
-            binding.materialTextViewGardenTitle.text = garden.gardenTitle
-            binding.textViewPhoneNumber.text = garden.phoneNumber.toString()
-            binding.materialTextViewPlannedPeriod.text = garden.period!!.getPeriodAsString()
-
-            if (!garden.isGarden)
-                binding.shapeableImageViewPlannedGarden.setImageResource(R.drawable.ic_lawn_mower)
+        override fun areContentsTheSame(oldItem: BasicGarden, newItem: BasicGarden): Boolean {
+            return oldItem == newItem
         }
     }
 }
+
+

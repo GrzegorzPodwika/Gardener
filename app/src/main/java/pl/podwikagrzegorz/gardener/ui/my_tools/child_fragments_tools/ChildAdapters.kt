@@ -1,102 +1,151 @@
 package pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools
 
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import io.realm.RealmResults
-import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.data.realm.MachineRealm
-import pl.podwikagrzegorz.gardener.data.realm.PropertyRealm
-import pl.podwikagrzegorz.gardener.data.realm.ToolRealm
-import pl.podwikagrzegorz.gardener.databinding.ListMaterialcardviewBinding
+import pl.podwikagrzegorz.gardener.data.domain.Machine
+import pl.podwikagrzegorz.gardener.data.domain.Property
+import pl.podwikagrzegorz.gardener.data.domain.Tool
+import pl.podwikagrzegorz.gardener.databinding.McvSingleMachineBinding
+import pl.podwikagrzegorz.gardener.databinding.McvSinglePropertyBinding
 import pl.podwikagrzegorz.gardener.databinding.McvSingleToolBinding
-import pl.podwikagrzegorz.gardener.ui.my_tools.MyToolsAbstractAdapter
-import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
 class ToolAdapter(
-    override val itemRealmResults: RealmResults<ToolRealm>,
-    override val listener: OnDeleteItemListener
-) : MyToolsAbstractAdapter<ToolRealm>(itemRealmResults, listener) {
+    private val listener: OnClickItemListener
+) : ListAdapter<Tool, ToolAdapter.ToolHolder>(ToolDiffCallback) {
 
-    override fun getLayoutId(position: Int, obj: ToolRealm): Int {
-        return R.layout.mcv_single_tool
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToolHolder {
+        return ToolHolder.from(parent)
     }
 
-    override fun getViewHolder(
-        binding: McvSingleToolBinding,
-        viewType: Int
-    ): RecyclerView.ViewHolder {
-        return ToolHolder(binding)
+    override fun onBindViewHolder(holder: ToolHolder, position: Int) {
+        val tool = getItem(position)
+        holder.bind(tool, listener)
     }
 
+    class ToolHolder private constructor(private val binding: McvSingleToolBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-    class ToolHolder(private val binding: McvSingleToolBinding) :
-        RecyclerView.ViewHolder(binding.root), Binder<ToolRealm> {
+        fun bind(tool: Tool, listener: OnClickItemListener) {
+            binding.tool = tool
+            binding.onCLickListener = listener
+            binding.executePendingBindings()
+        }
 
-        override fun bind(data: ToolRealm, listener: OnDeleteItemListener) {
-            binding.textViewToolName.text = data.toolName
-            binding.textViewNumbOfTools.text = data.numberOfTools.toString()
-            binding.imageButtonToolToDelete.setOnClickListener {
-                listener.onDeleteItemClick(data.id)
+        companion object {
+            fun from(parent: ViewGroup): ToolHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = McvSingleToolBinding.inflate(layoutInflater, parent, false)
+                return ToolHolder(binding)
             }
+        }
+
+    }
+
+    object ToolDiffCallback : DiffUtil.ItemCallback<Tool>() {
+        override fun areItemsTheSame(oldItem: Tool, newItem: Tool): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Tool, newItem: Tool): Boolean {
+            return oldItem == newItem
         }
     }
 }
+
+
+
 
 class MachineAdapter(
-    override val itemRealmResults: RealmResults<MachineRealm>,
-    override val listener: OnDeleteItemListener
-) : MyToolsAbstractAdapter<MachineRealm>(itemRealmResults, listener) {
+    private val listener: OnClickItemListener
+) : ListAdapter<Machine, MachineAdapter.MachineHolder>(MachineDiffCallback) {
 
-    override fun getLayoutId(position: Int, obj: MachineRealm): Int {
-        return R.layout.mcv_single_tool
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MachineHolder {
+        return MachineHolder.from(parent)
     }
 
-
-    override fun getViewHolder(
-        binding: McvSingleToolBinding,
-        viewType: Int
-    ): RecyclerView.ViewHolder {
-        return MachineHolder(binding)
+    override fun onBindViewHolder(holder: MachineHolder, position: Int) {
+        val machine = getItem(position)
+        holder.bind(machine, listener)
     }
 
-    class MachineHolder(private val binding: McvSingleToolBinding) :
-        RecyclerView.ViewHolder(binding.root), Binder<MachineRealm> {
+    class MachineHolder private constructor(private val binding: McvSingleMachineBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        override fun bind(data: MachineRealm, listener: OnDeleteItemListener) {
-            binding.textViewToolName.text = data.machineName
-            binding.textViewNumbOfTools.text = data.numberOfMachines.toString()
-            binding.imageButtonToolToDelete.setOnClickListener {
-                listener.onDeleteItemClick(data.id)
+        fun bind(machine: Machine, listener: OnClickItemListener) {
+            binding.machine = machine
+            binding.onClickListener = listener
+            binding.executePendingBindings()
+        }
+
+        companion object {
+            fun from(parent: ViewGroup): MachineHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = McvSingleMachineBinding.inflate(layoutInflater, parent, false)
+                return MachineHolder(binding)
             }
+        }
+
+    }
+
+    object MachineDiffCallback : DiffUtil.ItemCallback<Machine>() {
+        override fun areItemsTheSame(oldItem: Machine, newItem: Machine): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Machine, newItem: Machine): Boolean {
+            return oldItem == newItem
         }
     }
 }
+
+
 
 class PropertyAdapter(
-    override val itemRealmResults: RealmResults<PropertyRealm>,
-    override val listener: OnDeleteItemListener
-) : MyToolsAbstractAdapter<PropertyRealm>(itemRealmResults, listener) {
+    private val listener: OnClickItemListener
+) : ListAdapter<Property, PropertyAdapter.PropertyHolder>(PropertyDiffCallback) {
 
-    override fun getLayoutId(position: Int, obj: PropertyRealm): Int {
-        return R.layout.mcv_single_tool
-    }
-
-    override fun getViewHolder(
-        binding: McvSingleToolBinding,
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
         viewType: Int
-    ): RecyclerView.ViewHolder {
-        return ToolHolder(binding)
+    ): PropertyHolder {
+        return PropertyHolder.from(parent)
     }
 
+    override fun onBindViewHolder(holder: PropertyHolder, position: Int) {
+        val property = getItem(position)
+        holder.bind(property, listener)
+    }
 
-    class ToolHolder(private val binding: McvSingleToolBinding) :
-        RecyclerView.ViewHolder(binding.root), Binder<PropertyRealm> {
+    class PropertyHolder private constructor(private val binding: McvSinglePropertyBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        override fun bind(data: PropertyRealm, listener: OnDeleteItemListener) {
-            binding.textViewToolName.text = data.propertyName
-            binding.textViewNumbOfTools.text = data.numberOfProperties.toString()
-            binding.imageButtonToolToDelete.setOnClickListener {
-                listener.onDeleteItemClick(data.id)
+        fun bind(property: Property, listener: OnClickItemListener) {
+            binding.property = property
+            binding.onClickListener = listener
+            binding.executePendingBindings()
+        }
+
+        companion object {
+            fun from(parent: ViewGroup): PropertyHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = McvSinglePropertyBinding.inflate(layoutInflater, parent, false)
+                return PropertyHolder(binding)
             }
         }
     }
+
+    object PropertyDiffCallback : DiffUtil.ItemCallback<Property>() {
+        override fun areItemsTheSame(oldItem: Property, newItem: Property): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Property, newItem: Property): Boolean {
+            return oldItem == newItem
+        }
+    }
 }
+

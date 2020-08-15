@@ -11,6 +11,8 @@ import io.realm.RealmList
 import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.domain.ManHours
+import pl.podwikagrzegorz.gardener.data.domain.ManHoursMap
 import pl.podwikagrzegorz.gardener.data.realm.ManHoursMapRealm
 import pl.podwikagrzegorz.gardener.data.realm.ManHoursRealm
 import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
@@ -21,11 +23,11 @@ import java.lang.StringBuilder
 
 class ExpandableListAdapter internal constructor(
     private val context: Context,
-    private val manHoursMap: RealmList<ManHoursMapRealm>
+    private val manHoursMap: List<ManHoursMap>
 ) : BaseExpandableListAdapter() {
 
-    override fun getChild(parentPosition: Int, childPosition: Int): ManHoursRealm =
-        manHoursMap[parentPosition]!!.listOfManHours[childPosition]!!
+    override fun getChild(parentPosition: Int, childPosition: Int): ManHours =
+        manHoursMap[parentPosition].listOfManHours[childPosition]
 
     override fun getChildId(parentPosition: Int, childPosition: Int): Long = childPosition.toLong()
 
@@ -36,9 +38,9 @@ class ExpandableListAdapter internal constructor(
         convertView: View?,
         parent: ViewGroup?
     ): View {
-        var manHoursRealm: ManHoursRealm? = null
-        val resources = GardenerApp.res
-        val sumAsString  = resources.getString(R.string.sum_of_hours)
+        var manHoursRealm: ManHours? = null
+
+        val sumAsString  = GardenerApp.res.getString(R.string.sum_of_hours)
         var sumOfWorkedHours = 0.0
 
         if (childPosition == getChildrenCount(parentPosition) - 1) {
@@ -78,7 +80,7 @@ class ExpandableListAdapter internal constructor(
     private fun getSumOfWorkedHoursFor(parentPosition: Int): Double {
         var sumOfWorkedHours = 0.0
 
-        val listOfWorkedHours = manHoursMap[parentPosition]!!.listOfManHours
+        val listOfWorkedHours = manHoursMap[parentPosition].listOfManHours
 
         for (hour in listOfWorkedHours){
             sumOfWorkedHours += hour.numberOfWorkedHours
@@ -87,11 +89,12 @@ class ExpandableListAdapter internal constructor(
         return sumOfWorkedHours
     }
 
+    // The Last position is for the total hours worked by each worker.
     override fun getChildrenCount(parentPosition: Int): Int =
-        manHoursMap[parentPosition]!!.listOfManHours.size + 1
+        manHoursMap[parentPosition].listOfManHours.size + 1
 
     override fun getGroup(parentPosition: Int): String =
-        manHoursMap[parentPosition]!!.workerFullName
+        manHoursMap[parentPosition].workerFullName
 
     override fun getGroupCount(): Int =
         manHoursMap.size

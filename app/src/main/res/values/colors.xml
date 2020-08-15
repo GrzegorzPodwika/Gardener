@@ -40,4 +40,6 @@
     <color name="colorLightYellow">#FFFFFDE7</color>
     <color name="colorAutumn">#ff0000</color>
     <color name="colorWinter">#03A9F4</color>
+    <color name="colorDarkGray">#FF393B45</color>
+    <color name="colorGray">#FF393B45</color>
 </resources>

@@ -2,6 +2,8 @@ package pl.podwikagrzegorz.gardener.data.realm
 
 import io.realm.RealmList
 import io.realm.RealmObject
+import pl.podwikagrzegorz.gardener.data.domain.ManHoursMap
+import pl.podwikagrzegorz.gardener.data.domain.asListOfManHours
 
 open class ManHoursMapRealm(
     var workerFullName: String = "",
@@ -13,4 +15,8 @@ open class ManHoursMapRealm(
             item?.deleteFromRealm()
         }
     }
+
+    fun asManHoursMap() : ManHoursMap =
+        ManHoursMap(workerFullName, listOfManHours.asListOfManHours())
+
 }

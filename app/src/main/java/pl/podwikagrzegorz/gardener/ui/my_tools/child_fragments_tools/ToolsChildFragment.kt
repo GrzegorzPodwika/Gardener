@@ -4,91 +4,92 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.data.realm.ToolRealm
-import pl.podwikagrzegorz.gardener.databinding.RecViewAndMcvBinding
+import pl.podwikagrzegorz.gardener.databinding.FragmentChildToolsBinding
 import pl.podwikagrzegorz.gardener.extensions.toast
-import pl.podwikagrzegorz.gardener.ui.price_list.OnDeleteItemListener
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
-class ToolsChildFragment : Fragment(), OnDeleteItemListener {
+class ToolsChildFragment : Fragment() {
 
-    private val toolsVM: ToolsChildViewModel by lazy {
+    private lateinit var binding: FragmentChildToolsBinding
+    private val viewModel: ToolsChildViewModel by lazy {
         ViewModelProvider(this).get(ToolsChildViewModel::class.java)
     }
-    private lateinit var binding: RecViewAndMcvBinding
+    private val toolAdapter: ToolAdapter by lazy {
+        ToolAdapter(object : OnClickItemListener {
+            override fun onClick(id: Long) {
+                deleteToolFromDb(id)
+            }
+        })
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.rec_view_and_mcv, container, false)
+        binding = FragmentChildToolsBinding.inflate(inflater, container, false)
+
+        setUpBindingWithViewModel()
+        observeAddToolButton()
+        observeToolData()
+
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        setOnAddToolListener()
-        observeToolData()
-    }
-
-    private fun setOnAddToolListener() {
-        binding.imageButtonAddTool.setOnClickListener { insertNewUserTool() }
-    }
-
-    private fun observeToolData() {
-        val recViewTools = binding.recyclerViewMyTools
-        recViewTools.layoutManager = LinearLayoutManager(requireContext())
-
-        toolsVM.listOfTools.observe(viewLifecycleOwner,
-            Observer { tools ->
-                recViewTools.also {
-                    it.adapter = ToolAdapter(tools, this)
-                }
-            })
-    }
-
-    private fun insertNewUserTool() {
-        addTool()
-        clearViews()
-        setFocusOnFirstEditText()
-    }
-
-    private fun addTool() {
-
-        if (areNotEmptyViews()) {
-            val tool = ToolRealm(
-                0,
-                binding.editTextMyToolsNameAdd.text.toString(),
-                binding.editTextPriceOfTool.text.toString().toInt()
-            )
-            toolsVM.addTool(tool)
-        } else {
-            requireContext().toast(getString(R.string.fill_all_fields))
+    private fun setUpBindingWithViewModel() {
+        binding.apply {
+            lifecycleOwner = viewLifecycleOwner
+            toolsChildViewModel = viewModel
+            recyclerViewMyTools.adapter = toolAdapter
         }
     }
 
-    private fun areNotEmptyViews(): Boolean {
-        return binding.editTextMyToolsNameAdd.text.isNotEmpty() && binding.editTextPriceOfTool.text.isNotEmpty()
+    private fun observeAddToolButton() {
+        viewModel.eventAddTool.observe(viewLifecycleOwner, Observer { hasAdded ->
+            if (hasAdded) {
+                cleanUp()
+            }
+        })
+
+        viewModel.errorEditTextEmpty.observe(viewLifecycleOwner, Observer { isEmpty ->
+            if (isEmpty) {
+                showErrorToast()
+            }
+        })
+
+    }
+
+    private fun showErrorToast() {
+        context?.toast(getString(R.string.fill_all_fields))
+        viewModel.onErrorShowComplete()
+    }
+
+    private fun cleanUp() {
+        clearViews()
+        setFocusOnFirstEditText()
+        viewModel.onAddToolComplete()
     }
 
     private fun clearViews() {
-        binding.editTextMyToolsNameAdd.text = null
+        binding.editTextToolNameAdd.text = null
         binding.editTextPriceOfTool.text = null
     }
 
     private fun setFocusOnFirstEditText() {
-        binding.editTextMyToolsNameAdd.requestFocus()
+        binding.editTextToolNameAdd.requestFocus()
     }
 
-    override fun onDeleteItemClick(id: Long?) {
-        toolsVM.deleteTool(id)
+    private fun observeToolData() {
+        viewModel.listOfTools.observe(viewLifecycleOwner, Observer { listOfTools ->
+            toolAdapter.submitList(listOfTools)
+        })
     }
 
+    private fun deleteToolFromDb(id: Long) {
+        viewModel.deleteTool(id)
+    }
 
 }

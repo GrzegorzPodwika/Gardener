@@ -3,50 +3,75 @@ package pl.podwikagrzegorz.gardener.data.daos
 import androidx.lifecycle.MutableLiveData
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import io.realm.RealmResults
 import io.realm.kotlin.where
+import pl.podwikagrzegorz.gardener.data.domain.BasicGarden
+import pl.podwikagrzegorz.gardener.data.domain.Period
+import pl.podwikagrzegorz.gardener.data.domain.asListOfBasicGardens
 import pl.podwikagrzegorz.gardener.data.realm.*
+import timber.log.Timber
 
-
-//TODO moze przerobic zeby jednak dziedziczyla?
-class GardenDAO {
+class GardenDAO : DAO<BasicGarden> {
     private val realm: Realm
+    var listener: OnExecuteTransactionListener? = null
 
-    fun insertItem(basicGardenRealm: BasicGardenRealm) {
+    override fun insertItem(item: BasicGarden) {
         val generatedNewId = generateId()
+        item.id = generatedNewId
+        val basicGardenRealm = item.asBasicGardenRealm()
 
-        realm.executeTransactionAsync { bgRealm ->
-            basicGardenRealm.id = generatedNewId
-
+        realm.executeTransactionAsync({ bgRealm ->
             val gardenRealm = GardenRealm(generatedNewId, basicGardenRealm)
             bgRealm.insert(gardenRealm)
-
-        }
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
-    fun getItemById(id: Long): GardenRealm? =
-        realm.where<GardenRealm>().equalTo(ID, id).findFirstAsync()
+    override fun getItemById(id: Long): BasicGarden? =
+        realm.where<GardenRealm>().equalTo(ID, id).findFirstAsync().basicGarden?.asBasicGarden()
 
 
-    fun deleteItem(id: Long) {
+    override fun deleteItem(id: Long) {
         realm.executeTransactionAsync { bgRealm ->
             val gardenRealm = bgRealm.where<GardenRealm>().equalTo(ID, id).findFirst()
             gardenRealm?.cascadeDelete()
         }
     }
 
-    // BasicGarden
-    fun getBasicGardenRealmData(): MutableLiveData<RealmResults<BasicGardenRealm>> =
-        realm.where<BasicGardenRealm>().findAllAsync().asLiveData()
+    override fun updateItem(item: BasicGarden) {
+        realm.executeTransactionAsync({ bgRealm ->
+            val basicGardenRealm = bgRealm.where<BasicGardenRealm>().equalTo(ID, item.id).findFirst()
+            basicGardenRealm?.apply {
+                gardenTitle = item.gardenTitle
+                phoneNumber = item.phoneNumber
+                period = item.period.asPeriodRealm()
+                isGarden = item.isGarden
+                uniqueSnapshotName = item.uniqueSnapshotName
+                latitude = item.latitude
+                longitude = item.longitude
+            }
 
-    fun getPeriodRealmData(): List<PeriodRealm> {
-        val basicGardens = realm.where<BasicGardenRealm>().findAll()
-
-        return basicGardens.map { it.period!! }
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
+    override fun getDomainData(): List<BasicGarden> =
+        realm.where<BasicGardenRealm>().findAllAsync().asListOfBasicGardens()
 
-    fun closeRealm() {
+
+    override fun getLiveDomainData(): MutableLiveData<List<BasicGarden>> =
+        getDomainData().asLiveList()
+
+    fun getDomainPeriodData(): List<Period> =
+        realm.where<PeriodRealm>().findAllAsync().map { it.asPeriod() }
+
+
+    override fun closeRealm() {
         realm.close()
     }
 

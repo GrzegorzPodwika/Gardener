@@ -1,6 +1,7 @@
 package pl.podwikagrzegorz.gardener.data.daos
 
 import androidx.lifecycle.MutableLiveData
+import io.realm.RealmModel
 import io.realm.RealmResults
 
 interface DAO<T> {
@@ -9,8 +10,8 @@ interface DAO<T> {
     fun deleteItem(id: Long)
 
     fun getItemById(id: Long): T?
-    fun getRealmResults() : RealmResults<T>
-    fun getLiveRealmResults() : MutableLiveData<RealmResults<T>>
+    fun getDomainData() : List<T>
+    fun getLiveDomainData() : MutableLiveData<List<T>>
 
     fun closeRealm()
 }

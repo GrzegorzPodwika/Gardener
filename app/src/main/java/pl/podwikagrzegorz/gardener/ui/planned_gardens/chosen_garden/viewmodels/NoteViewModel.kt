@@ -4,46 +4,52 @@ import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.realm.RealmList
 import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
-import pl.podwikagrzegorz.gardener.data.realm.ActiveStringRealm
+import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import pl.podwikagrzegorz.gardener.data.domain.ActiveString
 
-class NoteViewModel(gardenID: Long) : ViewModel() {
-    private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
+class NoteViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListener {
+    private val gardenComponentsDAO =
+        GardenComponentsDAO(gardenID).apply { listener = this@NoteViewModel }
 
-    private val _listOfNotes: MutableLiveData<RealmList<ActiveStringRealm>> =
+    private val _listOfNotes: MutableLiveData<List<ActiveString>> =
         gardenComponentsDAO.getLiveListOfNotes()
-    val listOfNotes : LiveData<RealmList<ActiveStringRealm>>
+    val listOfNotes: LiveData<List<ActiveString>>
         get() = _listOfNotes
 
+    private val _eventOnAddedNote = MutableLiveData<Boolean>()
+    val eventOnAddedNote: LiveData<Boolean>
+        get() = _eventOnAddedNote
 
-    fun addNoteToList(note: String) {
+    fun onAddNote(note: String) {
         gardenComponentsDAO.addNoteToList(note)
-        refreshLiveDataList()
+        _eventOnAddedNote.value = true
     }
 
+    fun onAddNoteComplete() {
+        _eventOnAddedNote.value = false
+    }
 
     fun reverseFlagOnNote(position: Int) {
         gardenComponentsDAO.reverseFlagOnNote(position)
-        refreshLiveDataList()
     }
 
-    fun deleteItemFromList(id: Long?) {
-        id?.let {
-            gardenComponentsDAO.deleteNoteFromList(it)
-            refreshLiveDataList()
-        }
+    fun deleteItemFromList(id: Long) {
+        gardenComponentsDAO.deleteNoteFromList(id)
     }
 
-    private fun refreshLiveDataList() {
-        _listOfNotes.postValue(_listOfNotes.value)
+    override fun onTransactionSuccess() {
+        fetchFreshData()
+    }
+
+    private fun fetchFreshData() {
+        _listOfNotes.value = gardenComponentsDAO.getListOfNotes()
     }
 
     override fun onCleared() {
         gardenComponentsDAO.closeRealm()
         super.onCleared()
     }
-
 
     companion object {
         private const val GARDEN_ID = "GARDEN_ID"
@@ -55,5 +61,6 @@ class NoteViewModel(gardenID: Long) : ViewModel() {
         }
 
         fun fromBundle(bundle: Bundle): Long = bundle.getLong(GARDEN_ID)
+
     }
 }

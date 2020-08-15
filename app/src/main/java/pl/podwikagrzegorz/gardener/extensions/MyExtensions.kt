@@ -1,14 +1,13 @@
 package pl.podwikagrzegorz.gardener.extensions
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import com.prolificinteractive.materialcalendarview.CalendarDay
-import pl.podwikagrzegorz.gardener.data.pojo.Period
+import pl.podwikagrzegorz.gardener.data.domain.Period
 import pl.podwikagrzegorz.gardener.data.realm.PeriodRealm
 import java.io.File
 import java.text.SimpleDateFormat
@@ -25,29 +24,23 @@ fun String.deleteCaptionedImage() {
     }
 }
 
-fun Period.mapIntoPeriodRealm(): PeriodRealm {
-    val periodRealm = PeriodRealm()
-    periodRealm.startDay = this.startDay
-    periodRealm.startMonth = this.startMonth
-    periodRealm.startYear = this.startYear
-    periodRealm.endDay = this.endDay
-    periodRealm.endMonth = this.endMonth
-    periodRealm.endYear = this.endYear
-    return periodRealm
+fun Period.loadRangeIntoPeriod(startDayInMilliseconds : Long, endDayInMilliseconds: Long) {
+    val startingDay = Calendar.getInstance()
+    startingDay.timeInMillis = startDayInMilliseconds
+
+    val endingDay = Calendar.getInstance()
+    endingDay.timeInMillis = endDayInMilliseconds
+
+    apply {
+        startDay = startingDay.get(Calendar.DAY_OF_MONTH)
+        startMonth = startingDay.get(Calendar.MONTH) + 1    // Calendar receives month from range 0-11
+        startYear = startingDay.get(Calendar.YEAR)
+
+        endDay = endingDay.get(Calendar.DAY_OF_MONTH)
+        endMonth = endingDay.get(Calendar.MONTH) + 1
+        endYear = endingDay.get(Calendar.YEAR)
+    }
 }
-
-fun PeriodRealm.mapToPeriod(): Period {
-    val period = Period()
-    period.startDay = this.startDay
-    period.startMonth = this.startMonth
-    period.startYear = this.startYear
-    period.endDay = this.endDay
-    period.endMonth = this.endMonth
-    period.endYear = this.endYear
-
-    return period
-}
-
 
 fun Calendar.asCalendarDay(): CalendarDay {
     val year = this.get(Calendar.YEAR)

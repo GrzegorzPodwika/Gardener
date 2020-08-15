@@ -3,48 +3,63 @@ package pl.podwikagrzegorz.gardener.data.daos
 import androidx.lifecycle.MutableLiveData
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import io.realm.RealmResults
 import io.realm.kotlin.where
+import pl.podwikagrzegorz.gardener.data.domain.Note
+import pl.podwikagrzegorz.gardener.data.domain.asListOfNotes
 import pl.podwikagrzegorz.gardener.data.realm.NoteModule
 import pl.podwikagrzegorz.gardener.data.realm.NoteRealm
-import pl.podwikagrzegorz.gardener.data.realm.asLiveData
+import pl.podwikagrzegorz.gardener.data.realm.asLiveList
+import timber.log.Timber
 
-class NoteDAO : DAO<NoteRealm> {
+class NoteDAO : DAO<Note> {
     private val realm: Realm
+    var listener: OnExecuteTransactionListener? = null
 
-    override fun insertItem(item: NoteRealm) {
+    override fun insertItem(item: Note) {
         val generatedNewId = generateId()
+        val noteRealm = item.asNoteRealm()
 
-        realm.executeTransactionAsync { bgRealm ->
-            item.id = generatedNewId
-
-            bgRealm.insert(item)
-        }
+        realm.executeTransactionAsync({ bgRealm ->
+            noteRealm.id = generatedNewId
+            bgRealm.insert(noteRealm)
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
-    override fun updateItem(item: NoteRealm) {
-        realm.executeTransactionAsync { bgRealm ->
+    override fun updateItem(item: Note) {
+        realm.executeTransactionAsync({ bgRealm ->
             val noteRealm = bgRealm.where<NoteRealm>().equalTo(ID, item.id).findFirst()
             noteRealm?.service = item.service
             noteRealm?.priceOfService = item.priceOfService
-        }
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
     override fun deleteItem(id: Long) {
-        realm.executeTransactionAsync { bgRealm ->
+        realm.executeTransactionAsync({ bgRealm ->
             val result = bgRealm.where<NoteRealm>().equalTo(ID, id).findFirst()
             result?.deleteFromRealm()
-        }
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
-    override fun getItemById(id: Long): NoteRealm? =
-        realm.where<NoteRealm>().equalTo(ID, id).findFirst()
+    override fun getItemById(id: Long): Note? =
+        realm.where<NoteRealm>().equalTo(ID, id).findFirstAsync()?.asNote()
 
-    override fun getRealmResults(): RealmResults<NoteRealm>
-            = realm.where<NoteRealm>().findAllAsync()
+    override fun getDomainData(): List<Note> =
+        realm.where<NoteRealm>().findAllAsync().asListOfNotes()
 
-    override fun getLiveRealmResults(): MutableLiveData<RealmResults<NoteRealm>> =
-        realm.where<NoteRealm>().findAllAsync().asLiveData()
+    override fun getLiveDomainData(): MutableLiveData<List<Note>> =
+        getDomainData().asLiveList()
 
     private fun generateId(): Long {
         val maxValue = realm.where<NoteRealm>().max(ID)
@@ -75,3 +90,5 @@ class NoteDAO : DAO<NoteRealm> {
     }
 
 }
+
+

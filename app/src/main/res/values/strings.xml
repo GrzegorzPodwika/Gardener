@@ -126,6 +126,7 @@
     <string name="navigate">Navigate</string>
     <string name="hint_enter_address">Enter Address, City or Zip Code</string>
     <string name="description_full_photo">Full screen photo</string>
+    <string name="machines">Machines</string>
 
 
 </resources>

@@ -6,40 +6,40 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.realm.RealmList
 import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
+import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import pl.podwikagrzegorz.gardener.data.domain.Item
 import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
 
-class PropertyViewModel(gardenID: Long) : ViewModel() {
-    private val gardenComponentsDAO = GardenComponentsDAO(gardenID)
+class PropertyViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListener {
+    private val gardenComponentsDAO = GardenComponentsDAO(gardenID).apply { listener = this@PropertyViewModel }
 
-    private val _listOfProperties: MutableLiveData<RealmList<ItemRealm>> =
+    private val _listOfProperties: MutableLiveData<List<Item>> =
         gardenComponentsDAO.getLiveListOfProperties()
-    val listOfProperties : LiveData<RealmList<ItemRealm>>
+    val listOfProperties: LiveData<List<Item>>
         get() = _listOfProperties
 
     fun addListOfPickedProperties(listOfItemRealm: List<ItemRealm>) {
         gardenComponentsDAO.addListOfPickedProperties(listOfItemRealm)
-        refreshLiveDataList()
     }
 
     fun updateNumberOfProperties(noItems: Int, position: Int) {
         gardenComponentsDAO.updateNumberOfProperty(noItems, position)
-        refreshLiveDataList()
     }
 
     fun reverseFlagOnProperty(position: Int) {
         gardenComponentsDAO.reverseFlagOnProperty(position)
-        refreshLiveDataList()
     }
 
-    fun deleteItemFromList(id: Long?) {
-        id?.let {
-            gardenComponentsDAO.deletePropertyFromList(it)
-            refreshLiveDataList()
-        }
+    fun deleteItemFromList(id: Long) {
+        gardenComponentsDAO.deletePropertyFromList(id)
     }
 
-    private fun refreshLiveDataList() {
-        _listOfProperties.postValue(_listOfProperties.value)
+    override fun onTransactionSuccess() {
+        fetchFreshData()
+    }
+
+    private fun fetchFreshData() {
+        _listOfProperties.value = gardenComponentsDAO.getListOfProperties()
     }
 
     override fun onCleared() {

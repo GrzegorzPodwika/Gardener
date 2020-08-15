@@ -3,53 +3,64 @@ package pl.podwikagrzegorz.gardener.data.daos
 import androidx.lifecycle.MutableLiveData
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import io.realm.RealmResults
-import io.realm.Sort
 import io.realm.kotlin.where
+import pl.podwikagrzegorz.gardener.data.domain.Machine
+import pl.podwikagrzegorz.gardener.data.domain.asListOfMachines
 import pl.podwikagrzegorz.gardener.data.realm.MachineModule
 import pl.podwikagrzegorz.gardener.data.realm.MachineRealm
-import pl.podwikagrzegorz.gardener.data.realm.asLiveData
+import pl.podwikagrzegorz.gardener.data.realm.asLiveList
+import timber.log.Timber
 
-class MachineDAO : DAO<MachineRealm> {
+class MachineDAO: DAO<Machine> {
     private val realm: Realm
+    var listener: OnExecuteTransactionListener? = null
 
-    override fun insertItem(item: MachineRealm) {
+
+    override fun insertItem(item: Machine) {
         val generatedNewId = generateId()
+        val machineRealm = item.asMachineRealm()
 
-        realm.executeTransactionAsync { bgRealm ->
-            item.id = generatedNewId
-            bgRealm.insert(item)
-        }
+        realm.executeTransactionAsync({ bgRealm ->
+            machineRealm.id = generatedNewId
+            bgRealm.insert(machineRealm)
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
-    override fun updateItem(item: MachineRealm) {
-        realm.executeTransactionAsync {bgRealm ->
+    override fun updateItem(item: Machine) {
+        realm.executeTransactionAsync({ bgRealm ->
             val machineRealm = bgRealm.where<MachineRealm>().equalTo(ID, item.id).findFirst()
             machineRealm?.machineName = item.machineName
             machineRealm?.numberOfMachines = item.numberOfMachines
-        }
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
     override fun deleteItem(id: Long) {
-        realm.executeTransactionAsync {bgRealm ->
+        realm.executeTransactionAsync({ bgRealm ->
             val machineRealm = bgRealm.where<MachineRealm>().equalTo(ID, id).findFirst()
             machineRealm?.deleteFromRealm()
-        }
+        }, {
+            listener?.onAsyncTransactionSuccess()
+        }, { error ->
+            Timber.e(error)
+        })
     }
 
-    override fun getItemById(id: Long): MachineRealm?
-        = realm.where<MachineRealm>().equalTo(ID, id).findFirst()
+    override fun getItemById(id: Long): Machine? =
+        realm.where<MachineRealm>().equalTo(ID, id).findFirstAsync()?.asMachine()
 
-    override fun getRealmResults(): RealmResults<MachineRealm> {
-        return realm.where<MachineRealm>().findAllAsync()
-    }
+    override fun getDomainData(): List<Machine> =
+        realm.where<MachineRealm>().findAllAsync().asListOfMachines()
 
-    override fun getLiveRealmResults(): MutableLiveData<RealmResults<MachineRealm>> {
-        return realm.where<MachineRealm>().findAllAsync().asLiveData()
-    }
-
-    fun findMaxValueOf(itemName: String): Int? =
-        realm.where<MachineRealm>().equalTo("machineName", itemName).findFirst()?.numberOfMachines
+    override fun getLiveDomainData(): MutableLiveData<List<Machine>> =
+        getDomainData().asLiveList()
 
     override fun closeRealm() {
         realm.close()
@@ -79,3 +90,6 @@ class MachineDAO : DAO<MachineRealm> {
         private const val REALM_MACHINE_NAME = "machine.realm"
     }
 }
+
+/*    fun findMaxValueOf(itemName: String): Int? =
+        realm.where<MachineRealm>().equalTo("machineName", itemName).findFirst()?.numberOfMachines*/

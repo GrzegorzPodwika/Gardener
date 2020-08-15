@@ -27,17 +27,14 @@ class GardenViewPagerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.viewpager_garden, container, false)
+
+        setUpViewPagerAdapter()
+        setUpTabLayoutMediator()
+
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        setViewPagerAdapter()
-        setTabLayoutMediator()
-    }
-
-    private fun setViewPagerAdapter() {
+    private fun setUpViewPagerAdapter() {
         binding.viewPagerGardenComponents.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int =
                 NUMBER_OF_FRAGMENTS
@@ -62,7 +59,7 @@ class GardenViewPagerFragment : Fragment() {
         }
 
 
-    private fun setTabLayoutMediator() {
+    private fun setUpTabLayoutMediator() {
         TabLayoutMediator(
             binding.tabLayoutComponentGarden,
             binding.viewPagerGardenComponents

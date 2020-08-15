@@ -3,6 +3,9 @@ package pl.podwikagrzegorz.gardener.data.realm
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
+import pl.podwikagrzegorz.gardener.GardenerApp
+import pl.podwikagrzegorz.gardener.extensions.deleteCaptionedImage
+import pl.podwikagrzegorz.gardener.extensions.getAbsoluteFilePath
 
 open class GardenRealm(
     @PrimaryKey
@@ -52,7 +55,13 @@ open class GardenRealm(
             map?.cascadeDelete()
         }
 
+        val ctx = GardenerApp.ctx
+
         // TODO delete already taken pictures
+        for (path in listOfPicturesPaths) {
+            val absolutePath = ctx.getAbsoluteFilePath(path)
+            absolutePath.deleteCaptionedImage()
+        }
 
         deleteFromRealm()
     }
