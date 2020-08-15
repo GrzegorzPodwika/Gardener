@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "121712359782",
+    "firebase_url": "https://gardener-4194a.firebaseio.com",
+    "project_id": "gardener-4194a",
+    "storage_bucket": "gardener-4194a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:121712359782:android:c9ee6e2958aceabf07f0a7",
+        "android_client_info": {
+          "package_name": "pl.podwikagrzegorz.gardener"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "121712359782-66jdjdsacs00tb0hoja5fbve8tk0erbv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pl.podwikagrzegorz.gardener",
+            "certificate_hash": "7b2c3e80f029c8775412e40a08203200d044ff98"
+          }
+        },
+        {
+          "client_id": "121712359782-3iq9364en8nhvdpg4riivtj8s24npn15.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZpcJInzXEGYUNvIt3ih3zObmvG4TYcVc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "121712359782-3iq9364en8nhvdpg4riivtj8s24npn15.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
