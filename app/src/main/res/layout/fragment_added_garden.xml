@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="android.net.Uri"/>
         <variable
             name="basicGardenViewModel"
             type="pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.BasicGardenViewModel" />
@@ -123,7 +123,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:loadImageViaName="@{basicGardenViewModel.basicGarden.uniqueSnapshotName}"
+            app:loadImageViaStorageRef="@{basicGardenViewModel.takenMapSnapshotStorageRef}"
             tools:srcCompat="@drawable/ic_street_map" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

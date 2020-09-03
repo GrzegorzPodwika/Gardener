@@ -17,8 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/materialButton_add_man_hours"
-            android:divider="@android:color/darker_gray"
-            android:dividerHeight="0.75dp"
+            android:divider="@color/colorDarkGray"
+            android:dividerHeight="1dp"
             android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
             android:layout_marginBottom="@dimen/keyline_4" />
 

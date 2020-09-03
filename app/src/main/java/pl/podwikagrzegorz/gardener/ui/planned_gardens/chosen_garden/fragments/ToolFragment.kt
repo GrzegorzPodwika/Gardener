@@ -6,50 +6,25 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import pl.podwikagrzegorz.gardener.GardenerApp
-import pl.podwikagrzegorz.gardener.data.daos.ToolDAO
-import pl.podwikagrzegorz.gardener.data.domain.Tool
-import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import dagger.hilt.android.AndroidEntryPoint
+import pl.podwikagrzegorz.gardener.data.domain.Item
 import pl.podwikagrzegorz.gardener.databinding.FragmentToolsInViewpagerBinding
+import pl.podwikagrzegorz.gardener.extensions.toBundle
+import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.ToolsChildViewModel
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.AddedItemAdapter
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.PickNumberDialog
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetToolsFragment
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.GardenViewModelFactory
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.ToolViewModel
 
 //Class No4 - Tools
+@AndroidEntryPoint
 class ToolFragment : Fragment() {
     private lateinit var binding: FragmentToolsInViewpagerBinding
-    private val gardenID: Long by lazy {
-        ToolViewModel.fromBundle(requireArguments())
-    }
-    private val viewModelMainTools: ToolViewModel by viewModels {
-        GardenViewModelFactory(
-            gardenID
-        )
-    }
+    private val viewModelMainTools: ToolViewModel by viewModels()
+    private lateinit var toolAdapter: AddedItemAdapter
 
-    private lateinit var receivedTools: List<Tool>
-    private val receivedToolNames = mutableListOf<String>()
-
-    private val toolAdapter: AddedItemAdapter by lazy {
-        AddedItemAdapter(object : OnClickItemListener {
-            override fun onClick(id: Long) {
-                deleteMachineFromDb(id)
-            }
-
-            override fun onChangeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
-                changeNumberOfItems(currentValue, position, itemName)
-            }
-
-            override fun onChangeFlagToOpposite(position: Int) {
-                changeFlagToOpposite(position)
-            }
-        })
-    }
-
+    private val receivedToolsViewModel: ToolsChildViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,14 +32,32 @@ class ToolFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentToolsInViewpagerBinding.inflate(inflater, container, false)
+        receivedToolsViewModel.preInitialize()
 
+        connectRecyclerViewWithQuery()
         setUpBinding()
-        fetchReceivedTools()
-        mapReceivedToolsIntoNames()
         setOnAddToolsButtonListener()
-        observeListOfAddedTools()
 
         return binding.root
+    }
+
+
+
+    private fun connectRecyclerViewWithQuery() {
+        val options = FirestoreRecyclerOptions.Builder<Item>()
+            .setQuery(viewModelMainTools.getTakenToolsQuerySortedByTimestamp(), Item::class.java)
+            .setLifecycleOwner(this)
+            .build()
+
+        toolAdapter = AddedItemAdapter(options, object : OnClickItemListener {
+            override fun onChangeFlagToOpposite(documentId: String) {
+                viewModelMainTools.reverseFlagOnTool(childDocumentId = documentId)
+            }
+
+            override fun onClickItem(documentId: String) {
+                viewModelMainTools.deleteItemFromList(childDocumentId = documentId)
+            }
+        })
     }
 
     private fun setUpBinding() {
@@ -74,54 +67,48 @@ class ToolFragment : Fragment() {
         }
     }
 
-    private fun fetchReceivedTools() {
-        val toolDAO = ToolDAO()
-        receivedTools = toolDAO.getDomainData()
-        toolDAO.closeRealm()
-    }
-
-    private fun mapReceivedToolsIntoNames() {
-        receivedTools.forEach { receivedToolNames.add(it.toolName) }
-    }
-
     private fun setOnAddToolsButtonListener() {
         binding.materialButtonAddTools.setOnClickListener {
             SheetToolsFragment(
-                receivedToolNames,
+                receivedToolsViewModel.listOfTools,
                 object : SheetToolsFragment.OnGetListOfPickedItemsListener {
-                    override fun onGetListOfPickedItems(listOfPickedItems: List<Boolean>) {
-                        addListOfPickedToolsToMainList(listOfPickedItems)
+
+                    override fun onGetListOfPickedItems(listOfPickedItems: List<Item>) {
+                        viewModelMainTools.addListOfPickedTools(listOfPickedItems)
                     }
+
                 }
             ).show(childFragmentManager, null)
         }
     }
 
-    private fun addListOfPickedToolsToMainList(listOfPickedItems: List<Boolean>) {
-        val listOfItemRealm = mutableListOf<ItemRealm>()
+    companion object {
+        fun create(gardenTitle: String): ToolFragment {
+            val fragment = ToolFragment()
+            fragment.arguments = toBundle(gardenTitle)
+            return fragment
+        }
+
+    }
+}
+
+
+
+
+/*       private fun addListOfPickedToolsToMainList(listOfPickedItems: List<Boolean>) {
+        val listOfItemRealm = mutableListOf<Item>()
+        val receivedTools = receivedToolsViewModel.listOfTools
 
         for (index in listOfPickedItems.indices) {
             if (listOfPickedItems[index]) {
-                val toolToAdd =
-                    ItemRealm(receivedTools[index].toolName, receivedTools[index].numberOfTools)
+                val toolToAdd = Item(receivedTools[index].toolName, receivedTools[index].numberOfTools)
                 listOfItemRealm.add(toolToAdd)
             }
         }
 
         viewModelMainTools.addListOfPickedTools(listOfItemRealm)
-    }
-
-    private fun observeListOfAddedTools() {
-        viewModelMainTools.listOfTools.observe(viewLifecycleOwner, Observer { listOfAddedTools ->
-            toolAdapter.submitList(listOfAddedTools)
-        })
-    }
-
-    private fun deleteMachineFromDb(id: Long) {
-        viewModelMainTools.deleteItemFromList(id)
-    }
-
-    private fun changeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
+        }
+private fun changeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
         val seekingTool = receivedTools.find { it.toolName == itemName }
         val maxValue: Int = seekingTool?.numberOfTools ?: GardenerApp.MAX_NUMBER_OF_MACHINES
 
@@ -134,19 +121,4 @@ class ToolFragment : Fragment() {
                     viewModelMainTools.updateNumberOfTools(chosenNumber, position)
                 }
             }).show(childFragmentManager, null)
-    }
-
-
-    private fun changeFlagToOpposite(position: Int) {
-        viewModelMainTools.reverseFlagOnTool(position)
-    }
-
-    companion object {
-        fun create(gardenID: Long): ToolFragment {
-            val fragment = ToolFragment()
-            fragment.arguments = ToolViewModel.toBundle(gardenID)
-            return fragment
-        }
-
-    }
-}
+    }*/

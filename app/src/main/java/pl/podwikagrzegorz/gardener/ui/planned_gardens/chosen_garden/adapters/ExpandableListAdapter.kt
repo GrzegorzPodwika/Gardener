@@ -5,21 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
-import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
-import io.realm.RealmList
-import io.realm.RealmResults
 import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.domain.ManHours
 import pl.podwikagrzegorz.gardener.data.domain.ManHoursMap
-import pl.podwikagrzegorz.gardener.data.realm.ManHoursMapRealm
-import pl.podwikagrzegorz.gardener.data.realm.ManHoursRealm
-import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
 import pl.podwikagrzegorz.gardener.databinding.ExpandableListGroupBinding
 import pl.podwikagrzegorz.gardener.databinding.ExpandableListItemBinding
 import pl.podwikagrzegorz.gardener.extensions.toSimpleFormat
-import java.lang.StringBuilder
 
 class ExpandableListAdapter internal constructor(
     private val context: Context,
@@ -136,4 +129,5 @@ class ExpandableListAdapter internal constructor(
     override fun hasStableIds(): Boolean = false
 
     override fun isChildSelectable(parentPosition: Int, childPosition: Int): Boolean = true
+
 }

@@ -5,24 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import dagger.hilt.android.AndroidEntryPoint
+import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.domain.Note
 import pl.podwikagrzegorz.gardener.databinding.FragmentPriceListBinding
+import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
+@AndroidEntryPoint
 class PriceListFragment : Fragment() {
 
     private lateinit var binding: FragmentPriceListBinding
-    private val viewModel: PriceListViewModel by lazy {
-        ViewModelProvider(this).get(PriceListViewModel::class.java)
-    }
-    private val noteAdapter: NoteAdapter by lazy {
-        NoteAdapter(object : OnClickItemListener {
-            override fun onClick(id: Long) {
-                viewModel.deleteNote(id)
-            }
-        })
-    }
+    private val viewModel: PriceListViewModel by viewModels()
+
+    private lateinit var noteAdapter: NoteAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,9 +29,25 @@ class PriceListFragment : Fragment() {
     ): View? {
         binding = FragmentPriceListBinding.inflate(inflater, container, false)
 
+        connectRecyclerViewWithQuery()
         setUpBindingWithViewModel()
+
         observeData()
+
         return binding.root
+    }
+
+    private fun connectRecyclerViewWithQuery() {
+        val options = FirestoreRecyclerOptions.Builder<Note>()
+            .setQuery(viewModel.getQuerySortedByTimestamp(), Note::class.java)
+            .setLifecycleOwner(this)
+            .build()
+
+        noteAdapter = NoteAdapter(options, object : OnClickItemListener {
+            override fun onClickItem(documentId: String) {
+                viewModel.deleteNote(documentId)
+            }
+        })
     }
 
     private fun setUpBindingWithViewModel() {
@@ -40,21 +55,24 @@ class PriceListFragment : Fragment() {
             priceListViewModel = viewModel
             lifecycleOwner = viewLifecycleOwner
             recyclerViewPriceList.adapter = noteAdapter
+            service = ""
+            priceOfService = ""
         }
     }
 
     private fun observeData() {
         observeAddNoteButton()
-        observeListOfNotes()
+        observeErrorEmptyInput()
     }
 
     private fun observeAddNoteButton() {
-        viewModel.eventAddNote.observe(viewLifecycleOwner, Observer { hasAdded ->
+        viewModel.eventAddNote.observe(viewLifecycleOwner,  { hasAdded ->
             if (hasAdded) {
                 cleanUp()
             }
         })
     }
+
 
     private fun cleanUp() {
         clearViews()
@@ -71,15 +89,20 @@ class PriceListFragment : Fragment() {
         binding.editTextService.requestFocus()
     }
 
-    private fun observeListOfNotes() {
-        viewModel.priceList.observe(viewLifecycleOwner, Observer { listOfNotes ->
-            noteAdapter.submitList(listOfNotes)
+    private fun observeErrorEmptyInput() {
+        viewModel.errorEmptyInput.observe(viewLifecycleOwner, { hasOccurred ->
+            if (hasOccurred) {
+                showWarningToast()
+            }
         })
     }
 
+    private fun showWarningToast() {
+        toast(getString(R.string.fill_up_all_field))
+        viewModel.onErrorEmptyInputComplete()
+    }
 
     companion object {
         fun newInstance() = PriceListFragment()
     }
-
 }

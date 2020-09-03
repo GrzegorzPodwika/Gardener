@@ -4,54 +4,61 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import pl.podwikagrzegorz.gardener.R
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import dagger.hilt.android.AndroidEntryPoint
 import pl.podwikagrzegorz.gardener.data.domain.BasicGarden
 import pl.podwikagrzegorz.gardener.data.domain.Period
 import pl.podwikagrzegorz.gardener.databinding.FragmentPlannedGardensBinding
+import pl.podwikagrzegorz.gardener.extensions.getAbsoluteFilePath
+import pl.podwikagrzegorz.gardener.extensions.snackbar
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.basic_garden.BasicGardenAdapter
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.basic_garden.DeleteBasicGardenDialog
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.garden_to_add.AddGardenFragment
 
+@AndroidEntryPoint
 class PlannedGardensFragment : Fragment() {
 
     private lateinit var binding: FragmentPlannedGardensBinding
-    private val viewModel: PlannedGardensViewModel by lazy {
-        ViewModelProvider(this).get(PlannedGardensViewModel::class.java)
-    }
-    private val basicGardenAdapter: BasicGardenAdapter by lazy {
-        BasicGardenAdapter(object : OnClickItemListener {
-            override fun onClick(id: Long) {
-                navigateToGardenViewPagerFragment(id)
-            }
-
-            override fun onLongClick(id: Long) {
-                showDeleteGardenDialog(id)
-            }
-        })
-    }
+    private val viewModel: PlannedGardensViewModel by viewModels()
+    private lateinit var basicGardenAdapter: BasicGardenAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_planned_gardens, container, false)
+        binding = FragmentPlannedGardensBinding.inflate(inflater, container, false)
 
+        connectRecyclerViewWithQuery()
         setUpBindingWithViewModel()
         presetRecyclerView()
         setOnFragmentResultListener()
         observeData()
 
         return binding.root
+    }
+
+    private fun connectRecyclerViewWithQuery() {
+        val options = FirestoreRecyclerOptions.Builder<BasicGarden>()
+            .setQuery(viewModel.getQuerySortedByTimestamp(), BasicGarden::class.java)
+            .setLifecycleOwner(this)
+            .build()
+
+        basicGardenAdapter = BasicGardenAdapter(options, object : OnClickItemListener {
+            override fun onClickItem(documentId: String) {
+                navigateToGardenViewPagerFragment(documentId)
+            }
+
+            override fun onLongClick(documentId: String) {
+                showDeleteGardenDialog(documentId)
+            }
+        })
     }
 
     private fun setUpBindingWithViewModel() {
@@ -61,6 +68,7 @@ class PlannedGardensFragment : Fragment() {
             recyclerViewPlannedGardens.adapter = basicGardenAdapter
         }
     }
+
 
     private fun presetRecyclerView() {
         binding.recyclerViewPlannedGardens.addOnScrollListener(object :
@@ -86,13 +94,15 @@ class PlannedGardensFragment : Fragment() {
 
     private fun getArgumentsFromAddedFragment(bundle: Bundle) {
         val basicGarden = BasicGarden()
+        val snapshotName = bundle.getString(AddGardenFragment.REQUEST_UNIQUE_SNAPSHOT_NAME, "")
+        val absolutePath = requireContext().getAbsoluteFilePath(snapshotName)
 
         basicGarden.apply {
             gardenTitle = bundle.getString(AddGardenFragment.REQUEST_GARDEN_TITLE, "")
             phoneNumber = bundle.getInt(AddGardenFragment.REQUEST_PHONE_NUMBER)
             period = bundle.getSerializable(AddGardenFragment.REQUEST_PERIOD) as Period
             isGarden = bundle.getBoolean(AddGardenFragment.REQUEST_IS_GARDEN)
-            uniqueSnapshotName = bundle.getString(AddGardenFragment.REQUEST_UNIQUE_SNAPSHOT_NAME, "")
+            uniqueSnapshotName = absolutePath
             latitude = bundle.getDouble(AddGardenFragment.REQUEST_LATITUDE)
             longitude = bundle.getDouble(AddGardenFragment.REQUEST_LONGITUDE)
         }
@@ -102,7 +112,7 @@ class PlannedGardensFragment : Fragment() {
 
     private fun observeData() {
         observeAddGardenFAB()
-        observeListOfBasicGardens()
+        observeInsertData()
     }
 
     private fun observeAddGardenFAB() {
@@ -113,44 +123,41 @@ class PlannedGardensFragment : Fragment() {
         })
     }
 
+    private fun observeInsertData() {
+        viewModel.eventGardenInserted.observe(viewLifecycleOwner, Observer { isSuccess ->
+            if (isSuccess) {
+                binding.root.snackbar("Insert success")
+                viewModel.onShowSuccessSnackbarComplete()
+            }
+        })
+    }
+
     private fun navigateToAddGardenFragment() {
         val navController = findNavController()
         val action = PlannedGardensFragmentDirections.actionPlannedGardensToAddGarden()
         navController.navigate(action)
+
         viewModel.onNavigateComplete()
     }
 
 
-    private fun observeListOfBasicGardens() {
-        viewModel.listOfBasicGardens.observe(
-            viewLifecycleOwner,
-            Observer { listOfBasicGardens ->
-                basicGardenAdapter.submitList(listOfBasicGardens)
-            }
-        )
-    }
-
-    private fun navigateToGardenViewPagerFragment(gardenId: Long) {
+    private fun navigateToGardenViewPagerFragment(documentId: String) {
         val navController = findNavController()
-        val action = PlannedGardensFragmentDirections.actionNavPlannedGardensToNavGardenViewPagerFragment(gardenId)
+        val action = PlannedGardensFragmentDirections
+            .actionNavPlannedGardensToNavGardenViewPagerFragment(documentId)
         navController.navigate(action)
     }
 
-    fun showDeleteGardenDialog(id: Long) {
-        val fragmentDialog =
-            DeleteBasicGardenDialog(
-                requireContext(),
-                object :
-                    DeleteBasicGardenDialog.NoticeDialogListener {
-                    override fun onDialogClick(isClickedPositive: Boolean) {
-                        if (isClickedPositive)
-                            viewModel.deleteGarden(id)
-                    }
-                })
+    fun showDeleteGardenDialog(documentId: String) {
+        val fragmentDialog = DeleteBasicGardenDialog(requireContext(),
+            object :
+                DeleteBasicGardenDialog.NoticeDialogListener {
+                override fun onDialogClick(isClickedPositive: Boolean) {
+                    if (isClickedPositive)
+                        viewModel.deleteGarden(documentId)
+                }
+            })
         fragmentDialog.show(childFragmentManager, null)
     }
 
-    companion object {
-        const val GARDEN_ID = "GARDEN_ID"
-    }
 }

@@ -2,43 +2,38 @@ package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_shee
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import io.realm.RealmResults
-import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.domain.Worker
-import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
 import pl.podwikagrzegorz.gardener.databinding.BottomSheetWorkerCheckboxBinding
 
-class SheetAssignWorkerAdapter :
-    ListAdapter<Worker, SheetAssignWorkerAdapter.WorkerHolder>(WorkerDiffCallback()) {
-    private val isCheckedWorkerList = mutableListOf<Boolean>()
+class SheetAssignWorkerAdapter(
+    private val workersList: List<Worker>
+): RecyclerView.Adapter<SheetAssignWorkerAdapter.WorkerHolder>() {
+
+    private val listOfCheckedWorkers = MutableList<Boolean>(workersList.size) {false}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkerHolder {
         return WorkerHolder.from(parent)
     }
 
+    override fun getItemCount(): Int = workersList.size
+
     override fun onBindViewHolder(holder: WorkerHolder, position: Int) {
-        val worker = getItem(position)
+        val worker = workersList[position]
         holder.bind(worker)
         holder.binding.materialCheckBoxReceivedWorkers.setOnCheckedChangeListener { _, isChecked ->
-            isCheckedWorkerList[position] = isChecked
+            listOfCheckedWorkers[position] = isChecked
         }
-    }
-
-    fun initAndSubmitList(listOfWorkers: List<Worker>) {
-        listOfWorkers.forEach { _ -> isCheckedWorkerList.add(false) }
-        submitList(listOfWorkers)
     }
 
     fun getListOfWorkersFullName(): List<String> {
         val workersFullName = mutableListOf<String>()
 
-        for (i in isCheckedWorkerList.indices) {
-            if (isCheckedWorkerList[i]) {
-                workersFullName.add(getItem(i).fullName)
+        for (i in listOfCheckedWorkers.indices) {
+            if (listOfCheckedWorkers[i]) {
+                workersFullName.add(workersList[i].name)
             }
         }
 
@@ -64,15 +59,19 @@ class SheetAssignWorkerAdapter :
         }
     }
 
+/*
 
     class WorkerDiffCallback : DiffUtil.ItemCallback<Worker>() {
         override fun areItemsTheSame(oldItem: Worker, newItem: Worker): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.name == newItem.name
         }
 
         override fun areContentsTheSame(oldItem: Worker, newItem: Worker): Boolean {
             return oldItem == newItem
         }
     }
+
+*/
+
 
 }

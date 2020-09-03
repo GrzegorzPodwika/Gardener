@@ -1,27 +1,39 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
-import android.os.Bundle
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
-import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.*
+import com.google.firebase.firestore.Query
+import com.google.firebase.storage.StorageReference
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import pl.podwikagrzegorz.gardener.data.repo.GardenComponentsRepository
+import pl.podwikagrzegorz.gardener.extensions.Constants
 
-class PhotosViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListener {
-    private val gardenComponentsDAO = GardenComponentsDAO(gardenID).apply { listener = this@PhotosViewModel }
+class PhotosViewModel @ViewModelInject constructor(
+    private val gardenComponentsRepository: GardenComponentsRepository,
+    @Assisted private val stateHandle: SavedStateHandle
+) : ViewModel() {
+    private val documentId = stateHandle.get<String>(Constants.GARDEN_TITLE)!!
 
-    private val _listOfPicturesPaths: MutableLiveData<List<String>> =
-        gardenComponentsDAO.getLiveListOfPicturesPaths()
-    val listOfPicturesPaths : LiveData<List<String>>
-        get() = _listOfPicturesPaths
+    private val _listOfPictureStorageRef = MutableLiveData<List<StorageReference>>()
+    val listOfPictureStorageRef: LiveData<List<StorageReference>>
+        get() = _listOfPictureStorageRef
 
     private val _eventOnTakePhoto = MutableLiveData<Boolean>()
-    val eventOnTakePhoto : LiveData<Boolean>
+    val eventOnTakePhoto: LiveData<Boolean>
         get() = _eventOnTakePhoto
 
-    fun addPictureToList(path: String) {
-        gardenComponentsDAO.addPictureToList(path)
-    }
+    private val _eventOnPhotoClick = MutableLiveData<Boolean>()
+    val eventOnPhotoClick: LiveData<Boolean>
+        get() = _eventOnPhotoClick
+
+    fun addPictureToList(absolutePath: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.insertPictureToList(documentId, absolutePath)
+            _listOfPictureStorageRef.postValue(gardenComponentsRepository.getListOfPictureRef(documentId))
+        }
 
     fun onTakePhoto() {
         _eventOnTakePhoto.value = true
@@ -31,32 +43,30 @@ class PhotosViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListene
         _eventOnTakePhoto.value = false
     }
 
-    fun onPhotoClick(position: Int){
-
+    fun onPhotoClick() {
+        _eventOnPhotoClick.value = true
     }
 
-    override fun onTransactionSuccess() {
-        fetchFreshData()
+    fun onPhotoClickComplete() {
+        _eventOnPhotoClick.value = false
     }
 
-    private fun fetchFreshData() {
-        _listOfPicturesPaths.value = gardenComponentsDAO.getListOfPicturesPaths()
+
+    init {
+        fetchListOfPictureUrls()
     }
 
-    override fun onCleared() {
-        gardenComponentsDAO.closeRealm()
-        super.onCleared()
-    }
-
-    companion object {
-        private const val GARDEN_ID = "GARDEN_ID"
-
-        fun toBundle(gardenID: Long): Bundle {
-            val bundle = Bundle(1)
-            bundle.putLong(GARDEN_ID, gardenID)
-            return bundle
+    private fun fetchListOfPictureUrls() =
+        viewModelScope.launch {
+            _listOfPictureStorageRef.postValue(
+                gardenComponentsRepository.getListOfPictureRef(documentId)
+            )
         }
 
-        fun fromBundle(bundle: Bundle): Long = bundle.getLong(GARDEN_ID)
-    }
+    fun getPhotoStorageReference(): StorageReference =
+        gardenComponentsRepository.gardenPictureRef
+
+    fun getTakenPhotoQuerySortedByTimestamp(): Query =
+        gardenComponentsRepository.getTakenPhotoQuerySortedByTimestamp(documentId)
+
 }

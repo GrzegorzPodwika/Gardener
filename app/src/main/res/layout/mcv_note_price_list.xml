@@ -52,7 +52,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/keyline_4"
                 android:layout_marginEnd="@dimen/keyline_2"
-                android:onClick="@{() -> clickListener.onClick(note.id)}"
+                android:onClick="@{() -> clickListener.onClickItem(note.documentId)}"
                 app:srcCompat="@drawable/ic_minus" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

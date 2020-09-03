@@ -12,18 +12,20 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.domain.Item
+import pl.podwikagrzegorz.gardener.data.domain.Tool
 import pl.podwikagrzegorz.gardener.databinding.BottomSheetAssignWorkerBinding
 
 class SheetToolsFragment(
-    listOfToolNames: List<String>,
+    private val listOfTools: List<Tool>,
     private val listener : OnGetListOfPickedItemsListener
 ) : BottomSheetDialogFragment() {
 
     private lateinit var binding: BottomSheetAssignWorkerBinding
-    private val adapter = SheetToolsAdapter(listOfToolNames)
+    private val adapter = SheetToolsAdapter(listOfTools)
 
     interface OnGetListOfPickedItemsListener {
-        fun onGetListOfPickedItems(listOfPickedItems: List<Boolean>)
+        fun onGetListOfPickedItems(listOfPickedItems: List<Item>)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -62,12 +64,19 @@ class SheetToolsFragment(
 
     private fun setAddToolsButtonListener() {
         binding.materialButtonConfirmAddingWorkers.setOnClickListener {
-            val listOfPickedTools = adapter.listOfCheckedTools
-            listener.onGetListOfPickedItems(listOfPickedTools)
+            val listOfCheckedTools = adapter.listOfCheckedTools
+            val listOfPickedItems = mutableListOf<Item>()
+
+            for (index in listOfCheckedTools.indices) {
+                if (listOfCheckedTools[index]) {
+                    val tool = listOfTools[index]
+                    val item = Item(tool.toolName, tool.numberOfTools)
+                    listOfPickedItems.add(item)
+                }
+            }
+            listener.onGetListOfPickedItems(listOfPickedItems)
             dismiss()
         }
     }
-
-
 
 }

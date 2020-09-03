@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Address
 import android.location.Geocoder
+import android.net.Uri
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
@@ -29,6 +30,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.FragmentMapsBinding
 import pl.podwikagrzegorz.gardener.extensions.getAbsoluteFilePath
@@ -37,10 +40,7 @@ import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.permissions.PermissionUtils
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.garden_to_add.AddGardenFragment
 import timber.log.Timber
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
+import java.io.*
 
 class MapsFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     ActivityCompat.OnRequestPermissionsResultCallback,

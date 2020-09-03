@@ -2,28 +2,24 @@ package pl.podwikagrzegorz.gardener.ui.workers
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import pl.podwikagrzegorz.gardener.R
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import pl.podwikagrzegorz.gardener.data.domain.Worker
-import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
-import pl.podwikagrzegorz.gardener.databinding.McvSingleItemBinding
 import pl.podwikagrzegorz.gardener.databinding.McvSingleWorkerBinding
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
 class WorkerAdapter(
+    options: FirestoreRecyclerOptions<Worker>,
     private val listener: OnClickItemListener
-) : ListAdapter<Worker, WorkerAdapter.WorkerHolder>(WorkerDiffCallback()) {
+) : FirestoreRecyclerAdapter<Worker, WorkerAdapter.WorkerHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkerHolder {
         return WorkerHolder.from(parent)
     }
 
-    override fun onBindViewHolder(holder: WorkerHolder, position: Int) {
-        val worker = getItem(position)
-        holder.bind(worker, listener)
+    override fun onBindViewHolder(holder: WorkerHolder, position: Int, model: Worker) {
+        holder.bind(model, listener)
     }
 
     class WorkerHolder private constructor(private val binding: McvSingleWorkerBinding) :
@@ -45,14 +41,5 @@ class WorkerAdapter(
         }
     }
 
-    class WorkerDiffCallback : DiffUtil.ItemCallback<Worker>() {
-        override fun areItemsTheSame(oldItem: Worker, newItem: Worker): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: Worker, newItem: Worker): Boolean {
-            return oldItem == newItem
-        }
-    }
 }
 

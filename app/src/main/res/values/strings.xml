@@ -91,7 +91,8 @@
     <string name="empty_phone_number">Enter correct client\'s phone!</string>
     <string name="default_period">Enter start and end date!</string>
     <string name="none_taken_snapshot">Locate work place!</string>
-    <string name="fill_all_fields">Fill up all fields!</string>
+    <string name="fill_up_field">Fill up field!</string>
+    <string name="fill_up_all_field">Fill up all fields!</string>
     <string name="fill_name_surname">Enter name and surname!</string>
 
     <!--Location strings-->
@@ -127,6 +128,10 @@
     <string name="hint_enter_address">Enter Address, City or Zip Code</string>
     <string name="description_full_photo">Full screen photo</string>
     <string name="machines">Machines</string>
+
+    <string name="login_success">You are already logged in.</string>
+    <string name="login_warning">You are not logged in.</string>
+    <string name="logout">Logout</string>
 
 
 </resources>

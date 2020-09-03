@@ -5,22 +5,26 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import pl.podwikagrzegorz.gardener.data.domain.BasicGarden
 
 import pl.podwikagrzegorz.gardener.databinding.McvSingleGardenBinding
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
 class BasicGardenAdapter(
+    options: FirestoreRecyclerOptions<BasicGarden>,
     private val listener: OnClickItemListener
-) : ListAdapter<BasicGarden, BasicGardenAdapter.BasicGardenHolder>(BasicGardenDiffCallback) {
+) : FirestoreRecyclerAdapter<BasicGarden, BasicGardenAdapter.BasicGardenHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasicGardenHolder {
         return BasicGardenHolder.from(parent)
     }
 
-    override fun onBindViewHolder(holder: BasicGardenHolder, position: Int) {
-        val basicGarden = getItem(position)
-        holder.bind(basicGarden, listener)
+
+
+    override fun onBindViewHolder(holder: BasicGardenHolder, position: Int, model: BasicGarden) {
+        holder.bind(model, listener)
     }
 
     class BasicGardenHolder private constructor(private val binding: McvSingleGardenBinding) :
@@ -30,7 +34,7 @@ class BasicGardenAdapter(
             binding.basicGarden = basicGarden
             binding.onClickListener = listener
             binding.root.setOnLongClickListener {
-                listener.onLongClick(basicGarden.id)
+                listener.onLongClick(basicGarden.documentId)
                 true
             }
             binding.executePendingBindings()
@@ -42,16 +46,6 @@ class BasicGardenAdapter(
                 val binding = McvSingleGardenBinding.inflate(inflater, parent, false)
                 return BasicGardenHolder(binding)
             }
-        }
-    }
-
-    object BasicGardenDiffCallback : DiffUtil.ItemCallback<BasicGarden>() {
-        override fun areItemsTheSame(oldItem: BasicGarden, newItem: BasicGarden): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: BasicGarden, newItem: BasicGarden): Boolean {
-            return oldItem == newItem
         }
     }
 }

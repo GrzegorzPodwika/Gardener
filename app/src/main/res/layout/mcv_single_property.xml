@@ -56,7 +56,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/keyline_4"
                 android:layout_marginEnd="@dimen/keyline_2"
-                android:onClick="@{() -> onClickListener.onClick(property.id)}"
+                android:onClick="@{() -> onClickListener.onClickItem(property.documentId)}"
                 app:srcCompat="@drawable/ic_minus" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

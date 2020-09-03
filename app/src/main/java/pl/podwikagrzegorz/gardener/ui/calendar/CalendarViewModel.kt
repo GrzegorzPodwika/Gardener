@@ -1,37 +1,46 @@
 package pl.podwikagrzegorz.gardener.ui.calendar
 
+import androidx.core.content.res.ResourcesCompat
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import kotlinx.coroutines.*
 import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.data.daos.GardenDAO
 import pl.podwikagrzegorz.gardener.data.domain.Period
+import pl.podwikagrzegorz.gardener.data.repo.CalendarRepository
 import pl.podwikagrzegorz.gardener.extensions.asCalendarDay
 import java.util.*
 
-class CalendarViewModel : ViewModel() {
-    private var viewModelJob = Job()
-    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+class CalendarViewModel @ViewModelInject constructor(
+    private val calendarRepository: CalendarRepository
+) : ViewModel() {
 
-    private val gardenDAO = GardenDAO()
-
-    private val listOfPeriods : List<Period>
+    private var listOfPeriods : List<Period> = emptyList()
     private val _listOfRangeDecorators = MutableLiveData<List<RangeDecorator>>()
     val listOfRangeDecorators : LiveData<List<RangeDecorator>>
         get() = _listOfRangeDecorators
 
     init {
-        listOfPeriods = gardenDAO.getDomainPeriodData()
-        initializeListOfRangeDecorators()
+        initializeViewModel()
     }
 
-    private fun initializeListOfRangeDecorators() {
-        uiScope.launch {
-            _listOfRangeDecorators.value = calculateRangeDecorators()
+    private fun initializeViewModel() {
+        viewModelScope.launch {
+            fetchListOfPeriods()
+            transformPeriodsIntoRangeDecorators()
         }
+    }
+
+    private suspend fun fetchListOfPeriods() {
+        listOfPeriods = calendarRepository.getAllPeriods()
+    }
+
+    private suspend fun transformPeriodsIntoRangeDecorators() {
+        _listOfRangeDecorators.postValue(calculateRangeDecorators())
     }
 
     private suspend fun calculateRangeDecorators(): List<RangeDecorator> {
@@ -60,26 +69,9 @@ class CalendarViewModel : ViewModel() {
         }
     }
 
-    override fun onCleared() {
-        gardenDAO.closeRealm()
-        super.onCleared()
-        viewModelJob.cancel()
-    }
 
     companion object {
-        private val coloredCircle = GardenerApp.res.getDrawable(R.drawable.calendar_circle, null)
+        private val coloredCircle = ResourcesCompat.getDrawable(GardenerApp.res, R.drawable.calendar_circle, null)
     }
 }
 
-/*    private fun getRangeOfDates(firstDay: Calendar, lastDay: Calendar): Set<CalendarDay> {
-        val dates = mutableSetOf<CalendarDay>()
-
-        do {
-            dates.add(firstDay.asCalendarDay())
-            firstDay.add(Calendar.DAY_OF_MONTH, 1)
-        } while (firstDay.time.before(lastDay.time))
-
-        dates.add(firstDay.asCalendarDay())
-
-        return dates
-    }*/

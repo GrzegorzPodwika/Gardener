@@ -5,31 +5,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import dagger.hilt.android.AndroidEntryPoint
 import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.domain.Worker
 import pl.podwikagrzegorz.gardener.databinding.WorkersFragmentBinding
 import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
+@AndroidEntryPoint
 class WorkersFragment : Fragment(), AddWorkerDialog.OnInputListener {
 
     private lateinit var binding: WorkersFragmentBinding
-    private val viewModel: WorkersViewModel by lazy {
-        ViewModelProvider(this).get(WorkersViewModel::class.java)
-    }
-    private val workerAdapter: WorkerAdapter by lazy {
-        WorkerAdapter(object : OnClickItemListener {
-            override fun onClick(id: Long) {
-                deleteWorkerFromDb(id)
-            }
-        })
-    }
-
-    private fun deleteWorkerFromDb(id: Long) {
-        viewModel.deleteWorker(id)
-    }
+    private val viewModel: WorkersViewModel by viewModels()
+    private lateinit var workerAdapter: WorkerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,12 +28,25 @@ class WorkersFragment : Fragment(), AddWorkerDialog.OnInputListener {
     ): View? {
         binding = WorkersFragmentBinding.inflate(inflater, container, false)
 
+        connectRecyclerViewWithQuery()
         setUpBindingWithViewModel()
         presetRecyclerView()
         setOnAddWorkerFabListener()
-        observeListOfWorkers()
 
         return binding.root
+    }
+
+    private fun connectRecyclerViewWithQuery() {
+        val options = FirestoreRecyclerOptions.Builder<Worker>()
+            .setQuery(viewModel.getQuerySortedByTimestamp(), Worker::class.java)
+            .setLifecycleOwner(this)
+            .build()
+
+        workerAdapter = WorkerAdapter(options, object : OnClickItemListener {
+            override fun onClickItem(documentId: String) {
+                deleteWorkerFromDb(documentId)
+            }
+        })
     }
 
     private fun setUpBindingWithViewModel() {
@@ -72,27 +76,21 @@ class WorkersFragment : Fragment(), AddWorkerDialog.OnInputListener {
         }
     }
 
-    private fun observeListOfWorkers() {
-        viewModel.listOfWorkers.observe(viewLifecycleOwner, Observer { listOfWorkers ->
-            workerAdapter.submitList(listOfWorkers)
-        })
-    }
 
     override fun onSendWorkerFullName(workerFullName: String) {
-        val nameList = workerFullName.split(Regex(" "))
-
-        if (nameList.size == 2) {
-            val name = nameList[0]
-            val surname = nameList[1]
-
-            addWorkerIntoViewModel(name, surname)
+        if (workerFullName.isNotEmpty()) {
+            addWorkerIntoViewModel(workerFullName)
         } else {
-            requireContext().toast(getString(R.string.fill_all_fields))
+            toast(getString(R.string.fill_up_field))
         }
     }
 
-    private fun addWorkerIntoViewModel(name: String, surname: String) {
-        viewModel.addWorkerIntoDatabase(name, surname)
+    private fun addWorkerIntoViewModel(workerName: String) {
+        viewModel.addWorkerIntoDatabase(workerName)
+    }
+
+    private fun deleteWorkerFromDb(workerName: String) {
+        viewModel.deleteWorker(workerName)
     }
 
     companion object {

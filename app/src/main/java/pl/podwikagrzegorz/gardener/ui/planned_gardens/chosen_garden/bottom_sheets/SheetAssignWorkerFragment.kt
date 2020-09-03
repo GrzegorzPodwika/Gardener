@@ -6,15 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import io.realm.RealmResults
-import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.domain.Worker
-import pl.podwikagrzegorz.gardener.data.realm.WorkerRealm
 import pl.podwikagrzegorz.gardener.databinding.BottomSheetAssignWorkerBinding
 
 class SheetAssignWorkerFragment(
@@ -23,7 +18,7 @@ class SheetAssignWorkerFragment(
 ) : BottomSheetDialogFragment() {
 
     private lateinit var binding: BottomSheetAssignWorkerBinding
-    private val adapter = SheetAssignWorkerAdapter()
+    private val workerAdapter = SheetAssignWorkerAdapter(workersList)
 
     interface OnGetListOfWorkersFullNameListener {
         fun onGetListOfWorkersFullName(listOfWorkersFullName: List<String>)
@@ -54,7 +49,6 @@ class SheetAssignWorkerFragment(
         binding = BottomSheetAssignWorkerBinding.inflate(inflater, container, false)
 
         setUpBinding()
-        setRecViewWithReceivedWorkers()
         setAddWorkersButton()
 
         return binding.root
@@ -63,17 +57,13 @@ class SheetAssignWorkerFragment(
     private fun setUpBinding() {
         binding.apply {
             lifecycleOwner = this@SheetAssignWorkerFragment
+            recyclerViewReceivedWorkers.adapter = workerAdapter
         }
-    }
-
-    private fun setRecViewWithReceivedWorkers() {
-        adapter.initAndSubmitList(workersList)
-        binding.recyclerViewReceivedWorkers.adapter = adapter
     }
 
     private fun setAddWorkersButton() {
         binding.materialButtonConfirmAddingWorkers.setOnClickListener {
-            val listOfWorkersFullName = adapter.getListOfWorkersFullName()
+            val listOfWorkersFullName = workerAdapter.getListOfWorkersFullName()
             listener.onGetListOfWorkersFullName(listOfWorkersFullName)
             dismiss()
         }

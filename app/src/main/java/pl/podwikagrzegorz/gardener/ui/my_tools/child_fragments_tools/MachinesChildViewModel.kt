@@ -1,33 +1,42 @@
 package pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import pl.podwikagrzegorz.gardener.data.daos.MachineDAO
-import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import pl.podwikagrzegorz.gardener.data.domain.Machine
+import pl.podwikagrzegorz.gardener.data.repo.MachineRepository
 
-class MachinesChildViewModel : ViewModel(), OnExecuteTransactionListener {
-    private val machineDAO = MachineDAO()
+class MachinesChildViewModel @ViewModelInject constructor(
+    private val machineRepository: MachineRepository
+) : ViewModel() {
 
-    private val _listOfMachines: MutableLiveData<List<Machine>> =
-        machineDAO.getLiveDomainData()
-    val listOfMachines: LiveData<List<Machine>>
+    private var _listOfMachines : List<Machine> = emptyList()
+    val listOfMachines : List<Machine>
         get() = _listOfMachines
 
+    private val _listOfMachineNames = mutableListOf<String>()
+    val listOfMachineNames : List<String>
+        get() = _listOfMachineNames
+
     private val _eventAddMachine = MutableLiveData<Boolean>()
-    val eventAddMachine : LiveData<Boolean>
+    val eventAddMachine: LiveData<Boolean>
         get() = _eventAddMachine
 
     private val _errorEditTextEmpty = MutableLiveData<Boolean>()
-    val errorEditTextEmpty : LiveData<Boolean>
+    val errorEditTextEmpty: LiveData<Boolean>
         get() = _errorEditTextEmpty
 
     fun onAddMachine(machineName: String, numbOfMachinesAsString: String) {
-        if (numbOfMachinesAsString.isNotEmpty()) {
-            val machine = Machine(0, machineName, numbOfMachinesAsString.toInt())
-            machineDAO.insertItem(machine)
-            _eventAddMachine.value = true
+        if (machineName.isNotEmpty() && numbOfMachinesAsString.isNotEmpty()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val machine = Machine(machineName, numbOfMachinesAsString.toInt())
+                machineRepository.insert(machine)
+                _eventAddMachine.postValue(true)
+            }
         } else {
             onErrorShow()
         }
@@ -45,27 +54,36 @@ class MachinesChildViewModel : ViewModel(), OnExecuteTransactionListener {
         _errorEditTextEmpty.value = false
     }
 
-    fun deleteMachine(id: Long?) {
-        id?.let { machineDAO.deleteItem(id) }
+    fun deleteMachine(machineName: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+        machineRepository.delete(machineName)
     }
 
-    override fun onAsyncTransactionSuccess() {
-        fetchFreshData()
-    }
+    fun getQuery() =
+        machineRepository.getQuery()
 
-    private fun fetchFreshData() {
-        _listOfMachines.value = machineDAO.getDomainData()
-    }
+    fun getQuerySortedByName() =
+        machineRepository.getQuerySortedByName()
 
-    override fun onCleared() {
-        machineDAO.closeRealm()
-        super.onCleared()
-    }
+    fun getQuerySortedByNumberOfMachines() =
+        machineRepository.getQueryByNumberOfMachines()
+
+    fun getQuerySortedByTimestamp() =
+        machineRepository.getQuerySortedByTimestamp()
+
+    fun preInitialize() {}
 
     init {
-        machineDAO.listener = this
+        fetchListOfMachines()
     }
-}
 
-/*    fun findMaxValueOf(itemName: String): Int =
-        machineDAO.findMaxValueOf(itemName) ?: GardenerApp.MAX_NUMBER_OF_MACHINES*/
+    private fun fetchListOfMachines() {
+        viewModelScope.launch {
+             _listOfMachines = machineRepository.getAllMachines()
+            for (machine in _listOfMachines) {
+                _listOfMachineNames.add(machine.machineName)
+            }
+        }
+    }
+
+}

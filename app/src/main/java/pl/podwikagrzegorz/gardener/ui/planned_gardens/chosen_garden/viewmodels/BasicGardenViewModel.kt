@@ -1,31 +1,30 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
 import android.net.Uri
-import android.os.Bundle
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.*
+import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.*
-import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
-import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
 import pl.podwikagrzegorz.gardener.data.domain.BasicGarden
-import pl.podwikagrzegorz.gardener.data.realm.BasicGardenRealm
+import pl.podwikagrzegorz.gardener.data.repo.GardenComponentsRepository
+import pl.podwikagrzegorz.gardener.extensions.Constants.GARDEN_TITLE
 
-//TODO dalsze przerobki,aby nie uzywali ClassRealm,
-//2.  uzywanie coroutines
-//3. implementacja listenerow
-class BasicGardenViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListener {
-    private var viewModelJob = Job()
-    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+//TODO Connecting component view models with @GardenComponentRepository
+class BasicGardenViewModel @ViewModelInject constructor(
+    private val gardenComponentsRepository: GardenComponentsRepository,
+    @Assisted private val stateHandle: SavedStateHandle
+) : ViewModel() {
 
-    private val gardenComponentsDAO = GardenComponentsDAO(gardenID).apply { listener = this@BasicGardenViewModel }
-
-    private val unManagedBasicGardenRealm: BasicGardenRealm =
-        gardenComponentsDAO.getBasicGarden()
+    private val documentId = stateHandle.get<String>(GARDEN_TITLE)!!
 
     private val _basicGarden = MutableLiveData<BasicGarden>()
     val basicGarden: LiveData<BasicGarden>
         get() = _basicGarden
+
+    private val _takenMapSnapshotStorageRef = MutableLiveData<StorageReference?>()
+    val takenMapSnapshotStorageRef : LiveData<StorageReference?>
+        get() = _takenMapSnapshotStorageRef
 
     private val _eventCallToClient = MutableLiveData<Boolean>()
     val eventCallToClient: LiveData<Boolean>
@@ -48,10 +47,6 @@ class BasicGardenViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionLi
         return basicGarden.value!!.uniqueSnapshotName
     }
 
-    override fun onAsyncTransactionSuccess() {
-        TODO("Not yet implemented")
-    }
-
     fun onCall() {
         _eventCallToClient.value = true
     }
@@ -69,38 +64,27 @@ class BasicGardenViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionLi
         _eventNavigateToWorkPlace.value = false
     }
 
-    override fun onCleared() {
-        gardenComponentsDAO.closeRealm()
-        super.onCleared()
-        viewModelJob.cancel()
-    }
-
     init {
         initializeBasicGarden()
     }
 
     private fun initializeBasicGarden() {
-        uiScope.launch {
-            _basicGarden.value = convertRealmObjectIntoDomain()
+        viewModelScope.launch {
+            _basicGarden.value = fetchBasicGardenFromRepository()
+            _takenMapSnapshotStorageRef.value = fetchMapSnapshotRefFromRepository()
         }
     }
 
-    private suspend fun convertRealmObjectIntoDomain(): BasicGarden {
+    private suspend fun fetchBasicGardenFromRepository(): BasicGarden {
         return withContext(Dispatchers.IO) {
-            unManagedBasicGardenRealm.asBasicGarden()
+            gardenComponentsRepository.getBasicGarden(documentId)
         }
     }
 
-    companion object {
-        private const val GARDEN_ID = "GARDEN_ID"
-
-        fun toBundle(gardenID: Long): Bundle {
-            val bundle = Bundle(1)
-            bundle.putLong(GARDEN_ID, gardenID)
-            return bundle
+    private suspend fun fetchMapSnapshotRefFromRepository(): StorageReference? {
+        return withContext(Dispatchers.IO) {
+            gardenComponentsRepository.getMapSnapshotStorageRef(documentId)
         }
-
-        fun fromBundle(bundle: Bundle): Long = bundle.getLong(GARDEN_ID)
     }
 
 

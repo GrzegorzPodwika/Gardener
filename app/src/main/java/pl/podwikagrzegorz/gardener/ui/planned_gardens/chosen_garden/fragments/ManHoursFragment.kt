@@ -7,29 +7,24 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import pl.podwikagrzegorz.gardener.data.daos.WorkerDAO
-import pl.podwikagrzegorz.gardener.data.domain.Worker
+import dagger.hilt.android.AndroidEntryPoint
 import pl.podwikagrzegorz.gardener.databinding.ExpandableListsOfManHoursBinding
+import pl.podwikagrzegorz.gardener.extensions.toBundle
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.ExpandableListAdapter
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetAssignWorkerFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetManHoursFragment
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.GardenViewModelFactory
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.ManHoursViewModel
+import pl.podwikagrzegorz.gardener.ui.workers.WorkersViewModel
 import java.util.*
 
 //Class No8 - Man hours
+@AndroidEntryPoint
 class ManHoursFragment : Fragment() {
 
     private lateinit var binding: ExpandableListsOfManHoursBinding
-    private val gardenID: Long by lazy {
-        ManHoursViewModel.fromBundle(requireArguments())
-    }
-    private val manHoursViewModel: ManHoursViewModel by viewModels {
-        GardenViewModelFactory(
-            gardenID
-        )
-    }
-    private lateinit var listOfWorkers: List<Worker>
+    private val manHoursViewModel: ManHoursViewModel by viewModels()
+
+    private val workerViewModel: WorkersViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,20 +32,14 @@ class ManHoursFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = ExpandableListsOfManHoursBinding.inflate(inflater, container, false)
+        workerViewModel.preInitialize()
 
         setUpViewModelWithBinding()
-        fetchListOfWorkers()
         setOnAddWorkerButtonListener()
         setOnAddManHoursButtonListener()
         observeMapOfWorkedHours()
 
         return binding.root
-    }
-
-    private fun fetchListOfWorkers() {
-        val workerDAO = WorkerDAO()
-        listOfWorkers = workerDAO.getDomainData()
-        workerDAO.closeRealm()
     }
 
     private fun setUpViewModelWithBinding() {
@@ -64,7 +53,7 @@ class ManHoursFragment : Fragment() {
 
         binding.materialButtonAddWorkers.setOnClickListener {
             SheetAssignWorkerFragment(
-                listOfWorkers,
+                workerViewModel.listOfWorkers,
                 object : SheetAssignWorkerFragment.OnGetListOfWorkersFullNameListener {
                     override fun onGetListOfWorkersFullName(listOfWorkersFullName: List<String>) {
                         manHoursViewModel.addListOfWorkersFullNames(listOfWorkersFullName)
@@ -74,24 +63,18 @@ class ManHoursFragment : Fragment() {
     }
 
     private fun setOnAddManHoursButtonListener() {
-
         binding.materialButtonAddManHours.setOnClickListener {
-            SheetManHoursFragment(
-                manHoursViewModel.workersFullNames,
-                object :
-                    SheetManHoursFragment.OnGetListOfWorkedHoursWithPickedDate {
-                    override fun onGetListOfWorkedHoursWithPickedDate(
-                        listOfWorkedHours: List<Double>,
-                        date: Date
-                    ) {
-                        manHoursViewModel.addListOfWorkedHoursWithPickedDate(
-                            listOfWorkedHours,
-                            date
-                        )
+            SheetManHoursFragment(manHoursViewModel.workersFullNames,
+                object : SheetManHoursFragment.OnGetListOfWorkedHoursWithPickedDate {
+
+                    override fun onGetListOfWorkedHoursWithPickedDate(listOfWorkedHours: List<Double>, date: Date) {
+                        manHoursViewModel.addListOfWorkedHoursWithPickedDate(listOfWorkedHours, date)
                     }
+
                 }).show(childFragmentManager, null)
         }
     }
+
 
     private fun observeMapOfWorkedHours() {
         manHoursViewModel.mapOfWorkedHours.observe(viewLifecycleOwner,
@@ -101,9 +84,9 @@ class ManHoursFragment : Fragment() {
     }
 
     companion object {
-        fun create(gardenID: Long): ManHoursFragment {
+        fun create(gardenTitle: String): ManHoursFragment {
             val fragment = ManHoursFragment()
-            fragment.arguments = ManHoursViewModel.toBundle(gardenID)
+            fragment.arguments = toBundle(gardenTitle)
             return fragment
         }
     }

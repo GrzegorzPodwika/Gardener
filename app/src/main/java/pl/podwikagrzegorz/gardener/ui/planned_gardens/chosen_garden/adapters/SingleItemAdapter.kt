@@ -5,39 +5,41 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import pl.podwikagrzegorz.gardener.data.domain.ActiveString
 import pl.podwikagrzegorz.gardener.databinding.McvSingleItemBinding
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
 class SingleItemAdapter(
+    options: FirestoreRecyclerOptions<ActiveString>,
     private val listener: OnClickItemListener
-) : ListAdapter<ActiveString, SingleItemAdapter.SingleItemHolder>(ItemDiffCallback) {
+) : FirestoreRecyclerAdapter<ActiveString, SingleItemAdapter.SingleItemHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SingleItemHolder {
         return SingleItemHolder.from(parent)
     }
 
-    override fun onBindViewHolder(holder: SingleItemHolder, position: Int) {
-        val activeString = getItem(position)
-        holder.bind(activeString, listener, position)
+    override fun onBindViewHolder(holder: SingleItemHolder, position: Int, model: ActiveString) {
+        holder.bind(model, listener)
     }
 
-    class SingleItemHolder(val binding: McvSingleItemBinding) :
+    class SingleItemHolder private constructor(private val binding: McvSingleItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(activeString: ActiveString, listener: OnClickItemListener, position: Int) {
+        fun bind(activeString: ActiveString, listener: OnClickItemListener) {
             binding.activeString = activeString
-            setUpBindingListeners(listener, position)
+            setUpBindingListeners(listener, activeString)
             binding.executePendingBindings()
         }
 
-        private fun setUpBindingListeners(listener: OnClickItemListener, position: Int) {
+        private fun setUpBindingListeners(listener: OnClickItemListener, activeString: ActiveString) {
             binding.textViewItemName.setOnClickListener {
-                listener.onChangeFlagToOpposite(position)
+                listener.onChangeFlagToOpposite(activeString.documentId)
             }
 
             binding.imageButtonItemToDelete.setOnClickListener {
-                listener.onClick(position.toLong())
+                listener.onClickItem(activeString.documentId)
             }
         }
 
@@ -50,14 +52,4 @@ class SingleItemAdapter(
         }
     }
 
-    object ItemDiffCallback : DiffUtil.ItemCallback<ActiveString>() {
-        override fun areItemsTheSame(oldItem: ActiveString, newItem: ActiveString): Boolean {
-            return oldItem.name == newItem.name
-        }
-
-        override fun areContentsTheSame(oldItem: ActiveString, newItem: ActiveString): Boolean {
-            return oldItem == newItem
-        }
-
-    }
 }

@@ -12,44 +12,32 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.firebase.storage.StorageReference
+import dagger.hilt.android.AndroidEntryPoint
 import pl.podwikagrzegorz.gardener.GardenerApp
+import pl.podwikagrzegorz.gardener.data.domain.Picture
 import pl.podwikagrzegorz.gardener.databinding.FragmentPhotosBinding
+import pl.podwikagrzegorz.gardener.extensions.getAbsoluteFilePath
+import pl.podwikagrzegorz.gardener.extensions.toBundle
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SmallPhotoAdapter
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.FullImageDialogFragment
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.GardenViewModelFactory
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.PhotosViewModel
 import java.io.File
 import java.io.IOException
 
 // Photos
+@AndroidEntryPoint
 class PhotosFragment : Fragment() {
-    private lateinit var binding: FragmentPhotosBinding
-    private val viewModel: PhotosViewModel by viewModels {
-        GardenViewModelFactory(
-            gardenID
-        )
-    }
-    private val gardenID: Long by lazy {
-        PhotosViewModel.fromBundle(requireArguments())
-    }
 
+    private lateinit var binding: FragmentPhotosBinding
+    private val viewModel: PhotosViewModel by viewModels()
     private val fileProviderPath: File by lazy {
         requireContext().filesDir
     }
     private var uniquePhotoName: String = ""
-
-    private val listener : OnClickItemListener = object : OnClickItemListener {
-        override fun onClick(id: Long) {
-            showFullResolutionImagesDialog()
-        }
-    }
-
-    private fun showFullResolutionImagesDialog() {
-        if (viewModel.listOfPicturesPaths.value != null) {
-            FullImageDialogFragment(viewModel.listOfPicturesPaths.value!!)
-                .show(childFragmentManager, null)
-        }
-    }
+    private lateinit var smallPhotoAdapter: SmallPhotoAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,20 +46,35 @@ class PhotosFragment : Fragment() {
     ): View? {
         binding = FragmentPhotosBinding.inflate(inflater, container, false)
 
+        connectRecyclerViewWithQuery()
         setUpViewModelWithBinding()
-        observeOnTakePhotoButton()
-
+        observeEventsFromViewModel()
         //setOnCompleteGardenButtonListener()
 
         return binding.root
     }
 
+    private fun connectRecyclerViewWithQuery() {
+        val options = FirestoreRecyclerOptions.Builder<Picture>()
+            .setQuery(viewModel.getTakenPhotoQuerySortedByTimestamp(), Picture::class.java)
+            .setLifecycleOwner(this)
+            .build()
+
+        val photoStorageReference : StorageReference = viewModel.getPhotoStorageReference()
+        smallPhotoAdapter = SmallPhotoAdapter(options, photoStorageReference)
+    }
+
     private fun setUpViewModelWithBinding() {
         binding.apply {
-            lifecycleOwner = this@PhotosFragment
+            lifecycleOwner = viewLifecycleOwner
             photosViewModel = viewModel
-            onClickListener = listener
+            recyclerViewTakenPhotos.adapter = smallPhotoAdapter
         }
+    }
+
+    private fun observeEventsFromViewModel() {
+        observeOnTakePhotoButton()
+        observeOnPhotoClick()
     }
 
     private fun observeOnTakePhotoButton() {
@@ -81,6 +84,25 @@ class PhotosFragment : Fragment() {
             }
         })
     }
+
+    private fun observeOnPhotoClick() {
+        viewModel.eventOnPhotoClick.observe(viewLifecycleOwner, {hasClicked ->
+            if (hasClicked) {
+                showFullResolutionImagesDialog()
+            }
+        })
+    }
+
+
+
+    private fun showFullResolutionImagesDialog() {
+        if (viewModel.listOfPictureStorageRef.value != null) {
+            FullImageDialogFragment(viewModel.listOfPictureStorageRef.value!!)
+                .show(childFragmentManager, null)
+        }
+        viewModel.onPhotoClickComplete()
+    }
+
 
     private fun tryTakePhoto() {
         val packageManager = requireContext().packageManager
@@ -118,7 +140,8 @@ class PhotosFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            viewModel.addPictureToList(uniquePhotoName)
+            val absolutePicturePath = requireContext().getAbsoluteFilePath(uniquePhotoName)
+            viewModel.addPictureToList(absolutePicturePath)
         }
     }
 
@@ -130,9 +153,9 @@ class PhotosFragment : Fragment() {
         const val CAMERA_REQUEST_CODE = 1001
         const val MAX_NUMBER_OF_POSSIBLE_PICTURES = 12
 
-        fun create(gardenID: Long): PhotosFragment {
+        fun create(gardenTitle: String): PhotosFragment {
             val fragment = PhotosFragment()
-            fragment.arguments = PhotosViewModel.toBundle(gardenID)
+            fragment.arguments = toBundle(gardenTitle)
             return fragment
         }
     }

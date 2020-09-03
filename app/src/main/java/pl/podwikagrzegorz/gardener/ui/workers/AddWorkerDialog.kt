@@ -41,6 +41,7 @@ class AddWorkerDialog(
         binding.apply {
             lifecycleOwner = viewLifecycleOwner
             addWorkerViewModel = viewModel
+            workerFullName = ""
         }
     }
 

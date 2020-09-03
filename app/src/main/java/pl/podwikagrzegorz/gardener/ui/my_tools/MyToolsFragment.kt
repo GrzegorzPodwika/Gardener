@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
@@ -30,10 +31,10 @@ class MyToolsFragment : Fragment() {
 
         binding.bottomNavigationTools.setOnNavigationItemSelectedListener(navListener)
 
-        childFragmentManager.beginTransaction().replace(
-            R.id.tools_fragment_container,
-            ToolsChildFragment()
-        ).commit()
+        childFragmentManager.beginTransaction()
+            .setCustomAnimations(R.anim.fragment_zoom_in, android.R.anim.fade_out)
+            .replace(R.id.tools_fragment_container, ToolsChildFragment())
+            .commit()
 
         return binding.root
     }
@@ -51,6 +52,7 @@ class MyToolsFragment : Fragment() {
             if (selectedFragment != null) {
 
                 childFragmentManager.beginTransaction()
+                    .setCustomAnimations(R.anim.fragment_zoom_in, android.R.anim.fade_out)
                     .replace(R.id.tools_fragment_container, selectedFragment)
                     .commit()
                 true

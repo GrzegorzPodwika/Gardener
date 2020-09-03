@@ -1,12 +1,12 @@
 package pl.podwikagrzegorz.gardener.data.domain
 
-import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentId
 
 data class Item(
-    var itemName: String = "",
-    var numberOfItems: Int = 0,
-    var isActive: Boolean = true
-) {
-    fun asItemRealm() : ItemRealm =
-        ItemRealm(itemName, numberOfItems, isActive)
-}
+    val itemName: String = "",
+    val numberOfItems: Int = 0,
+    val isActive: Boolean = true,
+    val timestamp: Timestamp = Timestamp.now(),
+    @DocumentId val documentId: String = ""
+)

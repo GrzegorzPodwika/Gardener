@@ -4,53 +4,32 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import dagger.hilt.android.AndroidEntryPoint
 import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.data.daos.PropertyDAO
-import pl.podwikagrzegorz.gardener.data.domain.Property
-import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
+import pl.podwikagrzegorz.gardener.data.domain.Item
 import pl.podwikagrzegorz.gardener.databinding.FragmentToolsInViewpagerBinding
+import pl.podwikagrzegorz.gardener.extensions.toBundle
+import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.PropertiesChildViewModel
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.AddedItemAdapter
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.PickNumberDialog
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetPropertiesFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetToolsFragment
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.GardenViewModelFactory
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.PropertyViewModel
 
 //Class No6 - Properties
+@AndroidEntryPoint
 class PropertyFragment : Fragment() {
 
     private lateinit var binding: FragmentToolsInViewpagerBinding
-    private val gardenID: Long by lazy {
-        PropertyViewModel.fromBundle(requireArguments())
-    }
-    private val viewModelMainProperties: PropertyViewModel by viewModels {
-        GardenViewModelFactory(
-            gardenID
-        )
-    }
+    private val viewModelMainProperties: PropertyViewModel by viewModels()
+    private lateinit var propertyAdapter: AddedItemAdapter
 
-    private lateinit var receivedProperties: List<Property>
-    private val receivedPropertyNames = mutableListOf<String>()
-
-    private val propertyAdapter: AddedItemAdapter by lazy {
-        AddedItemAdapter(object : OnClickItemListener {
-            override fun onClick(id: Long) {
-                deleteMachineFromDb(id)
-            }
-
-            override fun onChangeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
-                changeNumberOfItems(currentValue, position, itemName)
-            }
-
-            override fun onChangeFlagToOpposite(position: Int) {
-                changeFlagToOpposite(position)
-            }
-        })
-    }
+    private val receivedPropertiesViewModel: PropertiesChildViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,15 +37,31 @@ class PropertyFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentToolsInViewpagerBinding.inflate(inflater, container, false)
+        receivedPropertiesViewModel.preInitialize()
 
+        connectRecyclerViewWithQuery()
         setUpBinding()
         presetAddPropertyButton()
-        fetchReceivedProperties()
-        mapReceivedPropertiesIntoNames()
         setOnAddPropertiesButtonListener()
-        observeListOfAddedProperties()
 
         return binding.root
+    }
+
+    private fun connectRecyclerViewWithQuery() {
+        val options = FirestoreRecyclerOptions.Builder<Item>()
+            .setQuery(viewModelMainProperties.getTakenPropertiesQuerySortedByTimestamp(), Item::class.java)
+            .setLifecycleOwner(this)
+            .build()
+
+        propertyAdapter = AddedItemAdapter(options, object : OnClickItemListener {
+            override fun onChangeFlagToOpposite(documentId: String) {
+                viewModelMainProperties.reverseFlagOnProperty(childDocumentId = documentId)
+            }
+
+            override fun onClickItem(documentId: String) {
+                viewModelMainProperties.deleteItemFromList(childDocumentId = documentId)
+            }
+        })
     }
 
     private fun setUpBinding() {
@@ -79,39 +74,46 @@ class PropertyFragment : Fragment() {
     private fun presetAddPropertyButton() {
         binding.materialButtonAddTools.text = getString(R.string.others)
         binding.materialButtonAddTools.icon =
-            GardenerApp.res.getDrawable(R.drawable.ic_canister, null)
+            ResourcesCompat.getDrawable(GardenerApp.res, R.drawable.ic_canister, null)
     }
 
-    private fun fetchReceivedProperties() {
-        val propertyDAO = PropertyDAO()
-        receivedProperties = propertyDAO.getDomainData()
-        propertyDAO.closeRealm()
-    }
-
-    private fun mapReceivedPropertiesIntoNames() {
-        receivedProperties.forEach { receivedPropertyNames.add(it.propertyName) }
-    }
 
     private fun setOnAddPropertiesButtonListener() {
         binding.materialButtonAddTools.setOnClickListener {
-            SheetToolsFragment(
-                receivedPropertyNames,
-                object : SheetToolsFragment.OnGetListOfPickedItemsListener {
-                    override fun onGetListOfPickedItems(listOfPickedItems: List<Boolean>) {
-                        addListOfPickedPropertiesToMainList(listOfPickedItems)
+            SheetPropertiesFragment(
+                receivedPropertiesViewModel.listOfProperties,
+                object : SheetPropertiesFragment.OnGetListOfPickedItemsListener {
+                    override fun onGetListOfPickedItems(listOfPickedItems: List<Item>) {
+                        viewModelMainProperties.addListOfPickedProperties(listOfPickedItems)
                     }
                 }
             ).show(childFragmentManager, null)
         }
     }
 
+    companion object {
+        fun create(gardenTitle: String): PropertyFragment {
+            val fragment = PropertyFragment()
+            fragment.arguments = toBundle(gardenTitle)
+            return fragment
+        }
+    }
+}
+
+
+
+
+
+/*
     private fun addListOfPickedPropertiesToMainList(listOfPickedItems: List<Boolean>) {
-        val listOfItemRealm = mutableListOf<ItemRealm>()
+        val listOfItemRealm = mutableListOf<Item>()
+        val receivedProperties = receivedPropertiesViewModel.listOfProperties
+
 
         for (index in listOfPickedItems.indices) {
             if (listOfPickedItems[index]) {
                 val propertyToAdd =
-                    ItemRealm(
+                    Item(
                         receivedProperties[index].propertyName,
                         receivedProperties[index].numberOfProperties
                     )
@@ -122,17 +124,7 @@ class PropertyFragment : Fragment() {
         viewModelMainProperties.addListOfPickedProperties(listOfItemRealm)
     }
 
-    private fun observeListOfAddedProperties() {
-        viewModelMainProperties.listOfProperties.observe(viewLifecycleOwner, Observer { listOfAddedProperties ->
-                propertyAdapter.submitList(listOfAddedProperties)
-        })
-    }
-
-    private fun deleteMachineFromDb(id: Long) {
-        viewModelMainProperties.deleteItemFromList(id)
-    }
-
-    private fun changeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
+private fun changeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
         val seekingProperty = receivedProperties.find { it.propertyName == itemName }
         val maxValue: Int = seekingProperty?.numberOfProperties ?: GardenerApp.MAX_NUMBER_OF_MACHINES
 
@@ -145,17 +137,4 @@ class PropertyFragment : Fragment() {
                     viewModelMainProperties.updateNumberOfProperties(chosenNumber, position)
                 }
             }).show(childFragmentManager, null)
-    }
-
-    private fun changeFlagToOpposite(position: Int) {
-        viewModelMainProperties.reverseFlagOnProperty(position)
-    }
-
-    companion object {
-        fun create(gardenID: Long): PropertyFragment {
-            val fragment = PropertyFragment()
-            fragment.arguments = PropertyViewModel.toBundle(gardenID)
-            return fragment
-        }
-    }
-}
+    }*/

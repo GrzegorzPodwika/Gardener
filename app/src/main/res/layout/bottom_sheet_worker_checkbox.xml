@@ -17,7 +17,7 @@
             android:id="@+id/materialCheckBox_received_workers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{worker.fullName}"
+            android:text="@{worker.name}"
             tools:text="John Smith" />
 
     </LinearLayout>

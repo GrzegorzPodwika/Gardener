@@ -1,19 +1,22 @@
 package pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import pl.podwikagrzegorz.gardener.GardenerApp
-import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
-import pl.podwikagrzegorz.gardener.data.daos.ToolDAO
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import pl.podwikagrzegorz.gardener.data.domain.Tool
+import pl.podwikagrzegorz.gardener.data.repo.ToolRepository
+import timber.log.Timber
 
-class ToolsChildViewModel : ViewModel(), OnExecuteTransactionListener {
-    private val toolDAO = ToolDAO()
+class ToolsChildViewModel @ViewModelInject constructor(
+    private val toolRepository: ToolRepository
+) : ViewModel() {
 
-    private val _listOfTools: MutableLiveData<List<Tool>> =
-        toolDAO.getLiveDomainData()
-    val listOfTools: LiveData<List<Tool>>
+    private var _listOfTools: List<Tool> = listOf()
+    val listOfTools: List<Tool>
         get() = _listOfTools
 
     private val _eventAddTool = MutableLiveData<Boolean>()
@@ -21,14 +24,16 @@ class ToolsChildViewModel : ViewModel(), OnExecuteTransactionListener {
         get() = _eventAddTool
 
     private val _errorEditTextEmpty = MutableLiveData<Boolean>()
-    val errorEditTextEmpty : LiveData<Boolean>
+    val errorEditTextEmpty: LiveData<Boolean>
         get() = _errorEditTextEmpty
 
     fun onAddTool(toolName: String, numbOfToolsAsString: String) {
-        if (numbOfToolsAsString.isNotEmpty()) {
-            val tool = Tool(0, toolName, numbOfToolsAsString.toInt())
-            toolDAO.insertItem(tool)
-            _eventAddTool.value = true
+        if (toolName.isNotEmpty() && numbOfToolsAsString.isNotEmpty()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val tool = Tool(toolName, numbOfToolsAsString.toInt())
+                toolRepository.insert(tool)
+                _eventAddTool.postValue(true)
+            }
         } else {
             onErrorShow()
         }
@@ -46,33 +51,45 @@ class ToolsChildViewModel : ViewModel(), OnExecuteTransactionListener {
         _errorEditTextEmpty.value = false
     }
 
-    fun findMaxValueOf(itemName: String): Int =
-        toolDAO.findMaxValueOf(itemName) ?: GardenerApp.MAX_NUMBER_OF_MACHINES
+    fun deleteTool(toolName: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+            toolRepository.delete(toolName)
+        }
 
-    fun deleteTool(id: Long) {
-        toolDAO.deleteItem(id)
-    }
+    fun getQuery() =
+        toolRepository.getQuery()
 
-    override fun onAsyncTransactionSuccess() {
-        fetchFreshData()
-    }
+    fun getQuerySortedByName() =
+        toolRepository.getQuerySortedByName()
 
-    private fun fetchFreshData() {
-        _listOfTools.value = toolDAO.getDomainData()
-    }
+    fun getQuerySortedByNumberOfTools() =
+        toolRepository.getQuerySortedByNumberOfTools()
 
+    fun getQuerySortedByTimestamp() =
+        toolRepository.getQuerySortedByTimestamp()
 
-    override fun onCleared() {
-        toolDAO.closeRealm()
-        super.onCleared()
-    }
+    fun preInitialize() {}
 
     init {
-        toolDAO.listener = this
+        initializeListOfTools()
+        Timber.i("Initialize ${javaClass.name}")
+    }
+
+    private fun initializeListOfTools() {
+        viewModelScope.launch {
+            _listOfTools = toolRepository.getAllTools()
+        }
     }
 }
 
-/*
+
+
+/*    private val _listOfToolNames = mutableListOf<String>()
+    val listOfToolNames : List<String>
+        get() = _listOfToolNames
+    fun findMaxValueOf(itemName: String): Int =
+        toolDAO.findMaxValueOf(itemName) ?: GardenerApp.MAX_NUMBER_OF_MACHINES
+
 fun getListOfTools(): List<Tool> =
     listOfTools.value ?: emptyList()
 */

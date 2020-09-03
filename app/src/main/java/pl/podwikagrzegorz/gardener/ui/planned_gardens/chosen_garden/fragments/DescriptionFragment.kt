@@ -7,34 +7,23 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import dagger.hilt.android.AndroidEntryPoint
+import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.domain.ActiveString
 import pl.podwikagrzegorz.gardener.databinding.FragmentDescriptionBinding
+import pl.podwikagrzegorz.gardener.extensions.toBundle
+import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SingleItemAdapter
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.DescriptionViewModel
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.GardenViewModelFactory
 
+@AndroidEntryPoint
 class DescriptionFragment : Fragment() {
 
     private lateinit var binding: FragmentDescriptionBinding
-    private val gardenID: Long by lazy {
-        DescriptionViewModel.fromBundle(requireArguments())
-    }
-    private val viewModel: DescriptionViewModel by viewModels {
-        GardenViewModelFactory(
-            gardenID
-        )
-    }
-    private val descriptionAdapter: SingleItemAdapter by lazy {
-        SingleItemAdapter(object : OnClickItemListener {
-            override fun onClick(id: Long) {
-                deleteDescriptionFromDb(id)
-            }
-
-            override fun onChangeFlagToOpposite(position: Int) {
-                reverseFlagOnDescription(position)
-            }
-        })
-    }
+    private val viewModel: DescriptionViewModel by viewModels()
+    private lateinit var descriptionAdapter: SingleItemAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,11 +33,28 @@ class DescriptionFragment : Fragment() {
 
         binding = FragmentDescriptionBinding.inflate(inflater, container, false)
 
+        connectRecyclerViewWithQuery()
         setUpViewModelWithBinding()
-        observeIsAddedDescription()
-        observeListOfDescriptions()
+        observeViewModelData()
 
         return binding.root
+    }
+
+    private fun connectRecyclerViewWithQuery() {
+        val options = FirestoreRecyclerOptions.Builder<ActiveString>()
+            .setQuery(viewModel.getDescriptionQuerySortedByTimestamp(), ActiveString::class.java)
+            .setLifecycleOwner(this)
+            .build()
+
+        descriptionAdapter = SingleItemAdapter(options, object : OnClickItemListener {
+            override fun onChangeFlagToOpposite(documentId: String) {
+                viewModel.reverseFlagOnDescription(childDocumentId = documentId)
+            }
+
+            override fun onClickItem(documentId: String) {
+                viewModel.deleteDescriptionFromList(childDocumentId = documentId)
+            }
+        })
     }
 
     private fun setUpViewModelWithBinding() {
@@ -60,19 +66,17 @@ class DescriptionFragment : Fragment() {
         }
     }
 
-    private fun observeIsAddedDescription() {
-        viewModel.eventOnAddedDescription.observe(viewLifecycleOwner, Observer { isAdded ->
-            if (isAdded) {
+    private fun observeViewModelData() {
+        observeDescriptionAdding()
+        observeErrorEmptyInput()
+    }
+
+    private fun observeDescriptionAdding() {
+        viewModel.eventDescriptionAdded.observe(viewLifecycleOwner, Observer { hasAdded ->
+            if (hasAdded) {
                 cleanUp()
             }
         })
-    }
-
-    private fun observeListOfDescriptions() {
-        viewModel.listOfDescriptions
-            .observe(viewLifecycleOwner, Observer { listOfDescriptions ->
-                descriptionAdapter.submitList(listOfDescriptions)
-            })
     }
 
     private fun cleanUp() {
@@ -89,20 +93,20 @@ class DescriptionFragment : Fragment() {
         binding.editTextDescriptionName.requestFocus()
     }
 
-    private fun deleteDescriptionFromDb(id: Long) {
-        viewModel.deleteDescriptionFromList(id)
-    }
-
-    private fun reverseFlagOnDescription(position: Int) {
-        viewModel.reverseFlagOnDescription(position)
+    private fun observeErrorEmptyInput() {
+        viewModel.errorEmptyInput.observe(viewLifecycleOwner, Observer { hasOccurred ->
+            if (hasOccurred) {
+                toast(getString(R.string.fill_up_field))
+                viewModel.onShowErrorComplete()
+            }
+        })
     }
 
     companion object {
-        fun create(gardenID: Long): DescriptionFragment {
+        fun create(gardenTitle: String): DescriptionFragment {
             val fragment = DescriptionFragment()
-            fragment.arguments = DescriptionViewModel.toBundle(gardenID)
+            fragment.arguments = toBundle(gardenTitle)
             return fragment
         }
-
     }
 }

@@ -7,36 +7,25 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import dagger.hilt.android.AndroidEntryPoint
+import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.domain.ActiveString
 import pl.podwikagrzegorz.gardener.databinding.FragmentNotesBinding
+import pl.podwikagrzegorz.gardener.extensions.fromBundle
+import pl.podwikagrzegorz.gardener.extensions.toBundle
+import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SingleItemAdapter
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.GardenViewModelFactory
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.NoteViewModel
 
 //Class No3 - Notes
+@AndroidEntryPoint
 class NoteFragment : Fragment() {
 
     private lateinit var binding: FragmentNotesBinding
-    private val gardenID: Long by lazy {
-        NoteViewModel.fromBundle(requireArguments())
-    }
-    private val viewModel: NoteViewModel by viewModels {
-        GardenViewModelFactory(
-            gardenID
-        )
-    }
-
-    private val propertyAdapter: SingleItemAdapter by lazy {
-        SingleItemAdapter(object : OnClickItemListener {
-            override fun onClick(id: Long) {
-                deleteNoteFromDb(id)
-            }
-
-            override fun onChangeFlagToOpposite(position: Int) {
-                reverseFlagOnNote(position)
-            }
-        })
-    }
+    private val viewModel: NoteViewModel by viewModels()
+    private lateinit var propertyAdapter: SingleItemAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,15 +35,28 @@ class NoteFragment : Fragment() {
 
         binding = FragmentNotesBinding.inflate(inflater, container, false)
 
+        connectRecyclerViewWithQuery()
+        setUpViewModelWithBinding()
+        observeHasAddedNote()
+
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun connectRecyclerViewWithQuery() {
+        val options = FirestoreRecyclerOptions.Builder<ActiveString>()
+            .setQuery(viewModel.getNoteQuerySortedByTimestamp(), ActiveString::class.java)
+            .setLifecycleOwner(this)
+            .build()
 
-        setUpViewModelWithBinding()
-        observeHasAddedNote()
-        observeListOfNotes()
+        propertyAdapter = SingleItemAdapter(options, object : OnClickItemListener {
+            override fun onChangeFlagToOpposite(documentId: String) {
+                viewModel.reverseFlagOnNote(childDocumentId = documentId)
+            }
+
+            override fun onClickItem(documentId: String) {
+                viewModel.deleteItemFromList(childDocumentId = documentId)
+            }
+        })
     }
 
     private fun setUpViewModelWithBinding() {
@@ -67,9 +69,16 @@ class NoteFragment : Fragment() {
     }
 
     private fun observeHasAddedNote() {
-        viewModel.eventOnAddedNote.observe(viewLifecycleOwner, Observer { hasAdded ->
+        viewModel.eventNoteAdded.observe(viewLifecycleOwner, { hasAdded ->
             if (hasAdded) {
                 cleanUp()
+            }
+        })
+
+        viewModel.errorEmptyInput.observe(viewLifecycleOwner, { hasOccurred ->
+            if (hasOccurred) {
+                toast(getString(R.string.fill_up_field))
+                viewModel.onShowErrorComplete()
             }
         })
     }
@@ -88,26 +97,10 @@ class NoteFragment : Fragment() {
         binding.editTextNote.requestFocus()
     }
 
-
-    private fun observeListOfNotes() {
-        viewModel.listOfNotes.observe(viewLifecycleOwner, Observer { listOfNotes ->
-            propertyAdapter.submitList(listOfNotes)
-        })
-    }
-
-
-    private fun deleteNoteFromDb(id: Long) {
-        viewModel.deleteItemFromList(id)
-    }
-
-    private fun reverseFlagOnNote(position: Int) {
-        viewModel.reverseFlagOnNote(position)
-    }
-
     companion object {
-        fun create(gardenID: Long): NoteFragment {
+        fun create(gardenTitle: String): NoteFragment {
             val fragment = NoteFragment()
-            fragment.arguments = NoteViewModel.toBundle(gardenID)
+            fragment.arguments = toBundle(gardenTitle)
             return fragment
         }
 

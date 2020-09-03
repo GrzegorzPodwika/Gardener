@@ -1,39 +1,69 @@
 package pl.podwikagrzegorz.gardener.ui.price_list
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import pl.podwikagrzegorz.gardener.data.daos.NoteDAO
-import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import pl.podwikagrzegorz.gardener.data.domain.Note
+import pl.podwikagrzegorz.gardener.data.repo.PriceListRepository
 
-class PriceListViewModel : ViewModel(), OnExecuteTransactionListener {
-    private val noteDAO = NoteDAO().apply { listener = this@PriceListViewModel }
-
-    private val _priceList: MutableLiveData<List<Note>> =
-        noteDAO.getLiveDomainData()
-    val priceList: LiveData<List<Note>>
-        get() = _priceList
+class PriceListViewModel @ViewModelInject constructor(
+    private val priceListRepository: PriceListRepository
+) : ViewModel() {
 
     private val _eventAddNote = MutableLiveData<Boolean>()
-    val eventAddNote : LiveData<Boolean>
+    val eventAddNote: LiveData<Boolean>
         get() = _eventAddNote
 
+    private val _errorEmptyInput = MutableLiveData<Boolean>()
+    val errorEmptyInput : LiveData<Boolean>
+        get() = _errorEmptyInput
+
     fun onAddNote(service: String, priceOfService: String) {
-        val newNote = Note(0, service, priceOfService)
-        noteDAO.insertItem(newNote)
-        _eventAddNote.value = true
+        if (service.isNotEmpty() && priceOfService.isNotEmpty()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val newNote = Note(service, priceOfService)
+                priceListRepository.insert(newNote)
+                _eventAddNote.postValue(true)
+            }
+        } else {
+            _errorEmptyInput.value = true
+        }
     }
 
     fun onAddNoteComplete() {
         _eventAddNote.value = false
     }
 
-    fun deleteNote(id: Long) {
-        noteDAO.deleteItem(id)
+    fun onErrorEmptyInputComplete() {
+        _errorEmptyInput.value = false
     }
 
-    override fun onAsyncTransactionSuccess() {
+    fun deleteNote(serviceName: String) = viewModelScope.launch(Dispatchers.IO) {
+        priceListRepository.delete(serviceName)
+    }
+
+    fun getQuery() =
+        priceListRepository.getQuery()
+
+    fun getQuerySortedByName() =
+        priceListRepository.getQuerySortedByName()
+
+    fun getQuerySortedByPrice() =
+        priceListRepository.getQuerySortedByPrice()
+
+    fun getQuerySortedByTimestamp() =
+        priceListRepository.getQuerySortedByTimestamp()
+
+}
+
+/*        private val noteDAO = NoteDAO().apply { listener = this@PriceListViewModel }
+
+
+override fun onAsyncTransactionSuccess() {
         fetchFreshData()
     }
 
@@ -49,5 +79,4 @@ class PriceListViewModel : ViewModel(), OnExecuteTransactionListener {
 
     init {
         _eventAddNote.value = false
-    }
-}
+    }*/

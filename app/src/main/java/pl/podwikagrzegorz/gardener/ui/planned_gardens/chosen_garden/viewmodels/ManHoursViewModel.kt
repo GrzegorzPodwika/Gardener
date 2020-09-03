@@ -1,84 +1,79 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
-import android.os.Bundle
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.*
 import kotlinx.coroutines.*
-import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
-import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import pl.podwikagrzegorz.gardener.data.repo.OnExecuteTransactionListener
+import pl.podwikagrzegorz.gardener.data.domain.ManHours
 import pl.podwikagrzegorz.gardener.data.domain.ManHoursMap
+import pl.podwikagrzegorz.gardener.data.repo.GardenComponentsRepository
+import pl.podwikagrzegorz.gardener.extensions.Constants
 import java.util.*
 
-class ManHoursViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListener {
-    private val gardenComponentsDAO = GardenComponentsDAO(gardenID).apply { listener = this@ManHoursViewModel }
+class ManHoursViewModel @ViewModelInject constructor(
+    private val gardenComponentsRepository: GardenComponentsRepository,
+    @Assisted private val stateHandle: SavedStateHandle
+) : ViewModel(){
+    private val documentId = stateHandle.get<String>(Constants.GARDEN_TITLE)!!
 
-    private var viewModelJob = Job()
-    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
-
-    private val _mapOfWorkedHours: MutableLiveData<List<ManHoursMap>> =
-        gardenComponentsDAO.getLiveMapOfManHours()
+    private val _mapOfWorkedHours = MutableLiveData<List<ManHoursMap>>()
     val mapOfWorkedHours: LiveData<List<ManHoursMap>>
         get() = _mapOfWorkedHours
 
-    private var _workersFullNames : List<String> = emptyList()
+    private var _workersFullNames: List<String> = emptyList()
     val workersFullNames: List<String>
         get() = _workersFullNames
 
-
-    fun addListOfWorkersFullNames(listOfWorkersFullNames: List<String>) {
-        gardenComponentsDAO.addListOfWorkersFullNames(listOfWorkersFullNames)
-    }
-
-    fun addListOfWorkedHoursWithPickedDate(listOfWorkedHours: List<Double>, date: Date) {
-        gardenComponentsDAO.addListOfWorkedHoursWithPickedDate(listOfWorkedHours, date)
-    }
-
-    override fun onTransactionSuccess() {
-        fetchFreshData()
+    private val listener: OnExecuteTransactionListener = object : OnExecuteTransactionListener {
+        override fun onTransactionSuccess() {
+            fetchFreshData()
+        }
     }
 
     private fun fetchFreshData() {
-        _mapOfWorkedHours.value = gardenComponentsDAO.getMapOfManHours()
-        fetchWorkerFullNames()
+        viewModelScope.launch {
+            _mapOfWorkedHours.postValue(gardenComponentsRepository.getMapOfManHours(documentId))
+            _workersFullNames = getFullNames()
+        }
     }
 
-    override fun onCleared() {
-        gardenComponentsDAO.closeRealm()
-        super.onCleared()
-        viewModelJob.cancel()
+
+    fun addListOfWorkersFullNames(listOfWorkerNames: List<String>) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.addListOfPickedWorkers(documentId, listOfWorkerNames)
+        }
+
+    fun addListOfWorkedHoursWithPickedDate(listOfWorkedHours: List<Double>, date: Date) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val mapOfManHours = mutableMapOf<String, ManHours>()
+            for (index in listOfWorkedHours.indices) {
+                if (listOfWorkedHours[index] != 0.0) {
+                    mapOfManHours[mapOfWorkedHours.value!![index].documentId] = ManHours(date, listOfWorkedHours[index])
+                }
+            }
+            gardenComponentsRepository.addListOfWorkedHoursWithPickedDate(documentId, mapOfManHours)
+        }
     }
 
     init {
-        fetchWorkerFullNames()
+        gardenComponentsRepository.listener = this.listener
+        fetchMapOfManHours()
     }
 
-    private fun fetchWorkerFullNames() {
-        uiScope.launch {
+    private fun fetchMapOfManHours() {
+        viewModelScope.launch {
+            _mapOfWorkedHours.postValue(gardenComponentsRepository.getMapOfManHours(documentId))
             _workersFullNames = getFullNames()
         }
     }
 
     private suspend fun getFullNames(): List<String> {
-        return withContext(Dispatchers.Default) {
+        return withContext(Dispatchers.IO) {
             val listOfFullNames = mutableListOf<String>()
             _mapOfWorkedHours.value?.forEach { listOfFullNames.add(it.workerFullName) }
             listOfFullNames
         }
     }
-
-
-    companion object {
-        private const val GARDEN_ID = "GARDEN_ID"
-
-        fun toBundle(gardenID: Long): Bundle {
-            val bundle = Bundle(1)
-            bundle.putLong(GARDEN_ID, gardenID)
-            return bundle
-        }
-
-        fun fromBundle(bundle: Bundle): Long = bundle.getLong(GARDEN_ID)
-    }
-
 
 }
