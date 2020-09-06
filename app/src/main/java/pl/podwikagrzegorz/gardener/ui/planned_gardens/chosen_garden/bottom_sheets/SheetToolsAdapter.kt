@@ -2,19 +2,15 @@ package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_shee
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import pl.podwikagrzegorz.gardener.R
-import pl.podwikagrzegorz.gardener.databinding.BottomSheetSingleItemBinding
+import pl.podwikagrzegorz.gardener.data.domain.Tool
 import pl.podwikagrzegorz.gardener.databinding.BottomSheetToolCheckboxBinding
-import pl.podwikagrzegorz.gardener.databinding.BottomSheetWorkerCheckboxBinding
-import pl.podwikagrzegorz.gardener.databinding.McvAddedToolBinding
 
 class SheetToolsAdapter(
-    private val listOfToolNames: List<String>
+    private val listOfTools: List<Tool>
 ) : RecyclerView.Adapter<SheetToolsAdapter.ReceivedToolsHolder>() {
 
-    private val _listOfCheckedTools = mutableListOf<Boolean>()
+    private val _listOfCheckedTools = MutableList(listOfTools.size) { false }
     val listOfCheckedTools: List<Boolean>
         get() = _listOfCheckedTools
 
@@ -22,10 +18,10 @@ class SheetToolsAdapter(
         return ReceivedToolsHolder.from(parent)
     }
 
-    override fun getItemCount(): Int = listOfToolNames.size
+    override fun getItemCount(): Int = listOfTools.size
 
     override fun onBindViewHolder(holder: ReceivedToolsHolder, position: Int) {
-        holder.bind(listOfToolNames[position])
+        holder.bind(listOfTools[position])
         holder.binding.materialCheckBoxName.setOnCheckedChangeListener { _, isChecked ->
             _listOfCheckedTools[position] = isChecked
         }
@@ -34,8 +30,8 @@ class SheetToolsAdapter(
     class ReceivedToolsHolder private constructor(val binding: BottomSheetToolCheckboxBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(toolName: String) {
-            binding.materialCheckBoxName.text = toolName
+        fun bind(tool: Tool) {
+            binding.materialCheckBoxName.text = tool.toolName
         }
 
         companion object {
@@ -48,7 +44,4 @@ class SheetToolsAdapter(
         }
     }
 
-    init {
-        listOfToolNames.forEach { _ -> _listOfCheckedTools.add(false) }
-    }
 }

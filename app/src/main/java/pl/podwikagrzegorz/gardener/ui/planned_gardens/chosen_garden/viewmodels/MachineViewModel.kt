@@ -1,61 +1,46 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
-import android.os.Bundle
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import io.realm.RealmList
-import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
-import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.*
+import com.google.firebase.firestore.Query
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import pl.podwikagrzegorz.gardener.data.domain.Item
-import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
+import pl.podwikagrzegorz.gardener.data.repo.GardenComponentsRepository
+import pl.podwikagrzegorz.gardener.extensions.Constants
 
-class MachineViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListener {
-    private val gardenComponentsDAO = GardenComponentsDAO(gardenID).apply { listener = this@MachineViewModel }
+class MachineViewModel @ViewModelInject constructor(
+    private val gardenComponentsRepository: GardenComponentsRepository,
+    @Assisted private val stateHandle: SavedStateHandle
+) : ViewModel() {
+    private val documentId = stateHandle.get<String>(Constants.GARDEN_TITLE)!!
 
-    private val _listOfMachines: MutableLiveData<List<Item>> =
-        gardenComponentsDAO.getLiveListOfMachines()
-    val listOfMachines: LiveData<List<Item>>
-        get() = _listOfMachines
+    fun addListOfPickedMachines(listOfPickedMachines: List<Item>) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.addListOfPickedMachines(documentId, listOfPickedMachines)
+        }
 
-    fun addListOfPickedMachines(listOfPickedMachines: List<ItemRealm>) {
-        gardenComponentsDAO.addListOfPickedMachines(listOfPickedMachines)
-    }
+    fun reverseFlagOnMachine(childDocumentId: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.reverseFlagOnMachine(documentId, childDocumentId)
+        }
 
-    fun reverseFlagOnMachine(position: Int) {
-        gardenComponentsDAO.reverseFlagOnMachine(position)
-    }
-
+/* Pomyslec czy sie przyda
     fun updateNumberOfMachines(noItems: Int, position: Int) {
         gardenComponentsDAO.updateNumberOfProperMachine(noItems, position)
     }
+*/
 
-    fun deleteItemFromList(id: Long) {
-        gardenComponentsDAO.deleteMachineFromList(id)
-    }
-
-    override fun onTransactionSuccess() {
-        fetchFreshData()
-    }
-
-    private fun fetchFreshData() {
-        _listOfMachines.value = gardenComponentsDAO.getListOfMachines()
-    }
-
-    override fun onCleared() {
-        gardenComponentsDAO.closeRealm()
-        super.onCleared()
-    }
-
-    companion object {
-        private const val GARDEN_ID = "GARDEN_ID"
-
-        fun toBundle(gardenID: Long): Bundle {
-            val bundle = Bundle(1)
-            bundle.putLong(GARDEN_ID, gardenID)
-            return bundle
+    fun deleteItemFromList(childDocumentId: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.deleteMachineFromList(documentId, childDocumentId)
         }
 
-        fun fromBundle(bundle: Bundle): Long = bundle.getLong(GARDEN_ID)
-    }
+    fun getTakenMachinesQuery(): Query =
+        gardenComponentsRepository.getTakenMachinesQuery(documentId)
+
+    fun getTakenMachinesQuerySortedByTimestamp(): Query =
+        gardenComponentsRepository.getTakenMachinesQuerySortedByTimestamp(documentId)
+
 }

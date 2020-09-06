@@ -1,18 +1,17 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters
 
 import android.content.Context
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import coil.api.load
+import com.google.firebase.storage.StorageReference
 import com.smarteist.autoimageslider.SliderViewAdapter
-import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.SingleImageBinding
-import java.io.File
+import pl.podwikagrzegorz.gardener.extensions.loadViaReference
 
 class ImageSliderAdapter(
     private val context: Context,
-    private val listOfPicturePaths: List<String>
+    private val listOfPictureRef: List<StorageReference>
 ) : SliderViewAdapter<ImageSliderAdapter.ImageSliderHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup?): ImageSliderHolder {
@@ -20,17 +19,17 @@ class ImageSliderAdapter(
     }
 
     override fun getCount(): Int =
-        listOfPicturePaths.size
+        listOfPictureRef.size
 
     override fun onBindViewHolder(viewHolder: ImageSliderHolder?, position: Int) {
-        viewHolder?.bind(listOfPicturePaths[position])
+        viewHolder?.bind(listOfPictureRef[position])
     }
 
     class ImageSliderHolder private constructor(val binding: SingleImageBinding) :
         SliderViewAdapter.ViewHolder(binding.root) {
 
-        fun bind(uniqueSnapshotName: String) {
-            binding.uniqueImageName = uniqueSnapshotName
+        fun bind(pictureStorageRef: StorageReference) {
+            binding.imageViewTakenPhoto.loadViaReference(pictureStorageRef)
             binding.executePendingBindings()
         }
 

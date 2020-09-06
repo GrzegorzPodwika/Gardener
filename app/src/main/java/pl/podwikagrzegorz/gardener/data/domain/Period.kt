@@ -1,6 +1,5 @@
 package pl.podwikagrzegorz.gardener.data.domain
 
-import pl.podwikagrzegorz.gardener.data.realm.PeriodRealm
 import java.io.Serializable
 
 data class Period (
@@ -12,7 +11,7 @@ data class Period (
     var endYear: Int = 0
 ) : Serializable{
 
-    val periodAsString : String
+    var periodAsString : String = ""
         get() = String.format(
                 "%02d.%02d.%s  -  %02d.%02d.%s",
                 startDay,
@@ -22,7 +21,4 @@ data class Period (
                 endMonth,
                 endYear
             )
-
-    fun asPeriodRealm() : PeriodRealm =
-        PeriodRealm(startDay, startMonth, startYear, endDay, endMonth, endYear)
 }

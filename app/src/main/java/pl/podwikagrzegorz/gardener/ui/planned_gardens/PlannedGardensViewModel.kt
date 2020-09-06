@@ -1,23 +1,26 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import pl.podwikagrzegorz.gardener.data.daos.GardenDAO
-import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import pl.podwikagrzegorz.gardener.data.domain.BasicGarden
+import pl.podwikagrzegorz.gardener.data.repo.GardenRepository
 
-class PlannedGardensViewModel : ViewModel(), OnExecuteTransactionListener {
-    private val gardenDAO: GardenDAO = GardenDAO().apply { listener = this@PlannedGardensViewModel }
-
-    private val _listOfBasicGardens: MutableLiveData<List<BasicGarden>> =
-        gardenDAO.getLiveDomainData()
-    val listOfBasicGardens: LiveData<List<BasicGarden>>
-        get() = _listOfBasicGardens
+class PlannedGardensViewModel @ViewModelInject constructor(
+    private val gardenRepository: GardenRepository
+) : ViewModel() {
 
     private val _navigateToAddGarden = MutableLiveData<Boolean>()
-    val navigateToAddGarden : LiveData<Boolean>
+    val navigateToAddGarden: LiveData<Boolean>
         get() = _navigateToAddGarden
+
+    private val _eventGardenInserted = MutableLiveData<Boolean>()
+    val eventGardenInserted: LiveData<Boolean>
+        get() = _eventGardenInserted
 
     fun onNavigate() {
         _navigateToAddGarden.value = true
@@ -27,24 +30,28 @@ class PlannedGardensViewModel : ViewModel(), OnExecuteTransactionListener {
         _navigateToAddGarden.value = false
     }
 
-    fun addBasicGarden(basicGarden: BasicGarden) {
-        gardenDAO.insertItem(basicGarden)
+    fun onShowSuccessSnackbarComplete() {
+        _eventGardenInserted.value = false
     }
 
-    fun deleteGarden(id: Long) =
-        gardenDAO.deleteItem(id)
+    fun addBasicGarden(basicGarden: BasicGarden) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenRepository.insert(basicGarden)
+            _eventGardenInserted.postValue(true)
+        }
 
-    override fun onAsyncTransactionSuccess() {
-        fetchFreshData()
-    }
+    fun deleteGarden(documentId: String) =
+        viewModelScope.launch {
+            gardenRepository.delete(documentId)
+        }
 
-    private fun fetchFreshData() {
-        _listOfBasicGardens.value = gardenDAO.getDomainData()
-    }
+    fun getQuery() =
+        gardenRepository.getQuery()
 
-    override fun onCleared() {
-        gardenDAO.closeRealm()
-        super.onCleared()
-    }
+    fun getQuerySortedByName() =
+        gardenRepository.getQuerySortedByName()
+
+    fun getQuerySortedByTimestamp() =
+        gardenRepository.getQuerySortedByTimestamp()
 
 }

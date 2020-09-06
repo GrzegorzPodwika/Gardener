@@ -13,9 +13,7 @@ class SheetManHoursAdapter(
     private val workersFullNames: List<String>
 ) : RecyclerView.Adapter<SheetManHoursAdapter.ManHoursHolder>() {
 
-    private val _listOfWorkedHours = mutableListOf<Double>()
-    val listOfWorkedHours : List<Double>
-        get() = _listOfWorkedHours
+    val listOfWorkedHours = MutableList(workersFullNames.size) {0.0}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ManHoursHolder {
         return ManHoursHolder.from(parent)
@@ -28,9 +26,9 @@ class SheetManHoursAdapter(
         holder.binding.editTextNumbOfManHours.addTextChangedListener { text: Editable? ->
             text?.let {
                 if (it.toString().isNotEmpty())
-                    _listOfWorkedHours[position] = it.toString().toDouble()
+                    listOfWorkedHours[position] = it.toString().toDouble()
                 else
-                    _listOfWorkedHours[position] = 0.0
+                    listOfWorkedHours[position] = 0.0
             }
         }
     }
@@ -55,9 +53,4 @@ class SheetManHoursAdapter(
         }
     }
 
-    init {
-        for (i in workersFullNames.indices) {
-            _listOfWorkedHours.add(0.0)
-        }
-    }
 }

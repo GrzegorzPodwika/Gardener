@@ -1,66 +1,65 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
 import android.os.Bundle
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
-import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.*
+import com.google.firebase.firestore.Query
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import pl.podwikagrzegorz.gardener.data.domain.ActiveString
+import pl.podwikagrzegorz.gardener.data.repo.GardenComponentsRepository
+import pl.podwikagrzegorz.gardener.extensions.Constants.GARDEN_TITLE
 
-class NoteViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListener {
-    private val gardenComponentsDAO =
-        GardenComponentsDAO(gardenID).apply { listener = this@NoteViewModel }
+class NoteViewModel @ViewModelInject constructor(
+    private val gardenComponentsRepository: GardenComponentsRepository,
+    @Assisted private val stateHandle: SavedStateHandle
+) : ViewModel() {
 
-    private val _listOfNotes: MutableLiveData<List<ActiveString>> =
-        gardenComponentsDAO.getLiveListOfNotes()
-    val listOfNotes: LiveData<List<ActiveString>>
-        get() = _listOfNotes
+    private val documentId = stateHandle.get<String>(GARDEN_TITLE)!!
 
-    private val _eventOnAddedNote = MutableLiveData<Boolean>()
-    val eventOnAddedNote: LiveData<Boolean>
-        get() = _eventOnAddedNote
+    private val _eventNoteAdded = MutableLiveData<Boolean>()
+    val eventNoteAdded: LiveData<Boolean>
+        get() = _eventNoteAdded
+
+    private val _errorEmptyInput = MutableLiveData<Boolean>()
+    val errorEmptyInput: LiveData<Boolean>
+        get() = _errorEmptyInput
 
     fun onAddNote(note: String) {
-        gardenComponentsDAO.addNoteToList(note)
-        _eventOnAddedNote.value = true
+        if (note.isNotEmpty()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val newNote = ActiveString(note)
+                gardenComponentsRepository.insertNote(documentId, newNote)
+                _eventNoteAdded.postValue(true)
+            }
+        } else {
+            _errorEmptyInput.value = true
+        }
     }
 
     fun onAddNoteComplete() {
-        _eventOnAddedNote.value = false
+        _eventNoteAdded.value = false
     }
 
-    fun reverseFlagOnNote(position: Int) {
-        gardenComponentsDAO.reverseFlagOnNote(position)
+    fun onShowErrorComplete() {
+        _errorEmptyInput.value = false
     }
 
-    fun deleteItemFromList(id: Long) {
-        gardenComponentsDAO.deleteNoteFromList(id)
-    }
 
-    override fun onTransactionSuccess() {
-        fetchFreshData()
-    }
-
-    private fun fetchFreshData() {
-        _listOfNotes.value = gardenComponentsDAO.getListOfNotes()
-    }
-
-    override fun onCleared() {
-        gardenComponentsDAO.closeRealm()
-        super.onCleared()
-    }
-
-    companion object {
-        private const val GARDEN_ID = "GARDEN_ID"
-
-        fun toBundle(gardenID: Long): Bundle {
-            val bundle = Bundle(1)
-            bundle.putLong(GARDEN_ID, gardenID)
-            return bundle
+    fun reverseFlagOnNote(childDocumentId: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.reverseFlagOnNote(documentId, childDocumentId)
         }
 
-        fun fromBundle(bundle: Bundle): Long = bundle.getLong(GARDEN_ID)
+    fun deleteItemFromList(childDocumentId: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.deleteNoteFromList(documentId, childDocumentId)
+        }
 
-    }
+    fun getNoteQuery() : Query =
+        gardenComponentsRepository.getNoteQuery(documentId)
+
+    fun getNoteQuerySortedByTimestamp() : Query =
+        gardenComponentsRepository.getNoteQuerySortedByTimestamp(documentId)
 }

@@ -117,22 +117,22 @@ class AddGardenFragment : Fragment() {
 
         if (viewModel.isGivenGardenTitleEmpty()) {
             val toastMessage = getString(R.string.empty_garden_title)
-            requireContext().toast(toastMessage)
+            toast(toastMessage)
             return false
         }
         if (viewModel.isGivenPhoneNumberIncorrect()) {
             val toastMessage = getString(R.string.empty_phone_number)
-            requireContext().toast(toastMessage)
+            toast(toastMessage)
             return false
         }
         if (viewModel.isPeriodDefault()) {
             val toastMessage = getString(R.string.default_period)
-            requireContext().toast(toastMessage)
+            toast(toastMessage)
             return false
         }
         if (viewModel.isNoneTakenSnapshot()) {
             val toastMessage = getString(R.string.none_taken_snapshot)
-            requireContext().toast(toastMessage)
+            toast(toastMessage)
             return false
         }
 

@@ -1,20 +1,43 @@
 package pl.podwikagrzegorz.gardener.extensions
 
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
+import android.view.View
+import android.widget.ImageView
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.firebase.storage.StorageReference
 import com.prolificinteractive.materialcalendarview.CalendarDay
+import pl.podwikagrzegorz.gardener.MainActivity
+import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.domain.Period
-import pl.podwikagrzegorz.gardener.data.realm.PeriodRealm
+import pl.podwikagrzegorz.gardener.di.GlideApp
+import pl.podwikagrzegorz.gardener.extensions.Constants.GARDEN_TITLE
+import pl.podwikagrzegorz.gardener.ui.auth.LoginActivity
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-fun Context.toast(msg: String, duration: Int = Toast.LENGTH_SHORT) {
-    Toast.makeText(this, msg, duration).show()
+fun Fragment.toast(msg: String?, duration: Int = Toast.LENGTH_SHORT) {
+    Toast.makeText(this.requireContext(), msg, duration).show()
+}
+
+fun View.snackbar(msg: String, duration: Int = Snackbar.LENGTH_SHORT) {
+    Snackbar.make(this, msg, duration).show()
+}
+
+fun ImageView.loadViaReference(storageReference: StorageReference) {
+    GlideApp.with(context)
+        .load(storageReference)
+        .placeholder(R.drawable.ic_place_holder)
+        .transition(DrawableTransitionOptions.withCrossFade())
+        .into(this)
 }
 
 fun String.deleteCaptionedImage() {
@@ -24,7 +47,19 @@ fun String.deleteCaptionedImage() {
     }
 }
 
-fun Period.loadRangeIntoPeriod(startDayInMilliseconds : Long, endDayInMilliseconds: Long) {
+fun Context.startHomeActivity() =
+    Intent(this, MainActivity::class.java).also {
+        it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(it)
+    }
+
+fun Context.startLoginActivity() =
+    Intent(this, LoginActivity::class.java).also {
+        it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(it)
+    }
+
+fun Period.loadRangeIntoPeriod(startDayInMilliseconds: Long, endDayInMilliseconds: Long) {
     val startingDay = Calendar.getInstance()
     startingDay.timeInMillis = startDayInMilliseconds
 
@@ -33,7 +68,8 @@ fun Period.loadRangeIntoPeriod(startDayInMilliseconds : Long, endDayInMillisecon
 
     apply {
         startDay = startingDay.get(Calendar.DAY_OF_MONTH)
-        startMonth = startingDay.get(Calendar.MONTH) + 1    // Calendar receives month from range 0-11
+        startMonth =
+            startingDay.get(Calendar.MONTH) + 1    // Calendar receives month from range 0-11
         startYear = startingDay.get(Calendar.YEAR)
 
         endDay = endingDay.get(Calendar.DAY_OF_MONTH)
@@ -70,9 +106,19 @@ fun Context.getFileProvider(fileName: String): File =
 fun Context.getAbsoluteFilePath(fileName: String): String =
     File(this.filesDir, fileName).absolutePath
 
-fun <T> Fragment.getNavigationResult(key: String = "key") : MutableLiveData<T>? =
+fun <T> Fragment.getNavigationResult(key: String = "key"): MutableLiveData<T>? =
     findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(key)
 
 fun <T> Fragment.setNavigationResult(key: String = "key", result: T) {
     findNavController().previousBackStackEntry?.savedStateHandle?.set(key, result)
+}
+
+fun toBundle(gardenTitle: String) : Bundle {
+    val bundle = Bundle()
+    bundle.putString(GARDEN_TITLE, gardenTitle)
+    return bundle
+}
+
+fun fromBundle(bundle: Bundle) : String {
+    return bundle.getString(GARDEN_TITLE)!!
 }

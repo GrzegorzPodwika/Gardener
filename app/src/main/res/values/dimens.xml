@@ -10,6 +10,7 @@
     <dimen name="keyline_6">32dp</dimen>
     <dimen name="keyline_7">40dp</dimen>
 
+    <dimen name="margin_100">100dp</dimen>
     <dimen name="custom_margin_10">10dp</dimen>
 
     <dimen name="component_label_horizontal_margin">@dimen/keyline_4</dimen>

@@ -9,21 +9,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import dagger.hilt.android.AndroidEntryPoint
 import pl.podwikagrzegorz.gardener.databinding.FragmentAddedGardenBinding
+import pl.podwikagrzegorz.gardener.extensions.fromBundle
+import pl.podwikagrzegorz.gardener.extensions.toBundle
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.BasicGardenViewModel
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.GardenViewModelFactory
 
+@AndroidEntryPoint
 class BasicGardenFragment : Fragment() {
 
     private lateinit var binding: FragmentAddedGardenBinding
-    private val gardenID: Long by lazy {
-        BasicGardenViewModel.fromBundle(requireArguments())
-    }
-    private val viewModel: BasicGardenViewModel by viewModels {
-        GardenViewModelFactory(
-            gardenID
-        )
-    }
+    private val viewModel: BasicGardenViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -85,9 +81,9 @@ class BasicGardenFragment : Fragment() {
     }
 
     companion object {
-        fun create(gardenID: Long): BasicGardenFragment {
+        fun create(gardenDocumentId: String): BasicGardenFragment {
             val fragment = BasicGardenFragment()
-            fragment.arguments = BasicGardenViewModel.toBundle(gardenID)
+            fragment.arguments = toBundle(gardenDocumentId)
             return fragment
         }
     }

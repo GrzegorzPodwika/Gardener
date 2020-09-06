@@ -1,12 +1,11 @@
 package pl.podwikagrzegorz.gardener.data.domain
 
-import pl.podwikagrzegorz.gardener.data.realm.NoteRealm
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentId
 
 data class Note(
-    var id: Long = 0,
-    var service: String = "",
-    var priceOfService: String = ""
-) {
-    fun asNoteRealm() : NoteRealm =
-        NoteRealm(id, service, priceOfService)
-}
+    val service: String = "",
+    val priceOfService: String = "",
+    val timestamp: Timestamp = Timestamp.now(),
+    @DocumentId val documentId: String = ""
+)

@@ -5,26 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import dagger.hilt.android.AndroidEntryPoint
 import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.domain.Machine
 import pl.podwikagrzegorz.gardener.databinding.FragmentChildMachinesBinding
 import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
+@AndroidEntryPoint
 class MachinesChildFragment : Fragment() {
 
     private lateinit var binding: FragmentChildMachinesBinding
-    private val viewModel: MachinesChildViewModel by lazy {
-        ViewModelProvider(this).get(MachinesChildViewModel::class.java)
-    }
-    private val machineAdapter: MachineAdapter by lazy {
-        MachineAdapter(object : OnClickItemListener {
-            override fun onClick(id: Long) {
-                deleteMachineFromDb(id)
-            }
-        })
-    }
+    private val viewModel: MachinesChildViewModel by viewModels()
+    private lateinit var machineAdapter: MachineAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,18 +28,35 @@ class MachinesChildFragment : Fragment() {
     ): View? {
         binding = FragmentChildMachinesBinding.inflate(inflater, container, false)
 
+        connectRecyclerViewWithQuery()
         setUpBindingWithViewModel()
         observeAddMachineButton()
-        observeListOfMachines()
 
         return binding.root
     }
+
+    private fun connectRecyclerViewWithQuery() {
+        val options = FirestoreRecyclerOptions.Builder<Machine>()
+            .setQuery(viewModel.getQuerySortedByTimestamp(), Machine::class.java)
+            .setLifecycleOwner(this)
+            .build()
+
+        machineAdapter = MachineAdapter(options, object : OnClickItemListener {
+            override fun onClickItem(documentId: String) {
+                viewModel.deleteMachine(documentId)
+            }
+        })
+    }
+
+    //private fun getOptionsBaseOnMenuOption(option: MenuOption)
 
     private fun setUpBindingWithViewModel() {
         binding.apply {
             lifecycleOwner = viewLifecycleOwner
             machinesChildViewModel = viewModel
             recyclerViewMyMachines.adapter = machineAdapter
+            machineName = ""
+            numbOfMachinesAsString = ""
         }
     }
 
@@ -63,7 +76,7 @@ class MachinesChildFragment : Fragment() {
     }
 
     private fun showErrorToast() {
-        context?.toast(getString(R.string.fill_all_fields))
+        toast(getString(R.string.fill_up_field))
         viewModel.onErrorShowComplete()
     }
 
@@ -82,14 +95,4 @@ class MachinesChildFragment : Fragment() {
         binding.editTextMachineNameAdd.requestFocus()
     }
 
-    private fun observeListOfMachines() {
-        viewModel.listOfMachines.observe(viewLifecycleOwner, Observer { listOfMachines ->
-            machineAdapter.submitList(listOfMachines)
-        })
-    }
-
-    private fun deleteMachineFromDb(id: Long) {
-        viewModel.deleteMachine(id)
-
-    }
 }

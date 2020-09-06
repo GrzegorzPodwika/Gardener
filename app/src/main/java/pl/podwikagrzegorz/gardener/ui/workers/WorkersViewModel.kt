@@ -1,40 +1,43 @@
 package pl.podwikagrzegorz.gardener.ui.workers
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
-import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
-import pl.podwikagrzegorz.gardener.data.daos.WorkerDAO
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.*
 import pl.podwikagrzegorz.gardener.data.domain.Worker
+import pl.podwikagrzegorz.gardener.data.repo.WorkerRepository
 
-class WorkersViewModel : ViewModel(), OnExecuteTransactionListener {
-    private val workerDAO: WorkerDAO = WorkerDAO().apply { listener = this@WorkersViewModel }
+class WorkersViewModel @ViewModelInject constructor(
+    private val workerRepository: WorkerRepository
+) : ViewModel() {
 
-    private val _listOfWorkers: MutableLiveData<List<Worker>> =
-        workerDAO.getLiveDomainData()
-    val listOfWorkers: LiveData<List<Worker>>
+    private var _listOfWorkers = listOf<Worker>()
+    val listOfWorkers: List<Worker>
         get() = _listOfWorkers
 
-    fun addWorkerIntoDatabase(name: String, surname: String) {
-        val worker = Worker(0, name, surname)
-        workerDAO.insertItem(worker)
+    fun addWorkerIntoDatabase(workerName: String) = viewModelScope.launch(Dispatchers.IO) {
+        val worker = Worker(workerName)
+        workerRepository.insert(worker)
     }
 
-    fun deleteWorker(id: Long) {
-        workerDAO.deleteItem(id)
+    fun deleteWorker(documentId: String) = viewModelScope.launch(Dispatchers.IO) {
+        workerRepository.delete(documentId)
     }
 
-    override fun onAsyncTransactionSuccess() {
-        fetchFreshData()
-    }
+    fun getQuery() =
+        workerRepository.getQuery()
 
-    private fun fetchFreshData() {
-        _listOfWorkers.value = workerDAO.getDomainData()
-    }
+    fun getQuerySortedByName() =
+        workerRepository.getQuerySortedByName()
 
-    override fun onCleared() {
-        workerDAO.closeRealm()
-        super.onCleared()
-    }
+    fun getQuerySortedByTimestamp() =
+        workerRepository.getQuerySortedByTimestamp()
 
+    fun preInitialize() {}
+
+    init {
+        viewModelScope.launch {
+            _listOfWorkers = workerRepository.getAllWorkers()
+        }
+    }
 }

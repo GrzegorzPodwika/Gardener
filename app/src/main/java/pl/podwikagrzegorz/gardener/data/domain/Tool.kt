@@ -1,13 +1,12 @@
 package pl.podwikagrzegorz.gardener.data.domain
 
-import pl.podwikagrzegorz.gardener.data.realm.ToolRealm
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentId
 
+//TODO zmienic dalej nastepne klasy
 data class Tool(
-    var id: Long = 0,
-    var toolName: String = "",
-    var numberOfTools: Int = 0
-) {
-    fun asToolRealm(): ToolRealm =
-        ToolRealm(id, toolName, numberOfTools)
-
-}
+    val toolName: String = "",
+    val numberOfTools: Int = 0,
+    val timestamp: Timestamp = Timestamp.now(),
+    @DocumentId val documentId: String = ""
+)

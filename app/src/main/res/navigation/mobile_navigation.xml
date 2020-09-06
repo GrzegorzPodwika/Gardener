@@ -25,8 +25,9 @@
             app:enterAnim="@anim/slide_in_left"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            />
+            app:popExitAnim="@anim/slide_out_right" />
+
+
     </fragment>
 
     <fragment
@@ -59,9 +60,8 @@
         tools:layout="@layout/viewpager_garden">
 
         <argument
-            android:name="flowGardenId"
-            app:argType="long"
-            android:defaultValue="0L"/>
+            android:name="flowGardenDocumentId"
+            app:argType="string" />
     </fragment>
 
     <fragment
@@ -74,7 +74,7 @@
         android:id="@+id/nav_my_tools"
         android:name="pl.podwikagrzegorz.gardener.ui.my_tools.MyToolsFragment"
         android:label="@string/menu_my_tools"
-        tools:layout="@layout/fragment_my_tools" >
+        tools:layout="@layout/fragment_my_tools">
         <action
             android:id="@+id/action_nav_my_tools_to_machinesChildFragment"
             app:destination="@id/machinesChildFragment" />
@@ -120,15 +120,16 @@
         android:id="@+id/machinesChildFragment"
         android:name="pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.MachinesChildFragment"
         android:label="@string/tools"
-        tools:layout="@layout/fragment_child_tools"/>
+        tools:layout="@layout/fragment_child_tools" />
     <fragment
         android:id="@+id/toolsChildFragment"
         android:name="pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.ToolsChildFragment"
         android:label="@string/equipment"
-        tools:layout="@layout/fragment_child_tools"/>
+        tools:layout="@layout/fragment_child_tools" />
     <fragment
         android:id="@+id/propertiesChildFragment"
         android:name="pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.PropertiesChildFragment"
         android:label="@string/others"
-        tools:layout="@layout/fragment_child_tools"/>
+        tools:layout="@layout/fragment_child_tools" />
+
 </navigation>

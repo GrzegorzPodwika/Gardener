@@ -1,64 +1,61 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
 import android.os.Bundle
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
-import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.*
+import com.google.firebase.firestore.Query
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import pl.podwikagrzegorz.gardener.data.domain.ActiveString
+import pl.podwikagrzegorz.gardener.data.repo.GardenComponentsRepository
+import pl.podwikagrzegorz.gardener.extensions.Constants
 
-class ShoppingViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListener {
-    private val gardenComponentsDAO = GardenComponentsDAO(gardenID).apply { listener = this@ShoppingViewModel }
+class ShoppingViewModel @ViewModelInject constructor(
+    private val gardenComponentsRepository: GardenComponentsRepository,
+    @Assisted private val stateHandle: SavedStateHandle
+) : ViewModel() {
+    private val documentId = stateHandle.get<String>(Constants.GARDEN_TITLE)!!
 
-    private val _listOfShopping: MutableLiveData<List<ActiveString>> =
-        gardenComponentsDAO.getLiveListOfShopping()
-    val listOfShopping: LiveData<List<ActiveString>>
-        get() = _listOfShopping
+    private val _eventShoppingNoteAdded = MutableLiveData<Boolean>()
+    val eventShoppingNoteAdded: LiveData<Boolean>
+        get() = _eventShoppingNoteAdded
 
-    private val _eventOnAddedShoppingNote = MutableLiveData<Boolean>()
-    val eventOnAddedShoppingNote: LiveData<Boolean>
-        get() = _eventOnAddedShoppingNote
+    private val _errorEmptyInput = MutableLiveData<Boolean>()
+    val errorEmptyInput: LiveData<Boolean>
+        get() = _errorEmptyInput
 
     fun onAddShoppingNote(shoppingNote: String) {
-        gardenComponentsDAO.addShoppingNoteToList(shoppingNote)
-        _eventOnAddedShoppingNote.value = true
+        if (shoppingNote.isNotEmpty()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val newShoppingNote = ActiveString(shoppingNote)
+                gardenComponentsRepository.insertShoppingNote(documentId, newShoppingNote)
+                _eventShoppingNoteAdded.postValue(true)
+            }
+        } else {
+            _errorEmptyInput.value = true
+        }
     }
 
     fun onAddShoppingNoteComplete() {
-        _eventOnAddedShoppingNote.value = false
+        _eventShoppingNoteAdded.value = false
     }
 
-    fun reverseFlagOnShoppingNote(position: Int) {
-        gardenComponentsDAO.reverseFlagOnShoppingNote(position)
+    fun onShowErrorComplete() {
+        _errorEmptyInput.value = false
     }
 
-    fun deleteShoppingNoteFromList(id: Long) {
-        gardenComponentsDAO.deleteShoppingNoteFromList(id)
-    }
 
-    override fun onTransactionSuccess() {
-        fetchFreshData()
-    }
-
-    private fun fetchFreshData() {
-        _listOfShopping.value = gardenComponentsDAO.getListOfShopping()
-    }
-
-    override fun onCleared() {
-        gardenComponentsDAO.closeRealm()
-        super.onCleared()
-    }
-
-    companion object {
-        private const val GARDEN_ID = "GARDEN_ID"
-
-        fun toBundle(gardenID: Long): Bundle {
-            val bundle = Bundle(1)
-            bundle.putLong(GARDEN_ID, gardenID)
-            return bundle
+    fun reverseFlagOnShoppingNote(childDocumentId: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.reverseFlagOnShoppingNote(documentId, childDocumentId)
         }
 
-        fun fromBundle(bundle: Bundle): Long = bundle.getLong(GARDEN_ID)
-    }
+    fun deleteShoppingNoteFromList(childDocumentId: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.deleteShoppingNoteFromList(documentId, childDocumentId)
+        }
+
+    fun getShoppingNotesQuery(): Query =
+        gardenComponentsRepository.getShoppingNotesQuery(documentId)
 }

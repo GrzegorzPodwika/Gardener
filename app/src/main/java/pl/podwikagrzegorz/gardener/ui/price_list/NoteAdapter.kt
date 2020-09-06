@@ -5,12 +5,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import pl.podwikagrzegorz.gardener.data.domain.Note
 import pl.podwikagrzegorz.gardener.databinding.McvNotePriceListBinding
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
+import timber.log.Timber
 
-class NoteAdapter(private val listener: OnClickItemListener) :
-    ListAdapter<Note, NoteAdapter.NoteHolder>(NoteDiffCallback) {
+class NoteAdapter(
+    options: FirestoreRecyclerOptions<Note>,
+    private val listener: OnClickItemListener
+) : FirestoreRecyclerAdapter<Note, NoteAdapter.NoteHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteHolder {
         return NoteHolder.from(parent)
@@ -19,6 +24,10 @@ class NoteAdapter(private val listener: OnClickItemListener) :
     override fun onBindViewHolder(holder: NoteHolder, position: Int) {
         val note = getItem(position)
         holder.bind(note, listener)
+    }
+
+    override fun onBindViewHolder(holder: NoteHolder, position: Int, model: Note) {
+        holder.bind(model, listener)
     }
 
     class NoteHolder(private val binding: McvNotePriceListBinding) :
@@ -39,15 +48,5 @@ class NoteAdapter(private val listener: OnClickItemListener) :
         }
     }
 
-    object NoteDiffCallback : DiffUtil.ItemCallback<Note>() {
-
-        override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
-            return oldItem == newItem
-        }
-    }
 }
 

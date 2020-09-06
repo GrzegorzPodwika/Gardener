@@ -7,8 +7,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import pl.podwikagrzegorz.gardener.R
 
-class DeleteBasicGardenDialog(private val ctx: Context,
-                              private val listener: NoticeDialogListener
+class DeleteBasicGardenDialog(
+    private val ctx: Context,
+    private val listener: NoticeDialogListener
 ) : DialogFragment() {
 
     interface NoticeDialogListener {
@@ -16,21 +17,18 @@ class DeleteBasicGardenDialog(private val ctx: Context,
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return ctx.let {
-            val builder = AlertDialog.Builder(it)
-            builder.setMessage(R.string.delete_basic_garden)
-                .setPositiveButton(
-                    R.string.confirm
-                ) { _, _ ->
-                    listener.onDialogClick(true)
-                }
-            builder.setNegativeButton(
+        return AlertDialog.Builder(ctx)
+            .setMessage(R.string.delete_basic_garden)
+            .setPositiveButton(
+                R.string.confirm
+            ) { _, _ ->
+                listener.onDialogClick(true)
+            }
+            .setNegativeButton(
                 R.string.cancel
             ) { _, _ ->
                 listener.onDialogClick(false)
             }
-
-            builder.create()
-        }
+            .create()
     }
 }

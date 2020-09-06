@@ -93,7 +93,8 @@
     <string name="empty_phone_number">Wprowadź poprawny telefon zleceniodawcy!</string>
     <string name="default_period">Wprowadź datę rozpoczęcia i zakończenia pracy!</string>
     <string name="none_taken_snapshot">Zlokalizuj miejsce pracy!</string>
-    <string name="fill_all_fields">Wypełnij wszystkie pola!</string>
+    <string name="fill_up_field">Wypełnij pole!</string>
+    <string name="fill_up_all_field">Wypełnij wszystkie pola!</string>
     <string name="fill_name_surname">Podaj imię i nazwisko!</string>
 
 
@@ -131,5 +132,8 @@
     <string name="machines">Maszyny</string>
     <string name="description_full_photo">Zdjęcie w pełnej rozdzielczości.</string>
 
+    <string name="login_success">Jesteś już zalogowany.</string>
+    <string name="login_warning">Nie jesteś zalogowany.</string>
+    <string name="logout">Wyloguj</string>
 
 </resources>

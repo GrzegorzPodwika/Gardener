@@ -1,12 +1,11 @@
 package pl.podwikagrzegorz.gardener.data.domain
 
-import pl.podwikagrzegorz.gardener.data.realm.PropertyRealm
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentId
 
 data class Property(
-    var id: Long = 0,
-    var propertyName: String = "",
-    var numberOfProperties: Int = 0
-) {
-    fun asPropertyRealm(): PropertyRealm =
-        PropertyRealm(id, propertyName, numberOfProperties)
-}
+    val propertyName: String = "",
+    val numberOfProperties: Int = 0,
+    val timestamp: Timestamp = Timestamp.now(),
+    @DocumentId val documentId: String = ""
+)

@@ -7,35 +7,24 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import dagger.hilt.android.AndroidEntryPoint
+import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.domain.ActiveString
 import pl.podwikagrzegorz.gardener.databinding.FragmentShoppingBinding
+import pl.podwikagrzegorz.gardener.extensions.toBundle
+import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SingleItemAdapter
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.GardenViewModelFactory
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.ShoppingViewModel
 
 //Class No7 - Shopping
+@AndroidEntryPoint
 class ShoppingFragment : Fragment() {
 
     private lateinit var binding: FragmentShoppingBinding
-    private val gardenID: Long by lazy {
-        ShoppingViewModel.fromBundle(requireArguments())
-    }
-    private val viewModel: ShoppingViewModel by viewModels {
-        GardenViewModelFactory(
-            gardenID
-        )
-    }
-    private val shoppingAdapter: SingleItemAdapter by lazy {
-        SingleItemAdapter(object : OnClickItemListener {
-            override fun onClick(id: Long) {
-                deleteShoppingNoteFromDb(id)
-            }
-
-            override fun onChangeFlagToOpposite(position: Int) {
-                reverseFlagOnShoppingNote(position)
-            }
-        })
-    }
+    private val viewModel: ShoppingViewModel by viewModels()
+    private lateinit var shoppingAdapter: SingleItemAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,11 +33,28 @@ class ShoppingFragment : Fragment() {
     ): View? {
         binding = FragmentShoppingBinding.inflate(inflater, container, false)
 
+        connectRecyclerViewWithQuery()
         setUpViewModelWithBinding()
-        observeHasAddedShoppingNote()
-        observeListOfShopping()
+        observeViewModelData()
 
         return binding.root
+    }
+
+    private fun connectRecyclerViewWithQuery() {
+        val options = FirestoreRecyclerOptions.Builder<ActiveString>()
+            .setQuery(viewModel.getShoppingNotesQuery(), ActiveString::class.java)
+            .setLifecycleOwner(this)
+            .build()
+
+        shoppingAdapter = SingleItemAdapter(options, object : OnClickItemListener {
+            override fun onChangeFlagToOpposite(documentId: String) {
+                viewModel.reverseFlagOnShoppingNote(childDocumentId = documentId)
+            }
+
+            override fun onClickItem(documentId: String) {
+                viewModel.deleteShoppingNoteFromList(childDocumentId = documentId)
+            }
+        })
     }
 
     private fun setUpViewModelWithBinding() {
@@ -59,13 +65,17 @@ class ShoppingFragment : Fragment() {
             userShoppingNote = ""
         }
     }
+    private fun observeViewModelData() {
+        observeShoppingNoteAdding()
+        observeErrorEmptyInput()
+    }
 
-    private fun observeHasAddedShoppingNote() {
-       viewModel.eventOnAddedShoppingNote.observe(viewLifecycleOwner , Observer { hasAdded ->
-           if (hasAdded) {
-               cleanUp()
-           }
-       })
+    private fun observeShoppingNoteAdding() {
+        viewModel.eventShoppingNoteAdded.observe(viewLifecycleOwner, Observer { hasAdded ->
+            if (hasAdded) {
+                cleanUp()
+            }
+        })
     }
 
     private fun cleanUp() {
@@ -82,24 +92,19 @@ class ShoppingFragment : Fragment() {
         binding.editTextShoppingNote.requestFocus()
     }
 
-    private fun observeListOfShopping() {
-        viewModel.listOfShopping.observe(viewLifecycleOwner, Observer { listOfShopping ->
-            shoppingAdapter.submitList(listOfShopping)
+    private fun observeErrorEmptyInput() {
+        viewModel.errorEmptyInput.observe(viewLifecycleOwner, Observer { hasOccurred ->
+            if (hasOccurred) {
+                toast(getString(R.string.fill_up_field))
+                viewModel.onShowErrorComplete()
+            }
         })
     }
 
-    private fun deleteShoppingNoteFromDb(id: Long) {
-        viewModel.deleteShoppingNoteFromList(id)
-    }
-
-    private fun reverseFlagOnShoppingNote(position: Int) {
-        viewModel.reverseFlagOnShoppingNote(position)
-    }
-
     companion object {
-        fun create(gardenID: Long): ShoppingFragment {
+        fun create(gardenTitle: String): ShoppingFragment {
             val fragment = ShoppingFragment()
-            fragment.arguments = ShoppingViewModel.toBundle(gardenID)
+            fragment.arguments = toBundle(gardenTitle)
             return fragment
         }
     }

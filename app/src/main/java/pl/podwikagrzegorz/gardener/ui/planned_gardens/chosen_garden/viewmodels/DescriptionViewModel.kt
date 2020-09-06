@@ -1,67 +1,64 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
-import android.os.Bundle
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import pl.podwikagrzegorz.gardener.GardenerApp
-import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
-import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.*
+import com.google.firebase.firestore.Query
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import pl.podwikagrzegorz.gardener.data.domain.ActiveString
+import pl.podwikagrzegorz.gardener.data.repo.GardenComponentsRepository
+import pl.podwikagrzegorz.gardener.extensions.Constants.GARDEN_TITLE
 
-class DescriptionViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListener {
-    private val gardenComponentsDAO =
-        GardenComponentsDAO(gardenID).apply { listener = this@DescriptionViewModel }
+class DescriptionViewModel @ViewModelInject constructor(
+    private val gardenComponentsRepository: GardenComponentsRepository,
+    @Assisted private val stateHandle: SavedStateHandle
+) : ViewModel() {
+    private val documentId = stateHandle.get<String>(GARDEN_TITLE)!!
 
-    private val _listOfDescriptions: MutableLiveData<List<ActiveString>> =
-        gardenComponentsDAO.getLiveListOfDescriptions()
-    val listOfDescriptions: LiveData<List<ActiveString>>
-        get() = _listOfDescriptions
+    private val _eventDescriptionAdded = MutableLiveData<Boolean>()
+    val eventDescriptionAdded: LiveData<Boolean>
+        get() = _eventDescriptionAdded
 
-    private val _eventOnAddedDescription = MutableLiveData<Boolean>()
-    val eventOnAddedDescription: LiveData<Boolean>
-        get() = _eventOnAddedDescription
-
+    private val _errorEmptyInput = MutableLiveData<Boolean>()
+    val errorEmptyInput: LiveData<Boolean>
+        get() = _errorEmptyInput
 
     fun onAddDescription(description: String) {
-        gardenComponentsDAO.addDescriptionToList(description)
-        _eventOnAddedDescription.value = true
+        if (description.isNotEmpty()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val newDescription = ActiveString(description)
+                gardenComponentsRepository.insertDescription(documentId, newDescription)
+                _eventDescriptionAdded.postValue(true)
+            }
+        } else {
+            _errorEmptyInput.value = true
+        }
     }
+
 
     fun onAddDescriptionComplete() {
-        _eventOnAddedDescription.value = false
+        _eventDescriptionAdded.value = false
     }
 
-    fun reverseFlagOnDescription(position: Int) {
-        gardenComponentsDAO.reverseFlagOnDescription(position)
+    fun onShowErrorComplete() {
+        _errorEmptyInput.value = false
     }
 
-    fun deleteDescriptionFromList(id: Long) {
-        gardenComponentsDAO.deleteDescriptionFromList(id)
-    }
-
-    override fun onTransactionSuccess() {
-        fetchFreshData()
-    }
-
-    private fun fetchFreshData() {
-        _listOfDescriptions.value = gardenComponentsDAO.getListOfDescriptions()
-    }
-
-    override fun onCleared() {
-        gardenComponentsDAO.closeRealm()
-        super.onCleared()
-    }
-
-    companion object {
-        private const val GARDEN_ID = "GARDEN_ID"
-
-        fun toBundle(gardenID: Long): Bundle {
-            val bundle = Bundle(1)
-            bundle.putLong(GARDEN_ID, gardenID)
-            return bundle
+    fun reverseFlagOnDescription(childDocumentId: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.reverseFlagOnDescription(documentId, childDocumentId)
         }
 
-        fun fromBundle(bundle: Bundle): Long = bundle.getLong(GARDEN_ID)
-    }
+    fun deleteDescriptionFromList(childDocumentId: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.deleteDescriptionFromList(documentId, childDocumentId)
+        }
+
+    fun getDescriptionQuery(): Query =
+        gardenComponentsRepository.getDescriptionQuery(documentId)
+
+    fun getDescriptionQuerySortedByTimestamp(): Query =
+        gardenComponentsRepository.getDescriptionQuerySortedByTimestamp(documentId)
+
 }

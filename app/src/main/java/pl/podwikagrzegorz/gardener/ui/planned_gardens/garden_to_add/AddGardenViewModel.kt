@@ -2,6 +2,7 @@ package pl.podwikagrzegorz.gardener.ui.planned_gardens.garden_to_add
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.Bindable
 import androidx.databinding.ObservableBoolean
@@ -66,10 +67,10 @@ class AddGardenViewModel : ObservableViewModel() {
     }
 
     @Bindable
-    fun getGardenOrServiceAsDrawable(): Drawable {
+    fun getGardenOrServiceAsDrawable(): Drawable? {
         return when (isGardenOrService) {
-            true -> GardenerApp.res.getDrawable(R.drawable.ic_farm, null)
-            false -> GardenerApp.res.getDrawable(R.drawable.ic_lawn_mower, null)
+            true -> ResourcesCompat.getDrawable(GardenerApp.res, R.drawable.ic_farm, null)
+            false -> ResourcesCompat.getDrawable(GardenerApp.res, R.drawable.ic_lawn_mower, null)
         }
     }
 

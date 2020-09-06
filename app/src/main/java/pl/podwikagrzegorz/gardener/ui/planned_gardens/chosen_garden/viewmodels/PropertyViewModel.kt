@@ -1,62 +1,47 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
-import android.os.Bundle
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import io.realm.RealmList
-import pl.podwikagrzegorz.gardener.data.daos.GardenComponentsDAO
-import pl.podwikagrzegorz.gardener.data.daos.OnExecuteTransactionListener
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.*
+import com.google.firebase.firestore.Query
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import pl.podwikagrzegorz.gardener.data.domain.Item
-import pl.podwikagrzegorz.gardener.data.realm.ItemRealm
+import pl.podwikagrzegorz.gardener.data.repo.GardenComponentsRepository
+import pl.podwikagrzegorz.gardener.extensions.Constants
 
-class PropertyViewModel(gardenID: Long) : ViewModel(), OnExecuteTransactionListener {
-    private val gardenComponentsDAO = GardenComponentsDAO(gardenID).apply { listener = this@PropertyViewModel }
+class PropertyViewModel @ViewModelInject constructor(
+    private val gardenComponentsRepository: GardenComponentsRepository,
+    @Assisted private val stateHandle: SavedStateHandle
+) : ViewModel() {
+    private val documentId = stateHandle.get<String>(Constants.GARDEN_TITLE)!!
 
-    private val _listOfProperties: MutableLiveData<List<Item>> =
-        gardenComponentsDAO.getLiveListOfProperties()
-    val listOfProperties: LiveData<List<Item>>
-        get() = _listOfProperties
 
-    fun addListOfPickedProperties(listOfItemRealm: List<ItemRealm>) {
-        gardenComponentsDAO.addListOfPickedProperties(listOfItemRealm)
-    }
+    fun addListOfPickedProperties(listOfItemRealm: List<Item>) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.addListOfPickedProperties(documentId, listOfItemRealm)
+        }
 
+/*
     fun updateNumberOfProperties(noItems: Int, position: Int) {
         gardenComponentsDAO.updateNumberOfProperty(noItems, position)
     }
+*/
 
-    fun reverseFlagOnProperty(position: Int) {
-        gardenComponentsDAO.reverseFlagOnProperty(position)
-    }
-
-    fun deleteItemFromList(id: Long) {
-        gardenComponentsDAO.deletePropertyFromList(id)
-    }
-
-    override fun onTransactionSuccess() {
-        fetchFreshData()
-    }
-
-    private fun fetchFreshData() {
-        _listOfProperties.value = gardenComponentsDAO.getListOfProperties()
-    }
-
-    override fun onCleared() {
-        gardenComponentsDAO.closeRealm()
-        super.onCleared()
-    }
-
-
-    companion object {
-        private const val GARDEN_ID = "GARDEN_ID"
-
-        fun toBundle(gardenID: Long): Bundle {
-            val bundle = Bundle(1)
-            bundle.putLong(GARDEN_ID, gardenID)
-            return bundle
+    fun reverseFlagOnProperty(childDocumentId: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.reverseFlagOnProperty(documentId, childDocumentId)
         }
 
-        fun fromBundle(bundle: Bundle): Long = bundle.getLong(GARDEN_ID)
-    }
+    fun deleteItemFromList(childDocumentId: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.deletePropertyFromList(documentId, childDocumentId)
+        }
+
+    fun getTakenPropertiesQuery(): Query =
+        gardenComponentsRepository.getTakenPropertiesQuery(documentId)
+
+    fun getTakenPropertiesQuerySortedByTimestamp(): Query =
+        gardenComponentsRepository.getTakenPropertiesQuerySortedByTimestamp(documentId)
+
 }

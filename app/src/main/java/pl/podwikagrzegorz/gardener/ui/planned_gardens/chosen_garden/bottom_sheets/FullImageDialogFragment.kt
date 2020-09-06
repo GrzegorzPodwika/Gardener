@@ -6,13 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import com.google.firebase.storage.StorageReference
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType
 import com.smarteist.autoimageslider.SliderAnimations
 import pl.podwikagrzegorz.gardener.databinding.DialogWholePictureBinding
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.ImageSliderAdapter
 
 class FullImageDialogFragment(
-    private val listOfPicturePaths : List<String>
+    private val listOfPictureRef : List<StorageReference>
 ) : DialogFragment() {
 
     private lateinit var binding: DialogWholePictureBinding
@@ -44,7 +45,7 @@ class FullImageDialogFragment(
 
     private fun setImageSliderAdapter() {
         binding.imageSlider.apply {
-            setSliderAdapter(ImageSliderAdapter(requireContext(), listOfPicturePaths))
+            setSliderAdapter(ImageSliderAdapter(requireContext(), listOfPictureRef))
             setIndicatorAnimation(IndicatorAnimationType.WORM)
             setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION)
             indicatorSelectedColor = Color.WHITE;
