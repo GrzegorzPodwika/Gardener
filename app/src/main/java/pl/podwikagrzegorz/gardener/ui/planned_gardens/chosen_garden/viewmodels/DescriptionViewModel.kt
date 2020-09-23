@@ -8,13 +8,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import pl.podwikagrzegorz.gardener.data.domain.ActiveString
 import pl.podwikagrzegorz.gardener.data.repo.GardenComponentsRepository
-import pl.podwikagrzegorz.gardener.extensions.Constants.GARDEN_TITLE
+import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_DOCUMENT_ID
 
 class DescriptionViewModel @ViewModelInject constructor(
     private val gardenComponentsRepository: GardenComponentsRepository,
     @Assisted private val stateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val documentId = stateHandle.get<String>(GARDEN_TITLE)!!
+    private val documentId = stateHandle.get<String>(FIREBASE_DOCUMENT_ID)!!
 
     private val _eventDescriptionAdded = MutableLiveData<Boolean>()
     val eventDescriptionAdded: LiveData<Boolean>
@@ -45,9 +45,14 @@ class DescriptionViewModel @ViewModelInject constructor(
         _errorEmptyInput.value = false
     }
 
-    fun reverseFlagOnDescription(childDocumentId: String) =
+    fun reverseFlagOnDescription(childDocumentId: String, isActive: Boolean) =
         viewModelScope.launch(Dispatchers.IO) {
-            gardenComponentsRepository.reverseFlagOnDescription(documentId, childDocumentId)
+            gardenComponentsRepository.reverseFlagOnDescription(documentId, childDocumentId, isActive)
+        }
+
+    fun updateDescription(newDescription: ActiveString) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.updateDescription(documentId, newDescription.documentId, newDescription)
         }
 
     fun deleteDescriptionFromList(childDocumentId: String) =
@@ -60,5 +65,8 @@ class DescriptionViewModel @ViewModelInject constructor(
 
     fun getDescriptionQuerySortedByTimestamp(): Query =
         gardenComponentsRepository.getDescriptionQuerySortedByTimestamp(documentId)
+
+    fun getDescriptionQuerySortedByActivity(): Query =
+        gardenComponentsRepository.getDescriptionQuerySortedByActivity(documentId)
 
 }

@@ -4,7 +4,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
 
 data class Worker(
-    val name: String = "",
-    val timestamp: Timestamp = Timestamp.now(),
-    @DocumentId val documentId: String = ""
+    var name: String = "",
+    var timestamp: Timestamp = Timestamp.now(),
+    @DocumentId var documentId: String = ""
 )

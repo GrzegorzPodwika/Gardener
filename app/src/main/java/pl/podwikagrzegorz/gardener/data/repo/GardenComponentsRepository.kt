@@ -3,6 +3,7 @@ package pl.podwikagrzegorz.gardener.data.repo
 import android.net.Uri
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +21,7 @@ import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_TAKEN_PROPERTIE
 import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_TAKEN_TOOLS
 import pl.podwikagrzegorz.gardener.data.domain.FirebaseSource
 import pl.podwikagrzegorz.gardener.extensions.deleteCaptionedImage
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.OnProgressListener
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -88,23 +90,37 @@ class GardenComponentsRepository @Inject constructor(
         }
     }
 
-    suspend fun reverseFlagOnDescription(documentId: String, childDocumentId: String) {
+    suspend fun reverseFlagOnDescription(
+        documentId: String,
+        childDocumentId: String,
+        isActive: Boolean
+    ) {
         try {
-            firebaseSource.firestore.runTransaction { transaction ->
-                val docRef = gardenCollectionRef.document(documentId)
-                    .collection(FIREBASE_DESCRIPTIONS).document(childDocumentId)
-                val activeString = transaction.get(docRef)
-                var reversedActivity = activeString[FIELD_IS_ACTIVE] as Boolean
-                reversedActivity = !reversedActivity
-                transaction.update(docRef, FIELD_IS_ACTIVE, reversedActivity)
-                null
-            }.await()
+            val docRef = gardenCollectionRef.document(documentId)
+                .collection(FIREBASE_DESCRIPTIONS).document(childDocumentId)
+            docRef.update(FIELD_IS_ACTIVE, !isActive).await()
 
             Timber.i("$childDocumentId has been successfully changed.")
         } catch (e: Exception) {
             Timber.e(e)
         }
     }
+
+    suspend fun updateDescription(
+        documentId: String,
+        childDocumentId: String,
+        newDescription: ActiveString
+    ) {
+        try {
+            gardenCollectionRef.document(documentId)
+                .collection(FIREBASE_DESCRIPTIONS).document(childDocumentId)
+                .set(newDescription, SetOptions.merge()).await()
+            Timber.i("$childDocumentId has been successfully deleted.")
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
 
     suspend fun deleteDescriptionFromList(documentId: String, childDocumentId: String) {
         try {
@@ -124,6 +140,10 @@ class GardenComponentsRepository @Inject constructor(
         gardenCollectionRef.document(documentId).collection(FIREBASE_DESCRIPTIONS)
             .orderBy(FIELD_TIMESTAMP)
 
+    fun getDescriptionQuerySortedByActivity(documentId: String): Query =
+        gardenCollectionRef.document(documentId).collection(FIREBASE_DESCRIPTIONS)
+            .orderBy(FIELD_IS_ACTIVE, Query.Direction.DESCENDING).orderBy(FIELD_TIMESTAMP)
+
     /**
      * 3. List of notes
      */
@@ -136,19 +156,24 @@ class GardenComponentsRepository @Inject constructor(
         }
     }
 
-    suspend fun reverseFlagOnNote(documentId: String, childDocumentId: String) {
+    suspend fun reverseFlagOnNote(documentId: String, childDocumentId: String, isActive: Boolean) {
         try {
-            firebaseSource.firestore.runTransaction { transaction ->
-                val docRef = gardenCollectionRef.document(documentId)
-                    .collection(FIREBASE_NOTES).document(childDocumentId)
-                val activeString = transaction.get(docRef)
-                var reversedActivity = activeString[FIELD_IS_ACTIVE] as Boolean
-                reversedActivity = !reversedActivity
-                transaction.update(docRef, FIELD_IS_ACTIVE, reversedActivity)
-                null
-            }.await()
+            val docRef = gardenCollectionRef.document(documentId)
+                .collection(FIREBASE_NOTES).document(childDocumentId)
+            docRef.update(FIELD_IS_ACTIVE, !isActive).await()
 
             Timber.i("$childDocumentId has been successfully changed.")
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
+    suspend fun updateNote(documentId: String, childDocumentId: String, newNote: ActiveString) {
+        try {
+            gardenCollectionRef.document(documentId)
+                .collection(FIREBASE_NOTES).document(childDocumentId)
+                .set(newNote, SetOptions.merge()).await()
+            Timber.i("$childDocumentId has been successfully deleted.")
         } catch (e: Exception) {
             Timber.e(e)
         }
@@ -172,6 +197,10 @@ class GardenComponentsRepository @Inject constructor(
         gardenCollectionRef.document(documentId).collection(FIREBASE_NOTES)
             .orderBy(FIELD_TIMESTAMP)
 
+    fun getNoteQuerySortedByActivity(documentId: String): Query =
+        gardenCollectionRef.document(documentId).collection(FIREBASE_NOTES)
+            .orderBy(FIELD_IS_ACTIVE, Query.Direction.DESCENDING).orderBy(FIELD_TIMESTAMP)
+
     /**
      * 4. List of tools
      */
@@ -187,17 +216,27 @@ class GardenComponentsRepository @Inject constructor(
         }
     }
 
-    suspend fun reverseFlagOnTool(documentId: String, childDocumentId: String) {
+    suspend fun reverseFlagOnTool(documentId: String, childDocumentId: String, isActive: Boolean) {
         try {
-            firebaseSource.firestore.runTransaction { transaction ->
-                val docRef = gardenCollectionRef.document(documentId)
-                    .collection(FIREBASE_TAKEN_TOOLS).document(childDocumentId)
-                val activeString = transaction.get(docRef)
-                var reversedActivity = activeString[FIELD_IS_ACTIVE] as Boolean
-                reversedActivity = !reversedActivity
-                transaction.update(docRef, FIELD_IS_ACTIVE, reversedActivity)
-                null
-            }.await()
+            val docRef = gardenCollectionRef.document(documentId)
+                .collection(FIREBASE_TAKEN_TOOLS).document(childDocumentId)
+            docRef.update(FIELD_IS_ACTIVE, !isActive).await()
+
+            Timber.i("$childDocumentId has been successfully changed.")
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
+    suspend fun updateNumberOfTools(
+        documentId: String,
+        childDocumentId: String,
+        chosenNumber: Int
+    ) {
+        try {
+            val docRef = gardenCollectionRef.document(documentId)
+                .collection(FIREBASE_TAKEN_TOOLS).document(childDocumentId)
+            docRef.update(FIELD_NUMBER_OF_ITEMS, chosenNumber).await()
 
             Timber.i("$childDocumentId has been successfully changed.")
         } catch (e: Exception) {
@@ -223,6 +262,10 @@ class GardenComponentsRepository @Inject constructor(
         gardenCollectionRef.document(documentId).collection(FIREBASE_TAKEN_TOOLS)
             .orderBy(FIELD_TIMESTAMP)
 
+    fun getTakenToolsQuerySortedByActivity(documentId: String): Query =
+        gardenCollectionRef.document(documentId).collection(FIREBASE_TAKEN_TOOLS)
+            .orderBy(FIELD_IS_ACTIVE, Query.Direction.DESCENDING).orderBy(FIELD_TIMESTAMP)
+
     /**
      * 5. List of machines
      */
@@ -238,17 +281,31 @@ class GardenComponentsRepository @Inject constructor(
         }
     }
 
-    suspend fun reverseFlagOnMachine(documentId: String, childDocumentId: String) {
+    suspend fun reverseFlagOnMachine(
+        documentId: String,
+        childDocumentId: String,
+        isActive: Boolean
+    ) {
         try {
-            firebaseSource.firestore.runTransaction { transaction ->
-                val docRef = gardenCollectionRef.document(documentId)
-                    .collection(FIREBASE_TAKEN_MACHINES).document(childDocumentId)
-                val activeString = transaction.get(docRef)
-                var reversedActivity = activeString[FIELD_IS_ACTIVE] as Boolean
-                reversedActivity = !reversedActivity
-                transaction.update(docRef, FIELD_IS_ACTIVE, reversedActivity)
-                null
-            }.await()
+            val docRef = gardenCollectionRef.document(documentId)
+                .collection(FIREBASE_TAKEN_MACHINES).document(childDocumentId)
+            docRef.update(FIELD_IS_ACTIVE, !isActive).await()
+
+            Timber.i("$childDocumentId has been successfully changed.")
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
+    suspend fun updateNumberOfMachines(
+        documentId: String,
+        childDocumentId: String,
+        chosenNumber: Int
+    ) {
+        try {
+            val docRef = gardenCollectionRef.document(documentId)
+                .collection(FIREBASE_TAKEN_MACHINES).document(childDocumentId)
+            docRef.update(FIELD_NUMBER_OF_ITEMS, chosenNumber).await()
 
             Timber.i("$childDocumentId has been successfully changed.")
         } catch (e: Exception) {
@@ -259,7 +316,7 @@ class GardenComponentsRepository @Inject constructor(
     suspend fun deleteMachineFromList(documentId: String, childDocumentId: String) {
         try {
             gardenCollectionRef.document(documentId)
-                .collection(FIREBASE_TAKEN_TOOLS).document(childDocumentId)
+                .collection(FIREBASE_TAKEN_MACHINES).document(childDocumentId)
                 .delete().await()
             Timber.i("$childDocumentId has been successfully deleted.")
         } catch (e: Exception) {
@@ -274,14 +331,21 @@ class GardenComponentsRepository @Inject constructor(
         gardenCollectionRef.document(documentId).collection(FIREBASE_TAKEN_MACHINES)
             .orderBy(FIELD_TIMESTAMP)
 
+    fun getTakenMachinesQuerySortedByActivity(documentId: String): Query =
+        gardenCollectionRef.document(documentId).collection(FIREBASE_TAKEN_MACHINES)
+            .orderBy(FIELD_IS_ACTIVE, Query.Direction.DESCENDING).orderBy(FIELD_TIMESTAMP)
+
     /**
      * 6. List of properties
      */
-    suspend fun addListOfPickedProperties(documentId: String, listOfPickedMachines: List<Item>) {
+    suspend fun addListOfPickedProperties(
+        documentId: String,
+        listOfPickedProperties: List<ActiveProperty>
+    ) {
         try {
-            for (machine in listOfPickedMachines) {
+            for (activeProperty in listOfPickedProperties) {
                 gardenCollectionRef.document(documentId)
-                    .collection(FIREBASE_TAKEN_PROPERTIES).add(machine).await()
+                    .collection(FIREBASE_TAKEN_PROPERTIES).add(activeProperty).await()
             }
             Timber.i("ListOfPickedMachines has been successfully inserted.")
         } catch (e: Exception) {
@@ -289,23 +353,33 @@ class GardenComponentsRepository @Inject constructor(
         }
     }
 
-    suspend fun reverseFlagOnProperty(documentId: String, childDocumentId: String) {
+    suspend fun reverseFlagOnProperty(
+        documentId: String,
+        childDocumentId: String,
+        isActive: Boolean
+    ) {
         try {
-            firebaseSource.firestore.runTransaction { transaction ->
-                val docRef = gardenCollectionRef.document(documentId)
-                    .collection(FIREBASE_TAKEN_PROPERTIES).document(childDocumentId)
-                val activeString = transaction.get(docRef)
-                var reversedActivity = activeString[FIELD_IS_ACTIVE] as Boolean
-                reversedActivity = !reversedActivity
-                transaction.update(docRef, FIELD_IS_ACTIVE, reversedActivity)
-                null
-            }.await()
+            val docRef = gardenCollectionRef.document(documentId)
+                .collection(FIREBASE_TAKEN_PROPERTIES).document(childDocumentId)
+            docRef.update(FIELD_IS_ACTIVE, !isActive).await()
 
             Timber.i("$childDocumentId has been successfully changed.")
         } catch (e: Exception) {
             Timber.e(e)
         }
     }
+
+/*    suspend fun updateNumberOfProperties(documentId: String, childDocumentId: String, chosenNumber: Int) {
+        try {
+            val docRef = gardenCollectionRef.document(documentId)
+                .collection(FIREBASE_TAKEN_PROPERTIES).document(childDocumentId)
+            docRef.update(FIELD_NUMBER_OF_ITEMS, chosenNumber).await()
+
+            Timber.i("$childDocumentId has been successfully changed.")
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }*/
 
     suspend fun deletePropertyFromList(documentId: String, childDocumentId: String) {
         try {
@@ -324,6 +398,10 @@ class GardenComponentsRepository @Inject constructor(
     fun getTakenPropertiesQuerySortedByTimestamp(documentId: String): Query =
         gardenCollectionRef.document(documentId).collection(FIREBASE_TAKEN_PROPERTIES)
             .orderBy(FIELD_TIMESTAMP)
+
+    fun getTakenPropertiesQuerySortedByActivity(documentId: String): Query =
+        gardenCollectionRef.document(documentId).collection(FIREBASE_TAKEN_PROPERTIES)
+            .orderBy(FIELD_IS_ACTIVE, Query.Direction.DESCENDING).orderBy(FIELD_TIMESTAMP)
 
     /**
      * 7. Map of manHours
@@ -397,19 +475,28 @@ class GardenComponentsRepository @Inject constructor(
         }
     }
 
-    suspend fun reverseFlagOnShoppingNote(documentId: String, childDocumentId: String) {
+    suspend fun reverseFlagOnShoppingNote(
+        documentId: String,
+        childDocumentId: String,
+        isActive: Boolean
+    ) {
         try {
-            firebaseSource.firestore.runTransaction { transaction ->
-                val docRef = gardenCollectionRef.document(documentId)
-                    .collection(FIREBASE_SHOPPING).document(childDocumentId)
-                val activeString = transaction.get(docRef)
-                var reversedActivity = activeString[FIELD_IS_ACTIVE] as Boolean
-                reversedActivity = !reversedActivity
-                transaction.update(docRef, FIELD_IS_ACTIVE, reversedActivity)
-                null
-            }.await()
+            val docRef = gardenCollectionRef.document(documentId)
+                .collection(FIREBASE_SHOPPING).document(childDocumentId)
+            docRef.update(FIELD_IS_ACTIVE, !isActive).await()
 
             Timber.i("$childDocumentId has been successfully changed.")
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
+    suspend fun updateShoppingNote(documentId: String, childDocumentId: String, newShoppingNote: ActiveString) {
+        try {
+            gardenCollectionRef.document(documentId)
+                .collection(FIREBASE_SHOPPING).document(childDocumentId)
+                .set(newShoppingNote, SetOptions.merge()).await()
+            Timber.i("$childDocumentId has been successfully deleted.")
         } catch (e: Exception) {
             Timber.e(e)
         }
@@ -429,13 +516,29 @@ class GardenComponentsRepository @Inject constructor(
     fun getShoppingNotesQuery(documentId: String): Query =
         gardenCollectionRef.document(documentId).collection(FIREBASE_SHOPPING)
 
+    fun getShoppingNotesQuerySortedByActivity(documentId: String): Query =
+        gardenCollectionRef.document(documentId).collection(FIREBASE_SHOPPING)
+            .orderBy(FIELD_IS_ACTIVE, Query.Direction.DESCENDING).orderBy(FIELD_TIMESTAMP)
+
     /**
      * 8. List od shopping notes
      */
-    suspend fun insertPictureToList(documentId: String, absolutePath: String) {
+    suspend fun insertPictureToList(
+        documentId: String,
+        absolutePath: String,
+        listener: OnProgressListener
+    ) {
         try {
             val uri = Uri.fromFile(File(absolutePath))
+
+            withContext(Dispatchers.Main) {
+                listener.onStarted()
+            }
             gardenPictureRef.child(uri.lastPathSegment!!).putFile(uri).await()
+            withContext(Dispatchers.Main) {
+                listener.onFinished()
+            }
+
             Timber.i("Image with uri $uri has been successfully inserted to STORAGE.")
 
             absolutePath.deleteCaptionedImage()
@@ -455,7 +558,7 @@ class GardenComponentsRepository @Inject constructor(
 
             try {
                 val querySnapshot = gardenCollectionRef.document(documentId)
-                    .collection(FIREBASE_TAKEN_PICTURES).get().await()
+                    .collection(FIREBASE_TAKEN_PICTURES).orderBy(FIELD_TIMESTAMP).get().await()
 
                 for (document in querySnapshot) {
                     val picture = document.toObject<Picture>()
@@ -471,8 +574,9 @@ class GardenComponentsRepository @Inject constructor(
         }
     }
 
-    fun getTakenPhotoQuerySortedByTimestamp(documentId: String) : Query =
+    fun getTakenPhotoQuerySortedByTimestamp(documentId: String): Query =
         gardenCollectionRef.document(documentId).collection(FIREBASE_TAKEN_PICTURES)
+            .orderBy(FIELD_TIMESTAMP)
 
     companion object {
         private const val FIELD_GARDEN_TITLE = "gardenTitle"
@@ -481,5 +585,6 @@ class GardenComponentsRepository @Inject constructor(
         private const val FIELD_WORKER_NAME = "workerFullName"
 
         private const val FIELD_IS_ACTIVE = "active"
+        private const val FIELD_NUMBER_OF_ITEMS = "numberOfItems"
     }
 }

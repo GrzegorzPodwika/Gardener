@@ -132,6 +132,7 @@
     <string name="login_success">You are already logged in.</string>
     <string name="login_warning">You are not logged in.</string>
     <string name="logout">Logout</string>
+    <string name="insert_success">Insert success</string>
 
 
 </resources>

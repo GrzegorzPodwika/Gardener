@@ -23,5 +23,5 @@ object Constants {
     //Storage
     const val FIREBASE_IMAGES = "images"
 
-    const val GARDEN_TITLE = "gardenTitle"
+    const val FIREBASE_DOCUMENT_ID = "documentId"
 }

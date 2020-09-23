@@ -9,10 +9,12 @@ import com.google.firebase.storage.StorageReference
 import pl.podwikagrzegorz.gardener.data.domain.Picture
 import pl.podwikagrzegorz.gardener.databinding.SingleTakenPhotoSmallBinding
 import pl.podwikagrzegorz.gardener.extensions.loadViaReference
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
 class SmallPhotoAdapter(
     options: FirestoreRecyclerOptions<Picture>,
-    private val photoStorageReference: StorageReference
+    private val photoStorageReference: StorageReference,
+    private val listener: OnClickPhotoListener
 ) : FirestoreRecyclerAdapter<Picture, SmallPhotoAdapter.SmallPhotoHolder>(options){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SmallPhotoHolder {
@@ -21,14 +23,16 @@ class SmallPhotoAdapter(
 
     override fun onBindViewHolder(holder: SmallPhotoHolder, position: Int, model: Picture) {
         val childStorageReference = photoStorageReference.child(model.uniquePictureName)
-        holder.bind(childStorageReference)
+        holder.bind(childStorageReference, listener)
     }
 
     class SmallPhotoHolder private constructor(private val binding: SingleTakenPhotoSmallBinding)
         : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(childStorageReference: StorageReference) {
-            binding.shapeableImageViewTakenPhoto.loadViaReference(childStorageReference)
+        fun bind(childStorageReference: StorageReference, listener: OnClickPhotoListener) {
+            binding.photoStorageReference = childStorageReference
+            binding.listener = listener
+            binding.executePendingBindings()
         }
 
         companion object {

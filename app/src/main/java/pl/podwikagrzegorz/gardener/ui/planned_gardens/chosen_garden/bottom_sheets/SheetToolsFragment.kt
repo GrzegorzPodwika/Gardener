@@ -70,7 +70,7 @@ class SheetToolsFragment(
             for (index in listOfCheckedTools.indices) {
                 if (listOfCheckedTools[index]) {
                     val tool = listOfTools[index]
-                    val item = Item(tool.toolName, tool.numberOfTools)
+                    val item = Item(tool.toolName, tool.numberOfTools, tool.numberOfTools)
                     listOfPickedItems.add(item)
                 }
             }

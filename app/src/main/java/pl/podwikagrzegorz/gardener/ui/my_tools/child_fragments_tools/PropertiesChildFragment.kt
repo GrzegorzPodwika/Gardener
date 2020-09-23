@@ -45,7 +45,20 @@ class PropertiesChildFragment : Fragment() {
             override fun onClickItem(documentId: String) {
                 viewModel.deleteProperty(documentId)
             }
+        }, object : OnEditItemListener<Property> {
+            override fun onEditItem(itemToEdit: Property) {
+                showEditItemDialog(itemToEdit)
+            }
+
         })
+    }
+
+    private fun showEditItemDialog(propertyToEdit: Property) {
+        EditPropertyDialog(propertyToEdit, object : EditPropertyDialog.OnChangedPropertyListener {
+            override fun onChangedProperty(newProperty: Property) {
+                viewModel.updateProperty(newProperty)
+            }
+        }).show(childFragmentManager, null)
     }
 
     private fun setUpBindingWithViewModel() {

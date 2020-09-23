@@ -29,10 +29,10 @@ class PropertiesChildViewModel @ViewModelInject constructor(
     val errorEditTextEmpty: LiveData<Boolean>
         get() = _errorEditTextEmpty
 
-    fun onAddProperty(propertyName: String, numbOfPropertiesAsString: String) {
-        if (propertyName.isNotEmpty() && numbOfPropertiesAsString.isNotEmpty()) {
+    fun onAddProperty(propertyName: String, amountOfProperties: String) {
+        if (propertyName.isNotEmpty() && amountOfProperties.isNotEmpty()) {
             viewModelScope.launch(Dispatchers.IO) {
-                val property = Property(propertyName, numbOfPropertiesAsString.toInt())
+                val property = Property(propertyName, amountOfProperties)
                 propertyRepository.insert(property)
                 _eventAddProperty.postValue(true)
             }
@@ -52,6 +52,11 @@ class PropertiesChildViewModel @ViewModelInject constructor(
     fun onErrorShowComplete() {
         _errorEditTextEmpty.value = false
     }
+
+    fun updateProperty(newProperty: Property) =
+        viewModelScope.launch(Dispatchers.IO) {
+            propertyRepository.update(newProperty.documentId,  newProperty)
+        }
 
     fun deleteProperty(propertyName: String) =
         viewModelScope.launch(Dispatchers.IO) {

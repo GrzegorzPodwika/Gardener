@@ -11,14 +11,16 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.domain.ActiveProperty
 import pl.podwikagrzegorz.gardener.data.domain.Item
 import pl.podwikagrzegorz.gardener.databinding.FragmentToolsInViewpagerBinding
 import pl.podwikagrzegorz.gardener.extensions.toBundle
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.PropertiesChildViewModel
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.ActivePropertyAdapter
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.AddedItemAdapter
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.PickNumberDialog
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetPropertiesFragment
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetToolsFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.PropertyViewModel
 
 //Class No6 - Properties
@@ -27,7 +29,7 @@ class PropertyFragment : Fragment() {
 
     private lateinit var binding: FragmentToolsInViewpagerBinding
     private val viewModelMainProperties: PropertyViewModel by viewModels()
-    private lateinit var propertyAdapter: AddedItemAdapter
+    private lateinit var propertyAdapter: ActivePropertyAdapter
 
     private val receivedPropertiesViewModel: PropertiesChildViewModel by viewModels()
 
@@ -48,21 +50,43 @@ class PropertyFragment : Fragment() {
     }
 
     private fun connectRecyclerViewWithQuery() {
-        val options = FirestoreRecyclerOptions.Builder<Item>()
-            .setQuery(viewModelMainProperties.getTakenPropertiesQuerySortedByTimestamp(), Item::class.java)
+        val options = FirestoreRecyclerOptions.Builder<ActiveProperty>()
+            .setQuery(viewModelMainProperties.getTakenPropertiesQuerySortedByActivity(), ActiveProperty::class.java)
             .setLifecycleOwner(this)
             .build()
 
-        propertyAdapter = AddedItemAdapter(options, object : OnClickItemListener {
-            override fun onChangeFlagToOpposite(documentId: String) {
-                viewModelMainProperties.reverseFlagOnProperty(childDocumentId = documentId)
-            }
-
+        propertyAdapter = ActivePropertyAdapter(options, object : OnClickItemListener {
             override fun onClickItem(documentId: String) {
                 viewModelMainProperties.deleteItemFromList(childDocumentId = documentId)
             }
+
+            override fun onChangeFlagToOpposite(documentId: String, isActive: Boolean) {
+                viewModelMainProperties.reverseFlagOnProperty(childDocumentId = documentId, isActive)
+            }
+
+/*            override fun onChangeNumberOfItems(
+                documentId: String,
+                currentNumberOfItems: Int,
+                maxNumberOfItems: Int
+            ) {
+                showPickNumberDialog(documentId, currentNumberOfItems, maxNumberOfItems)
+            }*/
+
         })
+
     }
+
+/*    private fun showPickNumberDialog(
+        documentId: String,
+        currentNumberOfItems: Int,
+        maxNumberOfItems: Int
+    ) {
+        PickNumberDialog(currentNumberOfItems, maxNumberOfItems, object : PickNumberDialog.OnChosenNumberListener {
+            override fun onChosenNumber(chosenNumber: Int) {
+                viewModelMainProperties.updateNumberOfProperties(documentId, chosenNumber)
+            }
+        }).show(childFragmentManager, null)
+    }*/
 
     private fun setUpBinding() {
         binding.apply {
@@ -82,8 +106,8 @@ class PropertyFragment : Fragment() {
         binding.materialButtonAddTools.setOnClickListener {
             SheetPropertiesFragment(
                 receivedPropertiesViewModel.listOfProperties,
-                object : SheetPropertiesFragment.OnGetListOfPickedItemsListener {
-                    override fun onGetListOfPickedItems(listOfPickedItems: List<Item>) {
+                object : SheetPropertiesFragment.OnGetListOfPickedPropertiesListener {
+                    override fun onGetListOfPickedItems(listOfPickedItems: List<ActiveProperty>) {
                         viewModelMainProperties.addListOfPickedProperties(listOfPickedItems)
                     }
                 }
@@ -92,9 +116,9 @@ class PropertyFragment : Fragment() {
     }
 
     companion object {
-        fun create(gardenTitle: String): PropertyFragment {
+        fun create(documentId: String): PropertyFragment {
             val fragment = PropertyFragment()
-            fragment.arguments = toBundle(gardenTitle)
+            fragment.arguments = toBundle(documentId)
             return fragment
         }
     }

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorGray">#FF393B45</color>
+    <color name="colorPrimaryDarkBothDayNight">@color/purple_600</color>
 </resources>

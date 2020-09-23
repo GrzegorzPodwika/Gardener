@@ -18,7 +18,7 @@ import pl.podwikagrzegorz.gardener.MainActivity
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.domain.Period
 import pl.podwikagrzegorz.gardener.di.GlideApp
-import pl.podwikagrzegorz.gardener.extensions.Constants.GARDEN_TITLE
+import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_DOCUMENT_ID
 import pl.podwikagrzegorz.gardener.ui.auth.LoginActivity
 import java.io.File
 import java.text.SimpleDateFormat
@@ -115,10 +115,10 @@ fun <T> Fragment.setNavigationResult(key: String = "key", result: T) {
 
 fun toBundle(gardenTitle: String) : Bundle {
     val bundle = Bundle()
-    bundle.putString(GARDEN_TITLE, gardenTitle)
+    bundle.putString(FIREBASE_DOCUMENT_ID, gardenTitle)
     return bundle
 }
 
 fun fromBundle(bundle: Bundle) : String {
-    return bundle.getString(GARDEN_TITLE)!!
+    return bundle.getString(FIREBASE_DOCUMENT_ID)!!
 }

@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import dagger.hilt.android.AndroidEntryPoint
+import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.domain.BasicGarden
 import pl.podwikagrzegorz.gardener.data.domain.Period
 import pl.podwikagrzegorz.gardener.databinding.FragmentPlannedGardensBinding
@@ -126,7 +127,7 @@ class PlannedGardensFragment : Fragment() {
     private fun observeInsertData() {
         viewModel.eventGardenInserted.observe(viewLifecycleOwner, Observer { isSuccess ->
             if (isSuccess) {
-                binding.root.snackbar("Insert success")
+                binding.root.snackbar(getString(R.string.insert_success))
                 viewModel.onShowSuccessSnackbarComplete()
             }
         })

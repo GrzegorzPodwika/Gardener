@@ -15,7 +15,7 @@ class ManHoursViewModel @ViewModelInject constructor(
     private val gardenComponentsRepository: GardenComponentsRepository,
     @Assisted private val stateHandle: SavedStateHandle
 ) : ViewModel(){
-    private val documentId = stateHandle.get<String>(Constants.GARDEN_TITLE)!!
+    private val documentId = stateHandle.get<String>(Constants.FIREBASE_DOCUMENT_ID)!!
 
     private val _mapOfWorkedHours = MutableLiveData<List<ManHoursMap>>()
     val mapOfWorkedHours: LiveData<List<ManHoursMap>>

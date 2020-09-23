@@ -4,10 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
-            name="item"
-            type="pl.podwikagrzegorz.gardener.data.domain.Item" />
+            name="activeProperty"
+            type="pl.podwikagrzegorz.gardener.data.domain.ActiveProperty" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -15,55 +14,55 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/keyline_1"
-        app:shouldBeGrayedOut="@{item.active}">
+        app:shouldBeGrayedOut="@{activeProperty.active}">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textView_numb_of_tools"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
+                android:id="@+id/textView_amount_of_properties"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/keyline_1"
                 android:layout_marginTop="@dimen/keyline_0"
                 android:layout_marginBottom="@dimen/keyline_0"
-                android:layout_weight="0.15"
-                android:background="@drawable/number_circle"
-                android:enabled="@{item.active}"
+                android:minHeight="35dp"
+                android:padding="@dimen/keyline_2"
+                android:enabled="@{activeProperty.active}"
                 android:gravity="center"
-                android:text="@{String.valueOf(item.numberOfItems)}"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
-                tools:text="17" />
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/number_circle"
+                tools:text="50 worków"
+                android:text="@{activeProperty.amountOfProperties}"
+                android:textAppearance="?attr/textAppearanceSubtitle1" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textView_added_tool"
+                android:id="@+id/textView_added_property"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/keyline_3"
                 android:layout_weight="1"
+                android:layout_marginStart="@dimen/keyline_3"
+                android:layout_gravity="center_vertical"
                 android:paddingStart="@dimen/keyline_2"
                 android:paddingEnd="@dimen/keyline_1"
-                android:text="@{item.itemName}"
-                app:shouldBeCrossedOut="@{item.active}"
-
-                android:textAppearance="?attr/textAppearanceSubtitle1"
-                tools:text="Grabki" />
+                android:text="@{activeProperty.propertyName}"
+                app:shouldBeCrossedOut="@{activeProperty.active}"
+                tools:text="Worków kory"
+                android:textAppearance="?attr/textAppearanceSubtitle1" />
 
 
             <ImageButton
-                android:id="@+id/imageButton_tool_to_delete"
+                android:id="@+id/imageButton_property_to_delete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="@dimen/keyline_1"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/keyline_4"
                 android:layout_marginTop="@dimen/keyline_1"
-                android:layout_marginEnd="@dimen/keyline_2"
                 android:layout_marginBottom="@dimen/keyline_1"
-                android:enabled="@{item.active}"
-                android:padding="@dimen/keyline_1"
+                android:layout_marginEnd="@dimen/keyline_2"
+                android:enabled="@{activeProperty.active}"
                 app:srcCompat="@drawable/ic_minus" />
 
         </LinearLayout>

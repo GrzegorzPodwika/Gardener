@@ -44,7 +44,19 @@ class ToolsChildFragment : Fragment() {
             override fun onClickItem(documentId: String) {
                 viewModel.deleteTool(documentId)
             }
+        }, object : OnEditItemListener<Tool> {
+            override fun onEditItem(itemToEdit: Tool) {
+                showEditItemDialog(itemToEdit)
+            }
         })
+    }
+
+    private fun showEditItemDialog(toolToEdit: Tool) {
+        EditToolOrMachineDialog(toolToEdit.toolName, toolToEdit.numberOfTools, object : EditToolOrMachineDialog.OnChangedItemAttributesListener {
+            override fun onChangedItemAttributes(newItemName: String, newNumberOfItems: Int) {
+                viewModel.updateTool(toolToEdit.documentId, newItemName, newNumberOfItems)
+            }
+        }).show(childFragmentManager, null)
     }
 
     private fun setUpBindingWithViewModel() {

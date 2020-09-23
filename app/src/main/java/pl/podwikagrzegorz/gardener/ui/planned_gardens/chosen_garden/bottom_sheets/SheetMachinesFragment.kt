@@ -67,7 +67,7 @@ class SheetMachinesFragment(
             for (index in listOfCheckedTools.indices) {
                 if (listOfCheckedTools[index]) {
                     val machine = listOfMachines[index]
-                    val item = Item(machine.machineName, machine.numberOfMachines)
+                    val item = Item(machine.machineName, machine.numberOfMachines, machine.numberOfMachines)
                     listOfPickedItems.add(item)
                 }
             }

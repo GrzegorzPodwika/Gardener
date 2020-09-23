@@ -12,7 +12,9 @@
 
     </data>
 
-    <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/materialCardView_single_property"
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -45,7 +47,7 @@
                 android:layout_weight="0.3"
                 android:gravity="center"
                 android:paddingStart="@dimen/keyline_2"
-                android:text="@{String.valueOf(property.numberOfProperties)}"
+                android:text="@{property.amountOfProperties}"
                 android:paddingEnd="@dimen/keyline_2"
                 android:textAppearance="?attr/textAppearanceSubtitle1" />
 

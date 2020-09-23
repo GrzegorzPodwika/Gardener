@@ -9,20 +9,21 @@ import android.widget.FrameLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import pl.podwikagrzegorz.gardener.data.domain.ActiveProperty
 import pl.podwikagrzegorz.gardener.data.domain.Item
 import pl.podwikagrzegorz.gardener.data.domain.Property
 import pl.podwikagrzegorz.gardener.databinding.BottomSheetAssignWorkerBinding
 
 class SheetPropertiesFragment(
     private val listOfProperties: List<Property>,
-    private val listener : OnGetListOfPickedItemsListener
+    private val listener : OnGetListOfPickedPropertiesListener
 ) : BottomSheetDialogFragment() {
 
     private lateinit var binding: BottomSheetAssignWorkerBinding
     private val adapter = SheetPropertiesAdapter(listOfProperties)
 
-    interface OnGetListOfPickedItemsListener {
-        fun onGetListOfPickedItems(listOfPickedItems: List<Item>)
+    interface OnGetListOfPickedPropertiesListener {
+        fun onGetListOfPickedItems(listOfPickedItems: List<ActiveProperty>)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -62,13 +63,12 @@ class SheetPropertiesFragment(
     private fun setAddToolsButtonListener() {
         binding.materialButtonConfirmAddingWorkers.setOnClickListener {
             val listOfCheckedTools = adapter.listOfCheckedProperties
-            val listOfPickedItems = mutableListOf<Item>()
+            val listOfPickedItems = mutableListOf<ActiveProperty>()
 
             for (index in listOfCheckedTools.indices) {
                 if (listOfCheckedTools[index]) {
                     val property = listOfProperties[index]
-                    val item = Item(property.propertyName, property.numberOfProperties)
-                    listOfPickedItems.add(item)
+                    listOfPickedItems.add(ActiveProperty(property.propertyName, property.amountOfProperties))
                 }
             }
             listener.onGetListOfPickedItems(listOfPickedItems)

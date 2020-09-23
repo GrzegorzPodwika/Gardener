@@ -14,23 +14,22 @@ class MachineViewModel @ViewModelInject constructor(
     private val gardenComponentsRepository: GardenComponentsRepository,
     @Assisted private val stateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val documentId = stateHandle.get<String>(Constants.GARDEN_TITLE)!!
+    private val documentId = stateHandle.get<String>(Constants.FIREBASE_DOCUMENT_ID)!!
 
     fun addListOfPickedMachines(listOfPickedMachines: List<Item>) =
         viewModelScope.launch(Dispatchers.IO) {
             gardenComponentsRepository.addListOfPickedMachines(documentId, listOfPickedMachines)
         }
 
-    fun reverseFlagOnMachine(childDocumentId: String) =
+    fun reverseFlagOnMachine(childDocumentId: String, isActive: Boolean) =
         viewModelScope.launch(Dispatchers.IO) {
-            gardenComponentsRepository.reverseFlagOnMachine(documentId, childDocumentId)
+            gardenComponentsRepository.reverseFlagOnMachine(documentId, childDocumentId, isActive)
         }
 
-/* Pomyslec czy sie przyda
-    fun updateNumberOfMachines(noItems: Int, position: Int) {
-        gardenComponentsDAO.updateNumberOfProperMachine(noItems, position)
-    }
-*/
+    fun updateNumberOfMachines(childDocumentId: String, chosenNumber: Int) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.updateNumberOfMachines(documentId, childDocumentId, chosenNumber)
+        }
 
     fun deleteItemFromList(childDocumentId: String) =
         viewModelScope.launch(Dispatchers.IO) {
@@ -43,4 +42,6 @@ class MachineViewModel @ViewModelInject constructor(
     fun getTakenMachinesQuerySortedByTimestamp(): Query =
         gardenComponentsRepository.getTakenMachinesQuerySortedByTimestamp(documentId)
 
+    fun getTakenMachinesQuerySortedByActivity(): Query =
+        gardenComponentsRepository.getTakenMachinesQuerySortedByActivity(documentId)
 }

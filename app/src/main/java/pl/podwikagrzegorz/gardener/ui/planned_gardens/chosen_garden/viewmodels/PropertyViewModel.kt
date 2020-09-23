@@ -6,7 +6,7 @@ import androidx.lifecycle.*
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import pl.podwikagrzegorz.gardener.data.domain.Item
+import pl.podwikagrzegorz.gardener.data.domain.ActiveProperty
 import pl.podwikagrzegorz.gardener.data.repo.GardenComponentsRepository
 import pl.podwikagrzegorz.gardener.extensions.Constants
 
@@ -14,24 +14,22 @@ class PropertyViewModel @ViewModelInject constructor(
     private val gardenComponentsRepository: GardenComponentsRepository,
     @Assisted private val stateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val documentId = stateHandle.get<String>(Constants.GARDEN_TITLE)!!
+    private val documentId = stateHandle.get<String>(Constants.FIREBASE_DOCUMENT_ID)!!
 
-
-    fun addListOfPickedProperties(listOfItemRealm: List<Item>) =
+    fun addListOfPickedProperties(listOfPickedProperties: List<ActiveProperty>) =
         viewModelScope.launch(Dispatchers.IO) {
-            gardenComponentsRepository.addListOfPickedProperties(documentId, listOfItemRealm)
+            gardenComponentsRepository.addListOfPickedProperties(documentId, listOfPickedProperties)
         }
 
-/*
-    fun updateNumberOfProperties(noItems: Int, position: Int) {
-        gardenComponentsDAO.updateNumberOfProperty(noItems, position)
-    }
-*/
-
-    fun reverseFlagOnProperty(childDocumentId: String) =
+    fun reverseFlagOnProperty(childDocumentId: String, isActive: Boolean) =
         viewModelScope.launch(Dispatchers.IO) {
-            gardenComponentsRepository.reverseFlagOnProperty(documentId, childDocumentId)
+            gardenComponentsRepository.reverseFlagOnProperty(documentId, childDocumentId, isActive)
         }
+
+/*    fun updateNumberOfProperties(childDocumentId: String, chosenNumber: Int) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.updateNumberOfProperties(documentId, childDocumentId, chosenNumber)
+        }*/
 
     fun deleteItemFromList(childDocumentId: String) =
         viewModelScope.launch(Dispatchers.IO) {
@@ -44,4 +42,6 @@ class PropertyViewModel @ViewModelInject constructor(
     fun getTakenPropertiesQuerySortedByTimestamp(): Query =
         gardenComponentsRepository.getTakenPropertiesQuerySortedByTimestamp(documentId)
 
+    fun getTakenPropertiesQuerySortedByActivity(): Query =
+        gardenComponentsRepository.getTakenPropertiesQuerySortedByActivity(documentId)
 }

@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <layout>
+
+    <data>
+        <import type="com.google.firebase.storage.StorageReference"/>
+
+        <variable
+            name="photoStorageReference"
+            type="StorageReference" />
+        <variable
+            name="listener"
+            type="pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.OnClickPhotoListener" />
+    </data>
+
     <com.google.android.material.imageview.ShapeableImageView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/shapeableImageView_taken_photo"
         android:layout_width="match_parent"
         android:layout_height="@dimen/image_size_small"
         android:layout_marginStart="@dimen/keyline_tight"
-        android:layout_marginEnd="@dimen/keyline_tight"
         android:layout_marginTop="@dimen/keyline_tight"
+        android:layout_marginEnd="@dimen/keyline_tight"
+        app:loadImageViaStorageRef="@{photoStorageReference}"
+        android:onClick="@{() -> listener.onPhotoClick()}"
         app:srcCompat="@drawable/ic_add_image">
 
     </com.google.android.material.imageview.ShapeableImageView>

@@ -54,9 +54,14 @@ class MachinesChildViewModel @ViewModelInject constructor(
         _errorEditTextEmpty.value = false
     }
 
-    fun deleteMachine(machineName: String) =
+    fun updateMachine(documentId: String, newMachineName: String, newNumberOfMachines: Int) =
         viewModelScope.launch(Dispatchers.IO) {
-        machineRepository.delete(machineName)
+            machineRepository.update(documentId, Machine(newMachineName, newNumberOfMachines))
+        }
+
+    fun deleteMachine(documentId: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+        machineRepository.delete(documentId)
     }
 
     fun getQuery() =

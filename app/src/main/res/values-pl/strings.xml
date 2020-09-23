@@ -135,5 +135,6 @@
     <string name="login_success">Jesteś już zalogowany.</string>
     <string name="login_warning">Nie jesteś zalogowany.</string>
     <string name="logout">Wyloguj</string>
+    <string name="insert_success">Pomyślnie dodano</string>
 
 </resources>

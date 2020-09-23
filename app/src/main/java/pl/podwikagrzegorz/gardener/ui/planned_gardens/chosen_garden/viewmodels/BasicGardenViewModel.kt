@@ -8,7 +8,7 @@ import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.*
 import pl.podwikagrzegorz.gardener.data.domain.BasicGarden
 import pl.podwikagrzegorz.gardener.data.repo.GardenComponentsRepository
-import pl.podwikagrzegorz.gardener.extensions.Constants.GARDEN_TITLE
+import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_DOCUMENT_ID
 
 //TODO Connecting component view models with @GardenComponentRepository
 class BasicGardenViewModel @ViewModelInject constructor(
@@ -16,7 +16,7 @@ class BasicGardenViewModel @ViewModelInject constructor(
     @Assisted private val stateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val documentId = stateHandle.get<String>(GARDEN_TITLE)!!
+    private val documentId = stateHandle.get<String>(FIREBASE_DOCUMENT_ID)!!
 
     private val _basicGarden = MutableLiveData<BasicGarden>()
     val basicGarden: LiveData<BasicGarden>

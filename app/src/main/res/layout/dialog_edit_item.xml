@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:padding="@dimen/keyline_3">
+
+
+        <EditText
+            android:id="@+id/editText_item_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:paddingStart="@dimen/keyline_1"
+            app:layout_constraintEnd_toStartOf="@id/editText_number_of_items"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Shovels" />
+
+        <EditText
+            android:id="@+id/editText_number_of_items"
+            android:layout_width="50dp"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:inputType="number"
+            tools:text="14" />
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/materialButton_cancel_editing_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="16dp"
+            android:text="@string/cancel"
+            app:icon="@drawable/ic_cancel"
+            app:iconGravity="end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/editText_item_name" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/materialButton_confirm_editing_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="16dp"
+            android:text="@string/confirm"
+            app:icon="@drawable/ic_confirm"
+            app:iconGravity="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/editText_number_of_items" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

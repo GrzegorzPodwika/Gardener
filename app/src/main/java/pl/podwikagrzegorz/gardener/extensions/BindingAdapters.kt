@@ -1,14 +1,16 @@
 package pl.podwikagrzegorz.gardener.extensions
 
+import android.graphics.Paint
 import android.net.Uri
 import android.widget.Button
 import android.widget.ImageView
-import androidx.core.content.res.ResourcesCompat
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import coil.api.load
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.storage.StorageReference
+import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.di.GlideApp
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.fragments.PhotosFragment
@@ -48,12 +50,24 @@ fun ImageView.loadIconDrawable(isGarden: Boolean) {
     }
 }
 
-@BindingAdapter("shouldBeCrossed")
-fun MaterialCardView.checkIfShouldBeCrossed(isActive: Boolean) {
-    foreground = if (isActive) {
-        null
+@BindingAdapter("shouldBeGrayedOut")
+fun MaterialCardView.shouldBeGrayedOut(isActive: Boolean) {
+    if (isActive) {
+        setCardBackgroundColor(GardenerApp.res.getColor(R.color.green_600, null))
     } else {
-        ResourcesCompat.getDrawable(resources, R.drawable.stroke_foreground, null)
+        setCardBackgroundColor(GardenerApp.res.getColor(R.color.colorGrayLight, null))
+    }
+}
+
+@BindingAdapter("shouldBeCrossedOut")
+fun shouldBeCrossedOut(textView: TextView, isActive: Boolean) {
+    textView.apply {
+        paintFlags = if (isActive) {
+            paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+        } else {
+            paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+
+        }
     }
 }
 

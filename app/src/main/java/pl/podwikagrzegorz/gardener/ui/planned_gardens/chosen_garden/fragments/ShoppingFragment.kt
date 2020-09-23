@@ -14,6 +14,7 @@ import pl.podwikagrzegorz.gardener.data.domain.ActiveString
 import pl.podwikagrzegorz.gardener.databinding.FragmentShoppingBinding
 import pl.podwikagrzegorz.gardener.extensions.toBundle
 import pl.podwikagrzegorz.gardener.extensions.toast
+import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.OnEditItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SingleItemAdapter
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.ShoppingViewModel
@@ -42,19 +43,31 @@ class ShoppingFragment : Fragment() {
 
     private fun connectRecyclerViewWithQuery() {
         val options = FirestoreRecyclerOptions.Builder<ActiveString>()
-            .setQuery(viewModel.getShoppingNotesQuery(), ActiveString::class.java)
+            .setQuery(viewModel.getShoppingNotesQuerySortedByActivity(), ActiveString::class.java)
             .setLifecycleOwner(this)
             .build()
 
         shoppingAdapter = SingleItemAdapter(options, object : OnClickItemListener {
-            override fun onChangeFlagToOpposite(documentId: String) {
-                viewModel.reverseFlagOnShoppingNote(childDocumentId = documentId)
-            }
-
             override fun onClickItem(documentId: String) {
                 viewModel.deleteShoppingNoteFromList(childDocumentId = documentId)
             }
+
+            override fun onChangeFlagToOpposite(documentId: String, isActive: Boolean) {
+                viewModel.reverseFlagOnShoppingNote(childDocumentId = documentId, isActive)
+            }
+        }, object : OnEditItemListener<ActiveString> {
+            override fun onEditItem(itemToEdit: ActiveString) {
+                showEditActiveStringDialog(itemToEdit)
+            }
         })
+    }
+
+    private fun showEditActiveStringDialog(itemToEdit: ActiveString) {
+        EditActiveStringDialog(itemToEdit, object : EditActiveStringDialog.OnChangedActiveStringListener {
+            override fun onChangedActiveString(newActiveString: ActiveString) {
+                viewModel.updateShoppingNote(newActiveString)
+            }
+        }).show(childFragmentManager, null)
     }
 
     private fun setUpViewModelWithBinding() {

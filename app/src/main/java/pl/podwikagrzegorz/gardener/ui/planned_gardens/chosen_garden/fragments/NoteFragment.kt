@@ -15,6 +15,7 @@ import pl.podwikagrzegorz.gardener.databinding.FragmentNotesBinding
 import pl.podwikagrzegorz.gardener.extensions.fromBundle
 import pl.podwikagrzegorz.gardener.extensions.toBundle
 import pl.podwikagrzegorz.gardener.extensions.toast
+import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.OnEditItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SingleItemAdapter
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.NoteViewModel
@@ -44,19 +45,31 @@ class NoteFragment : Fragment() {
 
     private fun connectRecyclerViewWithQuery() {
         val options = FirestoreRecyclerOptions.Builder<ActiveString>()
-            .setQuery(viewModel.getNoteQuerySortedByTimestamp(), ActiveString::class.java)
+            .setQuery(viewModel.getNoteQuerySortedByActivity(), ActiveString::class.java)
             .setLifecycleOwner(this)
             .build()
 
         propertyAdapter = SingleItemAdapter(options, object : OnClickItemListener {
-            override fun onChangeFlagToOpposite(documentId: String) {
-                viewModel.reverseFlagOnNote(childDocumentId = documentId)
-            }
-
             override fun onClickItem(documentId: String) {
                 viewModel.deleteItemFromList(childDocumentId = documentId)
             }
+
+            override fun onChangeFlagToOpposite(documentId: String, isActive: Boolean) {
+                viewModel.reverseFlagOnNote(childDocumentId = documentId, isActive)
+            }
+        }, object : OnEditItemListener<ActiveString> {
+            override fun onEditItem(itemToEdit: ActiveString) {
+                showEditActiveStringDialog(itemToEdit)
+            }
         })
+    }
+
+    private fun showEditActiveStringDialog(itemToEdit: ActiveString) {
+        EditActiveStringDialog(itemToEdit, object : EditActiveStringDialog.OnChangedActiveStringListener {
+            override fun onChangedActiveString(newActiveString: ActiveString) {
+                viewModel.updateNote(newActiveString)
+            }
+        }).show(childFragmentManager, null)
     }
 
     private fun setUpViewModelWithBinding() {

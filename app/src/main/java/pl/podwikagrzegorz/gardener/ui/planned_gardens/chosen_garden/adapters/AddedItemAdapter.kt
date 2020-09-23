@@ -36,11 +36,13 @@ class AddedItemAdapter(
 
         private fun setListenersToViews(item: Item, listener: OnClickItemListener) {
             binding.textViewAddedTool.setOnClickListener {
-                listener.onChangeFlagToOpposite(item.documentId)
+                listener.onChangeFlagToOpposite(item.documentId, item.isActive)
             }
-/*            binding.textViewNumbOfTools.setOnClickListener {
-                listener.onChangeNumberOfItems(item.numberOfItems, position, item.itemName)
-            }*/
+
+            binding.textViewNumbOfTools.setOnClickListener {
+                listener.onChangeNumberOfItems(item.documentId, item.numberOfItems, item.maxNumberOfItems)
+            }
+
             binding.imageButtonToolToDelete.setOnClickListener {
                 listener.onClickItem(item.documentId)
             }

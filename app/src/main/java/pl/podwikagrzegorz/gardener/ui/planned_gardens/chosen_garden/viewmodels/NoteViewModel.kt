@@ -1,6 +1,5 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
-import android.os.Bundle
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
@@ -9,14 +8,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import pl.podwikagrzegorz.gardener.data.domain.ActiveString
 import pl.podwikagrzegorz.gardener.data.repo.GardenComponentsRepository
-import pl.podwikagrzegorz.gardener.extensions.Constants.GARDEN_TITLE
+import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_DOCUMENT_ID
 
 class NoteViewModel @ViewModelInject constructor(
     private val gardenComponentsRepository: GardenComponentsRepository,
     @Assisted private val stateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val documentId = stateHandle.get<String>(GARDEN_TITLE)!!
+    private val documentId = stateHandle.get<String>(FIREBASE_DOCUMENT_ID)!!
 
     private val _eventNoteAdded = MutableLiveData<Boolean>()
     val eventNoteAdded: LiveData<Boolean>
@@ -47,9 +46,14 @@ class NoteViewModel @ViewModelInject constructor(
     }
 
 
-    fun reverseFlagOnNote(childDocumentId: String) =
+    fun reverseFlagOnNote(childDocumentId: String, isActive: Boolean) =
         viewModelScope.launch(Dispatchers.IO) {
-            gardenComponentsRepository.reverseFlagOnNote(documentId, childDocumentId)
+            gardenComponentsRepository.reverseFlagOnNote(documentId, childDocumentId, isActive)
+        }
+
+    fun updateNote(newNote: ActiveString) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.updateNote(documentId, newNote.documentId, newNote)
         }
 
     fun deleteItemFromList(childDocumentId: String) =
@@ -62,4 +66,9 @@ class NoteViewModel @ViewModelInject constructor(
 
     fun getNoteQuerySortedByTimestamp() : Query =
         gardenComponentsRepository.getNoteQuerySortedByTimestamp(documentId)
+
+    fun getNoteQuerySortedByActivity() : Query =
+        gardenComponentsRepository.getNoteQuerySortedByActivity(documentId)
+
+
 }

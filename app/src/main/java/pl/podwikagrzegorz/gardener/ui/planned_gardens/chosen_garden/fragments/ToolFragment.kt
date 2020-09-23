@@ -14,6 +14,7 @@ import pl.podwikagrzegorz.gardener.extensions.toBundle
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.ToolsChildViewModel
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.AddedItemAdapter
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.PickNumberDialog
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetToolsFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.ToolViewModel
 
@@ -42,22 +43,37 @@ class ToolFragment : Fragment() {
     }
 
 
-
     private fun connectRecyclerViewWithQuery() {
         val options = FirestoreRecyclerOptions.Builder<Item>()
-            .setQuery(viewModelMainTools.getTakenToolsQuerySortedByTimestamp(), Item::class.java)
+            .setQuery(viewModelMainTools.getTakenToolsQuerySortedByActivity(), Item::class.java)
             .setLifecycleOwner(this)
             .build()
 
         toolAdapter = AddedItemAdapter(options, object : OnClickItemListener {
-            override fun onChangeFlagToOpposite(documentId: String) {
-                viewModelMainTools.reverseFlagOnTool(childDocumentId = documentId)
-            }
-
             override fun onClickItem(documentId: String) {
                 viewModelMainTools.deleteItemFromList(childDocumentId = documentId)
             }
+
+            override fun onChangeFlagToOpposite(documentId: String, isActive: Boolean) {
+                viewModelMainTools.reverseFlagOnTool(childDocumentId = documentId, isActive)
+            }
+
+            override fun onChangeNumberOfItems(
+                documentId: String,
+                currentNumberOfItems: Int,
+                maxNumberOfItems: Int
+            ) {
+                showPickNumberDialog(documentId, currentNumberOfItems, maxNumberOfItems)
+            }
         })
+    }
+
+    private fun showPickNumberDialog(documentId: String, currentNumberOfItems: Int, maxNumberOfItems: Int) {
+        PickNumberDialog(currentNumberOfItems, maxNumberOfItems, object : PickNumberDialog.OnChosenNumberListener {
+            override fun onChosenNumber(chosenNumber: Int) {
+                viewModelMainTools.updateNumberOfTools(childDocumentId =  documentId, chosenNumber)
+            }
+        }).show(childFragmentManager, null)
     }
 
     private fun setUpBinding() {
@@ -91,8 +107,6 @@ class ToolFragment : Fragment() {
 
     }
 }
-
-
 
 
 /*       private fun addListOfPickedToolsToMainList(listOfPickedItems: List<Boolean>) {

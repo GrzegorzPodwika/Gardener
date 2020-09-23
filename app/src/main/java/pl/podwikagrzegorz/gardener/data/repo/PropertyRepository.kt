@@ -71,14 +71,14 @@ class PropertyRepository @Inject constructor(
         propertyCollectionRef.orderBy(FIELD_PROPERTY_NAME)
 
     fun getQuerySortedByNumberOfProperties() : Query =
-        propertyCollectionRef.orderBy(FIELD_NUMBER_OF_PROPERTIES)
+        propertyCollectionRef.orderBy(FIELD_AMOUNT_OF_PROPERTIES)
 
     override fun getQuerySortedByTimestamp(): Query =
         propertyCollectionRef.orderBy(FIELD_TIMESTAMP)
 
     companion object {
         private const val FIELD_PROPERTY_NAME = "propertyName"
-        private const val FIELD_NUMBER_OF_PROPERTIES = "numberOfProperties"
+        private const val FIELD_AMOUNT_OF_PROPERTIES = "amountOfProperties"
         private const val FIELD_TIMESTAMP = "timestamp"
     }
 }

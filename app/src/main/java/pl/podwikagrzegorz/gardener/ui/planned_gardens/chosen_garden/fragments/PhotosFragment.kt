@@ -21,6 +21,8 @@ import pl.podwikagrzegorz.gardener.databinding.FragmentPhotosBinding
 import pl.podwikagrzegorz.gardener.extensions.getAbsoluteFilePath
 import pl.podwikagrzegorz.gardener.extensions.toBundle
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.OnClickPhotoListener
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.OnProgressListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SmallPhotoAdapter
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.FullImageDialogFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.PhotosViewModel
@@ -38,6 +40,23 @@ class PhotosFragment : Fragment() {
     }
     private var uniquePhotoName: String = ""
     private lateinit var smallPhotoAdapter: SmallPhotoAdapter
+    private val progressListener: OnProgressListener = object : OnProgressListener {
+        override fun onStarted() {
+            binding.progressBarUploadImage.visibility = View.VISIBLE
+            binding.materialButtonTakePhoto.isEnabled = false
+            binding.materialButtonCompleteGarden.isEnabled = false
+        }
+
+        override fun onProgress(progress: Double) {
+            binding.progressBarUploadImage.progress = progress.toInt()
+        }
+
+        override fun onFinished() {
+            binding.progressBarUploadImage.visibility = View.GONE
+            binding.materialButtonTakePhoto.isEnabled = true
+            binding.materialButtonCompleteGarden.isEnabled = true
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,8 +79,12 @@ class PhotosFragment : Fragment() {
             .setLifecycleOwner(this)
             .build()
 
-        val photoStorageReference : StorageReference = viewModel.getPhotoStorageReference()
-        smallPhotoAdapter = SmallPhotoAdapter(options, photoStorageReference)
+        val photoStorageReference: StorageReference = viewModel.getPhotoStorageReference()
+        smallPhotoAdapter = SmallPhotoAdapter(options, photoStorageReference, object : OnClickPhotoListener {
+                override fun onPhotoClick() {
+                    showFullResolutionImagesDialog()
+                }
+            })
     }
 
     private fun setUpViewModelWithBinding() {
@@ -74,7 +97,6 @@ class PhotosFragment : Fragment() {
 
     private fun observeEventsFromViewModel() {
         observeOnTakePhotoButton()
-        observeOnPhotoClick()
     }
 
     private fun observeOnTakePhotoButton() {
@@ -85,22 +107,12 @@ class PhotosFragment : Fragment() {
         })
     }
 
-    private fun observeOnPhotoClick() {
-        viewModel.eventOnPhotoClick.observe(viewLifecycleOwner, {hasClicked ->
-            if (hasClicked) {
-                showFullResolutionImagesDialog()
-            }
-        })
-    }
-
-
 
     private fun showFullResolutionImagesDialog() {
         if (viewModel.listOfPictureStorageRef.value != null) {
             FullImageDialogFragment(viewModel.listOfPictureStorageRef.value!!)
                 .show(childFragmentManager, null)
         }
-        viewModel.onPhotoClickComplete()
     }
 
 
@@ -141,7 +153,7 @@ class PhotosFragment : Fragment() {
 
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val absolutePicturePath = requireContext().getAbsoluteFilePath(uniquePhotoName)
-            viewModel.addPictureToList(absolutePicturePath)
+            viewModel.addPictureToList(absolutePicturePath, progressListener)
         }
     }
 
@@ -153,9 +165,9 @@ class PhotosFragment : Fragment() {
         const val CAMERA_REQUEST_CODE = 1001
         const val MAX_NUMBER_OF_POSSIBLE_PICTURES = 12
 
-        fun create(gardenTitle: String): PhotosFragment {
+        fun create(documentId: String): PhotosFragment {
             val fragment = PhotosFragment()
-            fragment.arguments = toBundle(gardenTitle)
+            fragment.arguments = toBundle(documentId)
             return fragment
         }
     }

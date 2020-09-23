@@ -4,9 +4,10 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
 
 data class Item(
-    val itemName: String = "",
-    val numberOfItems: Int = 0,
-    val isActive: Boolean = true,
-    val timestamp: Timestamp = Timestamp.now(),
-    @DocumentId val documentId: String = ""
+    var itemName: String = "",
+    var numberOfItems: Int = 0,
+    var maxNumberOfItems: Int = 0,
+    var isActive: Boolean = true,
+    var timestamp: Timestamp = Timestamp.now(),
+    @DocumentId var documentId: String = ""
 )

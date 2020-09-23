@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "121712359782-5hp5mflprenv0bngu2cqvdutv2bjknrf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pl.podwikagrzegorz.gardener",
+            "certificate_hash": "868ad6c36191eb3a388e96b1b9b8fce7172c9967"
+          }
+        },
+        {
           "client_id": "121712359782-2ro4crnp7f7piqodlgc3f3je3rurefeg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

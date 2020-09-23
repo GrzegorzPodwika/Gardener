@@ -51,6 +51,11 @@ class ToolsChildViewModel @ViewModelInject constructor(
         _errorEditTextEmpty.value = false
     }
 
+    fun updateTool(documentId: String, newToolName: String, newNumberOfTools: Int) =
+        viewModelScope.launch(Dispatchers.IO) {
+            toolRepository.update(documentId, Tool(newToolName, newNumberOfTools))
+        }
+
     fun deleteTool(toolName: String) =
         viewModelScope.launch(Dispatchers.IO) {
             toolRepository.delete(toolName)

@@ -1,6 +1,5 @@
 package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels
 
-import android.os.Bundle
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
@@ -15,7 +14,7 @@ class ShoppingViewModel @ViewModelInject constructor(
     private val gardenComponentsRepository: GardenComponentsRepository,
     @Assisted private val stateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val documentId = stateHandle.get<String>(Constants.GARDEN_TITLE)!!
+    private val documentId = stateHandle.get<String>(Constants.FIREBASE_DOCUMENT_ID)!!
 
     private val _eventShoppingNoteAdded = MutableLiveData<Boolean>()
     val eventShoppingNoteAdded: LiveData<Boolean>
@@ -46,9 +45,14 @@ class ShoppingViewModel @ViewModelInject constructor(
     }
 
 
-    fun reverseFlagOnShoppingNote(childDocumentId: String) =
+    fun reverseFlagOnShoppingNote(childDocumentId: String, isActive: Boolean) =
         viewModelScope.launch(Dispatchers.IO) {
-            gardenComponentsRepository.reverseFlagOnShoppingNote(documentId, childDocumentId)
+            gardenComponentsRepository.reverseFlagOnShoppingNote(documentId, childDocumentId, isActive)
+        }
+
+    fun updateShoppingNote(newShoppingNote: ActiveString)  =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.updateNote(documentId, newShoppingNote.documentId, newShoppingNote)
         }
 
     fun deleteShoppingNoteFromList(childDocumentId: String) =
@@ -58,4 +62,9 @@ class ShoppingViewModel @ViewModelInject constructor(
 
     fun getShoppingNotesQuery(): Query =
         gardenComponentsRepository.getShoppingNotesQuery(documentId)
+
+    fun getShoppingNotesQuerySortedByActivity(): Query =
+        gardenComponentsRepository.getShoppingNotesQuerySortedByActivity(documentId)
+
+
 }

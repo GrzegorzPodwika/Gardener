@@ -14,16 +14,21 @@ class ToolViewModel @ViewModelInject constructor(
     private val gardenComponentsRepository: GardenComponentsRepository,
     @Assisted private val stateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val documentId = stateHandle.get<String>(Constants.GARDEN_TITLE)!!
+    private val documentId = stateHandle.get<String>(Constants.FIREBASE_DOCUMENT_ID)!!
 
     fun addListOfPickedTools(listOfPickedTools: List<Item>) =
         viewModelScope.launch(Dispatchers.IO) {
             gardenComponentsRepository.addListOfPickedTools(documentId, listOfPickedTools)
         }
 
-    fun reverseFlagOnTool(childDocumentId: String) =
+    fun reverseFlagOnTool(childDocumentId: String, isActive: Boolean) =
         viewModelScope.launch(Dispatchers.IO) {
-            gardenComponentsRepository.reverseFlagOnTool(documentId, childDocumentId)
+            gardenComponentsRepository.reverseFlagOnTool(documentId, childDocumentId, isActive)
+        }
+
+    fun updateNumberOfTools(childDocumentId: String, chosenNumber: Int) =
+        viewModelScope.launch(Dispatchers.IO) {
+            gardenComponentsRepository.updateNumberOfTools(documentId, childDocumentId, chosenNumber)
         }
 
     fun deleteItemFromList(childDocumentId: String)  =
@@ -36,13 +41,12 @@ class ToolViewModel @ViewModelInject constructor(
 
     fun getTakenToolsQuerySortedByTimestamp(): Query =
         gardenComponentsRepository.getTakenToolsQuerySortedByTimestamp(documentId)
+
+    fun getTakenToolsQuerySortedByActivity(): Query =
+        gardenComponentsRepository.getTakenToolsQuerySortedByActivity(documentId)
 }
 
 /*    // deprecated
-/*    TODO ZASTANOWIC SIE CZY POTRZEBNE
-fun updateNumberOfTools(noItems: Int, position: Int) {
-        gardenComponentsDAO.updateNumberOfProperTool(noItems, position)
-    }*/
 
 fun updateListOfActiveTools(listOfActiveTools: List<Boolean>) {
         gardenComponentsDAO.updateListOfActiveTools(listOfActiveTools)
