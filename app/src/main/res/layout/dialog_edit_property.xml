@@ -5,7 +5,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="@dimen/keyline_3">
 
@@ -15,23 +15,29 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"
-            android:inputType="textCapSentences"
+            android:inputType="textCapSentences|textMultiLine"
             android:paddingStart="@dimen/keyline_1"
             app:layout_constraintEnd_toStartOf="@id/editText_amount_of_properties"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Shovels" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/editText_amount_of_properties"
-            android:layout_width="wrap_content"
-            android:gravity="center_horizontal"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:gravity="center_horizontal"
             android:paddingStart="@dimen/keyline_1"
             android:paddingEnd="@dimen/keyline_1"
-            tools:text="14 worków" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:barrierMargin="@dimen/keyline_2"
+            app:constraint_referenced_ids="editText_property_name, editText_amount_of_properties" />
 
 
         <com.google.android.material.button.MaterialButton
@@ -44,7 +50,7 @@
             app:icon="@drawable/ic_cancel"
             app:iconGravity="end"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/editText_property_name" />
+            app:layout_constraintTop_toBottomOf="@id/barrier" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/materialButton_confirm_editing_item"
@@ -56,7 +62,8 @@
             app:icon="@drawable/ic_confirm"
             app:iconGravity="end"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/editText_amount_of_properties" />
+            app:layout_constraintTop_toBottomOf="@id/barrier" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

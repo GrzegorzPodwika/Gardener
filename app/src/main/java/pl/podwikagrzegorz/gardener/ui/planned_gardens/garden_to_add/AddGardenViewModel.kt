@@ -69,8 +69,8 @@ class AddGardenViewModel : ObservableViewModel() {
     @Bindable
     fun getGardenOrServiceAsDrawable(): Drawable? {
         return when (isGardenOrService) {
-            true -> ResourcesCompat.getDrawable(GardenerApp.res, R.drawable.ic_farm, null)
-            false -> ResourcesCompat.getDrawable(GardenerApp.res, R.drawable.ic_lawn_mower, null)
+            true -> ResourcesCompat.getDrawable(GardenerApp.res, R.drawable.ic_garden_park, null)
+            false -> ResourcesCompat.getDrawable(GardenerApp.res, R.drawable.ic_wheelbarrow, null)
         }
     }
 

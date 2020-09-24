@@ -36,6 +36,7 @@ import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.FragmentMapsBinding
 import pl.podwikagrzegorz.gardener.extensions.getAbsoluteFilePath
 import pl.podwikagrzegorz.gardener.extensions.setNavigationResult
+import pl.podwikagrzegorz.gardener.extensions.snackbar
 import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.permissions.PermissionUtils
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.garden_to_add.AddGardenFragment
@@ -204,10 +205,11 @@ class MapsFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         try {
             listOfAddresses = geoCoder.getFromLocationName(searchPlace, 1)
         } catch (ex : IOException) {
-            println(ex.stackTrace)
+            Timber.e(ex)
+            binding.root.snackbar(getString(R.string.searching_location_error))
         }
 
-        if (listOfAddresses.size >= 0) {
+        if (listOfAddresses.isNotEmpty()) {
             val searchedAddress = listOfAddresses[0]
             Timber.i("Map geoLocate: $searchedAddress")
             moveToSearchedAddress(searchedAddress)

@@ -5,14 +5,14 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:padding="@dimen/keyline_3">
 
         <EditText
             android:id="@+id/editText_active_string"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:inputType="textCapSentences"
+            android:inputType="textCapSentences|textMultiLine"
             android:paddingStart="@dimen/keyline_1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -158,7 +158,7 @@ class PhotosFragment : Fragment() {
     }
 
     private fun setOnCompleteGardenButtonListener() {
-        //TODO - zaimplementowac konczenie ogrodu kiedys tam
+        //TODO - implement in the future complete garden
     }
 
     companion object {

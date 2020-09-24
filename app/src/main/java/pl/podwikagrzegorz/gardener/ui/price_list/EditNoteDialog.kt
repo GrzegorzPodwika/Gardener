@@ -1,21 +1,23 @@
-package pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools
+package pl.podwikagrzegorz.gardener.ui.price_list
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import pl.podwikagrzegorz.gardener.data.domain.Note
 import pl.podwikagrzegorz.gardener.data.domain.Property
 import pl.podwikagrzegorz.gardener.databinding.DialogEditPropertyBinding
 
-class EditPropertyDialog(
-    private val propertyToEdit: Property,
-    private val listener: OnChangedPropertyListener
-) : DialogFragment(){
+class EditNoteDialog(
+    private val noteToEdit: Note,
+    private val listener: OnChangedNoteListener
+) : DialogFragment() {
+
     private lateinit var binding: DialogEditPropertyBinding
 
-    interface OnChangedPropertyListener {
-        fun onChangedProperty(updatedProperty: Property)
+    interface OnChangedNoteListener {
+        fun onChangedNote(updatedNote: Note)
     }
 
     override fun onStart() {
@@ -42,8 +44,8 @@ class EditPropertyDialog(
     }
 
     private fun setUpEditTextsWithCurrentVariables() {
-        binding.editTextPropertyName.setText(propertyToEdit.propertyName)
-        binding.editTextAmountOfProperties.setText(propertyToEdit.amountOfProperties)
+        binding.editTextPropertyName.setText(noteToEdit.service)
+        binding.editTextAmountOfProperties.setText(noteToEdit.priceOfService)
     }
 
     private fun setUpListenersToButtons() {
@@ -52,21 +54,22 @@ class EditPropertyDialog(
         }
 
         binding.materialButtonConfirmEditingItem.setOnClickListener {
-            val newItemName = if(binding.editTextPropertyName.text.isNotEmpty()) {
+            val newService = if (binding.editTextPropertyName.text.isNotEmpty()) {
                 binding.editTextPropertyName.text.toString()
             } else {
-                propertyToEdit.propertyName
+                noteToEdit.service
             }
 
-            val newNumberOfItems = if(binding.editTextAmountOfProperties.text.isNotEmpty()) {
+            val newPriceOfService = if (binding.editTextAmountOfProperties.text.isNotEmpty()) {
                 binding.editTextAmountOfProperties.text.toString()
             } else {
                 "0"
             }
-            val newProperty = Property(newItemName, newNumberOfItems, propertyToEdit.timestamp, propertyToEdit.documentId)
-            listener.onChangedProperty(newProperty)
+            val updatedNote =
+                Note(newService, newPriceOfService, noteToEdit.timestamp, noteToEdit.documentId)
+            listener.onChangedNote(updatedNote)
             dismiss()
         }
     }
-
 }
+

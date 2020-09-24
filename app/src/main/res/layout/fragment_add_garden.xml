@@ -137,10 +137,10 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/textField_height"
             android:layout_marginTop="@dimen/keyline_4"
-            android:gravity="center_vertical"
             android:checked="@={addGardenViewModel.gardenOrService}"
-            android:textAppearance="?attr/textAppearanceBody1"
+            android:gravity="center_vertical"
             android:text="@{addGardenViewModel.gardenOrServiceAsString}"
+            android:textAppearance="?attr/textAppearanceBody1"
             android:textColor="?attr/colorOnSurface"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView3"
@@ -150,12 +150,11 @@
             android:id="@+id/shapeableImageView_garden_or_service"
             android:layout_width="@dimen/image_size_small"
             android:layout_height="@dimen/image_size_small"
-            android:layout_marginTop="@dimen/keyline_4"
             android:elevation="@dimen/keyline_tight"
             android:src="@{addGardenViewModel.gardenOrServiceAsDrawable}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/switchMaterial_garden_or_service"
-            tools:src="@drawable/ic_farm" />
+            tools:src="@drawable/ic_garden_park" />
         <!--app:srcCompat="@{addGardenViewModel.gardenOrServiceAsDrawable}"-->
 
 

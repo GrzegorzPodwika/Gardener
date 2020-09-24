@@ -20,6 +20,10 @@ class WorkersViewModel @ViewModelInject constructor(
         workerRepository.insert(worker)
     }
 
+    fun updateWorkerInDatabase(documentId: String, workerToUpdate: Worker) = viewModelScope.launch(Dispatchers.IO) {
+        workerRepository.update(documentId, workerToUpdate)
+    }
+
     fun deleteWorker(documentId: String) = viewModelScope.launch(Dispatchers.IO) {
         workerRepository.delete(documentId)
     }

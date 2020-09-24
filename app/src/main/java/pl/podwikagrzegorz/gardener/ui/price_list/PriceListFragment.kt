@@ -12,6 +12,7 @@ import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.domain.Note
 import pl.podwikagrzegorz.gardener.databinding.FragmentPriceListBinding
 import pl.podwikagrzegorz.gardener.extensions.toast
+import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.OnEditItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
 @AndroidEntryPoint
@@ -47,7 +48,19 @@ class PriceListFragment : Fragment() {
             override fun onClickItem(documentId: String) {
                 viewModel.deleteNote(documentId)
             }
+        }, object : OnEditItemListener<Note> {
+            override fun onEditItem(itemToEdit: Note) {
+                showEditNoteDialog(itemToEdit)
+            }
         })
+    }
+
+    private fun showEditNoteDialog(noteToEdit: Note) {
+        EditNoteDialog(noteToEdit, object : EditNoteDialog.OnChangedNoteListener {
+            override fun onChangedNote(updatedNote: Note) {
+                viewModel.updateNote(updatedNote)
+            }
+        }).show(childFragmentManager, null)
     }
 
     private fun setUpBindingWithViewModel() {

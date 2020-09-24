@@ -9,10 +9,13 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import pl.podwikagrzegorz.gardener.R
+import pl.podwikagrzegorz.gardener.data.domain.Worker
 import pl.podwikagrzegorz.gardener.databinding.WorkerFragmentDialogBinding
 
 class AddWorkerDialog(
-    private val listener: OnInputListener
+    private val listener: OnInputListener,
+    private val type: Type = Type.ADD,
+    private val currentWorker : Worker? = null
 ) : DialogFragment() {
 
     private lateinit var binding: WorkerFragmentDialogBinding
@@ -41,7 +44,14 @@ class AddWorkerDialog(
         binding.apply {
             lifecycleOwner = viewLifecycleOwner
             addWorkerViewModel = viewModel
-            workerFullName = ""
+
+            workerFullName = if (type == Type.ADD) {
+                ""
+            } else if (type == Type.EDIT){
+                currentWorker!!.name
+            } else {
+                ""
+            }
         }
     }
 
@@ -69,18 +79,3 @@ class AddWorkerDialog(
         })
     }
 }
-
-/*            setOnCancelButtonListener()
-        setOnAddWorkerButtonListener()
-private fun setOnCancelButtonListener() {
-        binding.buttonCancel.setOnClickListener {
-            dialog?.dismiss()
-        }
-    }
-
-    private fun setOnAddWorkerButtonListener() {
-        binding.buttonAddWorker.setOnClickListener {
-            listener.sendInput(binding.editTextWorkerName.text.toString())
-            dialog?.dismiss()
-        }
-    }*/

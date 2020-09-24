@@ -40,7 +40,7 @@
 
     <!-- Added Garden Fragment Summary -->
     <string name="sample_name_surname">Sample - Name Surname</string>
-    <string name="planned_start_end_date">Estimated start and end date of garden:</string>
+    <string name="planned_start_end_date">Estimated start&amp;end date of making garden:</string>
     <string name="workplace_location">Work place location:</string>
 
     <!-- Short actions -->
@@ -133,6 +133,7 @@
     <string name="login_warning">You are not logged in.</string>
     <string name="logout">Logout</string>
     <string name="insert_success">Insert success</string>
+    <string name="searching_location_error">Couldn\'t find searching location</string>
 
 
 </resources>

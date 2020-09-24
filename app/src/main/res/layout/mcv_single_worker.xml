@@ -16,7 +16,7 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/mcv_single_worker"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/cardView_height"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/keyline_1">
 
         <LinearLayout
@@ -26,11 +26,14 @@
             <TextView
                 android:id="@+id/textView_worker_name"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@{worker.name}"
-                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:paddingStart="@dimen/keyline_2"
+                android:layout_marginTop="@dimen/keyline_1"
+                android:layout_marginBottom="@dimen/keyline_1"
+                tools:text="John Smith "
                 android:paddingEnd="@dimen/keyline_2"
                 android:textAppearance="?attr/textAppearanceSubtitle1" />
 
@@ -43,6 +46,8 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/keyline_4"
                 android:layout_marginEnd="@dimen/keyline_2"
+                android:layout_marginTop="@dimen/keyline_1"
+                android:layout_marginBottom="@dimen/keyline_1"
                 app:srcCompat="@drawable/ic_minus" />
         </LinearLayout>
 

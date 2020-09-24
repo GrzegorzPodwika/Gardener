@@ -13,6 +13,7 @@ import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.domain.Worker
 import pl.podwikagrzegorz.gardener.databinding.WorkersFragmentBinding
 import pl.podwikagrzegorz.gardener.extensions.toast
+import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.OnEditItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
 @AndroidEntryPoint
@@ -46,7 +47,21 @@ class WorkersFragment : Fragment(), AddWorkerDialog.OnInputListener {
             override fun onClickItem(documentId: String) {
                 deleteWorkerFromDb(documentId)
             }
+        }, object : OnEditItemListener<Worker> {
+            override fun onEditItem(itemToEdit: Worker) {
+                showWorkerDialogWithEditMode(itemToEdit)
+            }
         })
+    }
+
+    private fun showWorkerDialogWithEditMode(workerToEdit: Worker) {
+        AddWorkerDialog(object : AddWorkerDialog.OnInputListener {
+            override fun onSendWorkerFullName(workerFullName: String) {
+                workerToEdit.name = workerFullName
+                viewModel.updateWorkerInDatabase(workerToEdit.documentId, workerToEdit)
+            }
+        }, Type.EDIT, workerToEdit)
+            .show(childFragmentManager, null)
     }
 
     private fun setUpBindingWithViewModel() {

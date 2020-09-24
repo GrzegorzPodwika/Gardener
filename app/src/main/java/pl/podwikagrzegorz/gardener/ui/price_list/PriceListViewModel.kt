@@ -42,6 +42,11 @@ class PriceListViewModel @ViewModelInject constructor(
         _errorEmptyInput.value = false
     }
 
+    fun updateNote(updatedNote: Note) = viewModelScope.launch(Dispatchers.IO) {
+        priceListRepository.update(updatedNote.documentId, updatedNote)
+    }
+
+
     fun deleteNote(serviceName: String) = viewModelScope.launch(Dispatchers.IO) {
         priceListRepository.delete(serviceName)
     }
@@ -57,6 +62,7 @@ class PriceListViewModel @ViewModelInject constructor(
 
     fun getQuerySortedByTimestamp() =
         priceListRepository.getQuerySortedByTimestamp()
+
 
 }
 

@@ -21,8 +21,6 @@ class BasicGardenAdapter(
         return BasicGardenHolder.from(parent)
     }
 
-
-
     override fun onBindViewHolder(holder: BasicGardenHolder, position: Int, model: BasicGarden) {
         holder.bind(model, listener)
     }

@@ -22,7 +22,6 @@ import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheet
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetToolsFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.MachineViewModel
 
-// TODO ogarnac MAchineFragment, ManHours..ToolFragment @see - ToolFramgnet9
 //Class No5 - Machines
 @AndroidEntryPoint
 class MachineFragment : Fragment() {

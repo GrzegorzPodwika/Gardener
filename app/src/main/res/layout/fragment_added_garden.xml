@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.net.Uri"/>
+
+        <import type="android.net.Uri" />
+
         <variable
             name="basicGardenViewModel"
             type="pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.BasicGardenViewModel" />
@@ -34,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="@string/phone"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textAppearance="@style/TextAppearance.MyTheme.Subtitle1"
             android:textColor="?attr/colorOnSurface"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView_garden_title" />
@@ -45,6 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="22dp"
+            android:layout_marginEnd="@dimen/keyline_2"
             android:onClick="@{() -> basicGardenViewModel.onCall()}"
             android:text="@string/call"
             app:icon="@drawable/ic_call"
@@ -57,9 +60,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="26dp"
+            android:background="@drawable/mcv_foreground"
+            android:paddingStart="@dimen/keyline_2"
+            android:paddingTop="@dimen/keyline_1"
+            android:paddingEnd="@dimen/keyline_2"
+            android:paddingBottom="@dimen/keyline_1"
             android:text="@{String.valueOf(basicGardenViewModel.basicGarden.phoneNumber)}"
-            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textAppearance="?attr/textAppearanceHeadline5"
             android:textColor="?attr/colorSecondaryVariant"
             app:layout_constraintStart_toEndOf="@+id/materialTextView4"
             app:layout_constraintTop_toBottomOf="@+id/textView_garden_title"
@@ -70,8 +78,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:gravity="center_horizontal"
             android:text="@string/planned_start_end_date"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textAppearance="?attr/textAppearanceHeadline6"
             android:textColor="?attr/colorOnSurface"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -82,8 +91,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:background="@drawable/mcv_foreground"
+            android:paddingStart="@dimen/keyline_2"
+            android:paddingTop="@dimen/keyline_1"
+            android:paddingEnd="@dimen/keyline_2"
+            android:paddingBottom="@dimen/keyline_1"
             android:text="@{basicGardenViewModel.basicGarden.period.periodAsString}"
-            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textAppearance="?attr/textAppearanceHeadline5"
             android:textColor="?attr/colorSecondaryVariant"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -98,26 +112,32 @@
             android:text="@string/workplace_location"
             android:textAppearance="?attr/textAppearanceSubtitle1"
             android:textColor="?attr/colorOnSurface"
+            android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/imageView_picked_localization"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView_planned_period"
+            app:layout_constraintVertical_bias="1" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/materialButton_navigate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="@dimen/keyline_2"
             android:layout_marginBottom="20dp"
             android:onClick="@{() -> basicGardenViewModel.onNavigate()}"
             android:text="@string/navigate"
             app:icon="@drawable/ic_navigate"
             app:iconGravity="end"
             app:layout_constraintBottom_toTopOf="@+id/imageView_picked_localization"
-            app:layout_constraintStart_toEndOf="@+id/materialTextView9" />
+            app:layout_constraintStart_toEndOf="@+id/materialTextView9"
+            app:layout_constraintTop_toBottomOf="@+id/textView_planned_period"
+            app:layout_constraintVertical_bias="1" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imageView_picked_localization"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/custom_map_height"
+            android:layout_height="250dp"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

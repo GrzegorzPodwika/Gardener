@@ -14,7 +14,6 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-//TODO naprawic integrac je z WorkerRealm itd.
 class WorkerRepository @Inject constructor(
     private val firebaseSource: FirebaseSource
 ) : Dao<Worker>{

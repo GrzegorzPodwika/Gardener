@@ -10,7 +10,6 @@ import pl.podwikagrzegorz.gardener.data.domain.BasicGarden
 import pl.podwikagrzegorz.gardener.data.repo.GardenComponentsRepository
 import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_DOCUMENT_ID
 
-//TODO Connecting component view models with @GardenComponentRepository
 class BasicGardenViewModel @ViewModelInject constructor(
     private val gardenComponentsRepository: GardenComponentsRepository,
     @Assisted private val stateHandle: SavedStateHandle

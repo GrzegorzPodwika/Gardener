@@ -17,7 +17,6 @@ import pl.podwikagrzegorz.gardener.databinding.FragmentAddGardenBinding
 import pl.podwikagrzegorz.gardener.extensions.*
 import timber.log.Timber
 
-//TODO zintegrowac viewmodel z tym fraagmentem
 class AddGardenFragment : Fragment() {
 
     private lateinit var binding: FragmentAddGardenBinding

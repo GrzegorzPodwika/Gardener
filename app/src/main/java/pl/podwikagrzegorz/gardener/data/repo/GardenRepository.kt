@@ -31,7 +31,9 @@ class GardenRepository @Inject constructor(
         try {
             val file = Uri.fromFile(File(item.uniqueSnapshotName))
             gardenPictureRef.child("${file.lastPathSegment}").putFile(file).await()
+
             item.uniqueSnapshotName.deleteCaptionedImage()
+
             item.uniqueSnapshotName = file.lastPathSegment!!
             gardenCollectionRef.add(item).await()
             Timber.i("$item has been successfully inserted.")

@@ -55,8 +55,8 @@ class PropertiesChildFragment : Fragment() {
 
     private fun showEditItemDialog(propertyToEdit: Property) {
         EditPropertyDialog(propertyToEdit, object : EditPropertyDialog.OnChangedPropertyListener {
-            override fun onChangedProperty(newProperty: Property) {
-                viewModel.updateProperty(newProperty)
+            override fun onChangedProperty(updatedProperty: Property) {
+                viewModel.updateProperty(updatedProperty)
             }
         }).show(childFragmentManager, null)
     }

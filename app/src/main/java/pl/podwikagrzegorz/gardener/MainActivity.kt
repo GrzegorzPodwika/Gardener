@@ -26,11 +26,6 @@ import pl.podwikagrzegorz.gardener.extensions.startLoginActivity
 import pl.podwikagrzegorz.gardener.ui.auth.AuthViewModel
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.PlannedGardensFragmentDirections
 
-/*TODO
-*  Cache i inne offline storage
-*  Poprawki bledow testowanie pitu pitu
-* */
-
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -118,8 +113,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val navOptions = NavOptions.Builder().setEnterAnim(android.R.anim.fade_in)
-            .setExitAnim(android.R.anim.fade_out).build()
+        val navOptions = NavOptions.Builder()
+            .setEnterAnim(android.R.anim.fade_in)
+            .setExitAnim(android.R.anim.fade_out)
+            .setPopEnterAnim(android.R.anim.fade_in)
+            .setPopExitAnim(android.R.anim.fade_out)
+            .build()
 
         when (item.itemId) {
             R.id.nav_planned_gardens -> {

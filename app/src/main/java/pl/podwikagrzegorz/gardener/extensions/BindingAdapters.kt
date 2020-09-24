@@ -44,9 +44,9 @@ fun loadImageViaUri(imageView : ImageView, uri: Uri?) {
 @BindingAdapter("loadIconIfIsGarden")
 fun ImageView.loadIconDrawable(isGarden: Boolean) {
     if (isGarden) {
-        setImageResource(R.drawable.ic_farm)
+        setImageResource(R.drawable.ic_garden_park)
     } else {
-        setImageResource(R.drawable.ic_lawn_mower)
+        setImageResource(R.drawable.ic_wheelbarrow)
     }
 }
 
