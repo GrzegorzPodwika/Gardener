@@ -6,7 +6,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import coil.api.load
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.storage.StorageReference
@@ -20,7 +19,11 @@ import java.io.File
 fun ImageView.loadImageWithName(uniqueName: String?) {
     if (!uniqueName.isNullOrEmpty()) {
         val absolutePath = context.getAbsoluteFilePath(uniqueName)
-        load(File(absolutePath))
+        GlideApp.with(context)
+            .load(File(absolutePath))
+            .transition(DrawableTransitionOptions.withCrossFade())
+            .placeholder(R.drawable.ic_place_holder)
+            .into(this)
     }
 }
 
@@ -35,10 +38,11 @@ fun loadImageViaStorageReference(imageView: ImageView, imageStorageRef: StorageR
 
 @BindingAdapter("loadImageViaUri")
 fun loadImageViaUri(imageView : ImageView, uri: Uri?) {
-    imageView.load(uri) {
-        crossfade(true)
-        placeholder(R.drawable.ic_place_holder)
-    }
+    GlideApp.with(imageView.context)
+        .load(uri)
+        .transition(DrawableTransitionOptions.withCrossFade())
+        .placeholder(R.drawable.ic_place_holder)
+        .into(imageView)
 }
 
 @BindingAdapter("loadIconIfIsGarden")

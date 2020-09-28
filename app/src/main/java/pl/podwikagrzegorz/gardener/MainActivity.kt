@@ -6,25 +6,23 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
-import androidx.navigation.findNavController
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.navigation.NavOptions
-import androidx.navigation.ui.*
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.NavigationUI.setupWithNavController
-import coil.api.load
+import androidx.navigation.ui.navigateUp
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.nav_header_main.*
+import pl.podwikagrzegorz.gardener.di.GlideApp
 import pl.podwikagrzegorz.gardener.extensions.startLoginActivity
 import pl.podwikagrzegorz.gardener.ui.auth.AuthViewModel
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.PlannedGardensFragmentDirections
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -90,7 +88,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val headerLayout = navView.getHeaderView(0)
 
             val userPhotoIV = headerLayout.findViewById(R.id.imageView_user_photo) as ImageView
-            userPhotoIV.load(photoUrl)
+            GlideApp.with(userPhotoIV.context)
+                .load(photoUrl)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .placeholder(R.drawable.ic_place_holder)
+                .into(userPhotoIV)
 
             val userNameTV = headerLayout.findViewById(R.id.textView_user_name) as TextView
             userNameTV.text = displayName
