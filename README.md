@@ -86,7 +86,7 @@ To-do list:
 The app is currently under development.
 
 ## Contact
-Created by [@PodwikaGrzegorz](podwikagrzegorz@gmail.com) - feel free to contact me!
+Created by [@PodwikaGrzegorz](mailto:podwikagrzegorz@gmail.com?subject=[GitHub]%20Gardener%20App) - feel free to contact me!
 
 ## License
 The MIT License (MIT)
