@@ -6,18 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.domain.ActiveString
 import pl.podwikagrzegorz.gardener.databinding.FragmentNotesBinding
-import pl.podwikagrzegorz.gardener.extensions.fromBundle
 import pl.podwikagrzegorz.gardener.extensions.toBundle
 import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.OnEditItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SingleItemAdapter
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets.EditActiveStringDialog
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.NoteViewModel
 
 //Class No3 - Notes
@@ -65,11 +64,12 @@ class NoteFragment : Fragment() {
     }
 
     private fun showEditActiveStringDialog(itemToEdit: ActiveString) {
-        EditActiveStringDialog(itemToEdit, object : EditActiveStringDialog.OnChangedActiveStringListener {
-            override fun onChangedActiveString(newActiveString: ActiveString) {
-                viewModel.updateNote(newActiveString)
-            }
-        }).show(childFragmentManager, null)
+        EditActiveStringDialog(itemToEdit
+        ) { newActiveString ->
+            viewModel.updateNote(
+                newActiveString
+            )
+        }.show(childFragmentManager, null)
     }
 
     private fun setUpViewModelWithBinding() {

@@ -3,15 +3,13 @@ package pl.podwikagrzegorz.gardener.extensions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.DatePicker
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
-import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
-import android.view.View
-import android.widget.ImageView
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.StorageReference
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import pl.podwikagrzegorz.gardener.MainActivity
@@ -106,12 +104,6 @@ fun Context.getFileProvider(fileName: String): File =
 fun Context.getAbsoluteFilePath(fileName: String): String =
     File(this.filesDir, fileName).absolutePath
 
-fun <T> Fragment.getNavigationResult(key: String = "key"): MutableLiveData<T>? =
-    findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(key)
-
-fun <T> Fragment.setNavigationResult(key: String = "key", result: T) {
-    findNavController().previousBackStackEntry?.savedStateHandle?.set(key, result)
-}
 
 fun toBundle(gardenTitle: String) : Bundle {
     val bundle = Bundle()

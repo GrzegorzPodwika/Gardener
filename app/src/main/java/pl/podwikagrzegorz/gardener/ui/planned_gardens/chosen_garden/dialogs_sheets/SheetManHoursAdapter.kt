@@ -1,12 +1,10 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets
 
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.BottomSheetSingleItemBinding
 
 class SheetManHoursAdapter(

@@ -18,8 +18,6 @@ import pl.podwikagrzegorz.gardener.data.domain.Period
 import pl.podwikagrzegorz.gardener.databinding.FragmentPlannedGardensBinding
 import pl.podwikagrzegorz.gardener.extensions.getAbsoluteFilePath
 import pl.podwikagrzegorz.gardener.extensions.snackbar
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.basic_garden.BasicGardenAdapter
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.basic_garden.DeleteBasicGardenDialog
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.garden_to_add.AddGardenFragment
 
 @AndroidEntryPoint
@@ -27,7 +25,7 @@ class PlannedGardensFragment : Fragment() {
 
     private lateinit var binding: FragmentPlannedGardensBinding
     private val viewModel: PlannedGardensViewModel by viewModels()
-    private lateinit var basicGardenAdapter: BasicGardenAdapter
+    private lateinit var gardenAdapter: GardenAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,7 +49,7 @@ class PlannedGardensFragment : Fragment() {
             .setLifecycleOwner(this)
             .build()
 
-        basicGardenAdapter = BasicGardenAdapter(options, object : OnClickItemListener {
+        gardenAdapter = GardenAdapter(options, object : OnClickItemListener {
             override fun onClickItem(documentId: String) {
                 navigateToGardenViewPagerFragment(documentId)
             }
@@ -62,14 +60,33 @@ class PlannedGardensFragment : Fragment() {
         })
     }
 
+    private fun navigateToGardenViewPagerFragment(documentId: String) {
+        val navController = findNavController()
+        val action = PlannedGardensFragmentDirections
+            .actionNavPlannedGardensToNavGardenViewPagerFragment(documentId)
+        navController.navigate(action)
+    }
+
+    fun showDeleteGardenDialog(documentId: String) {
+        val fragmentDialog = DeleteGardenDialog(requireContext(),
+            object :
+                DeleteGardenDialog.NoticeDialogListener {
+                override fun onDialogClick(isClickedPositive: Boolean) {
+                    if (isClickedPositive)
+                        viewModel.deleteGarden(documentId)
+                }
+            })
+        fragmentDialog.show(childFragmentManager, null)
+    }
+
+
     private fun setUpBindingWithViewModel() {
         binding.apply {
             plannedGardensViewModel = viewModel
             lifecycleOwner = viewLifecycleOwner
-            recyclerViewPlannedGardens.adapter = basicGardenAdapter
+            recyclerViewPlannedGardens.adapter = gardenAdapter
         }
     }
-
 
     private fun presetRecyclerView() {
         binding.recyclerViewPlannedGardens.addOnScrollListener(object :
@@ -124,15 +141,6 @@ class PlannedGardensFragment : Fragment() {
         })
     }
 
-    private fun observeInsertData() {
-        viewModel.eventGardenInserted.observe(viewLifecycleOwner, Observer { isSuccess ->
-            if (isSuccess) {
-                binding.root.snackbar(getString(R.string.insert_success))
-                viewModel.onShowSuccessSnackbarComplete()
-            }
-        })
-    }
-
     private fun navigateToAddGardenFragment() {
         val navController = findNavController()
         val action = PlannedGardensFragmentDirections.actionPlannedGardensToAddGarden()
@@ -142,23 +150,13 @@ class PlannedGardensFragment : Fragment() {
     }
 
 
-    private fun navigateToGardenViewPagerFragment(documentId: String) {
-        val navController = findNavController()
-        val action = PlannedGardensFragmentDirections
-            .actionNavPlannedGardensToNavGardenViewPagerFragment(documentId)
-        navController.navigate(action)
-    }
-
-    fun showDeleteGardenDialog(documentId: String) {
-        val fragmentDialog = DeleteBasicGardenDialog(requireContext(),
-            object :
-                DeleteBasicGardenDialog.NoticeDialogListener {
-                override fun onDialogClick(isClickedPositive: Boolean) {
-                    if (isClickedPositive)
-                        viewModel.deleteGarden(documentId)
-                }
-            })
-        fragmentDialog.show(childFragmentManager, null)
+    private fun observeInsertData() {
+        viewModel.eventGardenInserted.observe(viewLifecycleOwner, Observer { isSuccess ->
+            if (isSuccess) {
+                binding.root.snackbar(getString(R.string.insert_success))
+                viewModel.onShowSuccessSnackbarComplete()
+            }
+        })
     }
 
 }

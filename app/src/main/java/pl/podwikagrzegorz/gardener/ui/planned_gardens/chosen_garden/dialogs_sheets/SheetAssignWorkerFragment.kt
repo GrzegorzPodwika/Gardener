@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets
 
 import android.app.Dialog
 import android.os.Bundle
@@ -20,7 +20,7 @@ class SheetAssignWorkerFragment(
     private lateinit var binding: BottomSheetAssignWorkerBinding
     private val workerAdapter = SheetAssignWorkerAdapter(workersList)
 
-    interface OnGetListOfWorkersFullNameListener {
+    fun interface OnGetListOfWorkersFullNameListener {
         fun onGetListOfWorkersFullName(listOfWorkersFullName: List<String>)
     }
 

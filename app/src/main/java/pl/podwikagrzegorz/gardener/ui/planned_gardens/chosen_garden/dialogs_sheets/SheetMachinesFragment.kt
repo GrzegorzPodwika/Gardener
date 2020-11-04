@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets
 
 import android.app.Dialog
 import android.os.Bundle
@@ -21,7 +21,7 @@ class SheetMachinesFragment(
     private lateinit var binding: BottomSheetAssignWorkerBinding
     private val adapter = SheetMachinesAdapter(listOfMachines)
 
-    interface OnGetListOfPickedItemsListener {
+    fun interface OnGetListOfPickedItemsListener {
         fun onGetListOfPickedItems(listOfPickedItems: List<Item>)
     }
 

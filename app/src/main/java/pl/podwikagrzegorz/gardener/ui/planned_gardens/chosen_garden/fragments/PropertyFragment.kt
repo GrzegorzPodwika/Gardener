@@ -12,15 +12,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.domain.ActiveProperty
-import pl.podwikagrzegorz.gardener.data.domain.Item
 import pl.podwikagrzegorz.gardener.databinding.FragmentToolsInViewpagerBinding
 import pl.podwikagrzegorz.gardener.extensions.toBundle
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.PropertiesChildViewModel
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.ActivePropertyAdapter
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.AddedItemAdapter
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.PickNumberDialog
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetPropertiesFragment
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets.SheetPropertiesFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.PropertyViewModel
 
 //Class No6 - Properties
@@ -61,32 +58,13 @@ class PropertyFragment : Fragment() {
             }
 
             override fun onChangeFlagToOpposite(documentId: String, isActive: Boolean) {
-                viewModelMainProperties.reverseFlagOnProperty(childDocumentId = documentId, isActive)
+                viewModelMainProperties.reverseFlagOnProperty(
+                    childDocumentId = documentId,
+                    isActive
+                )
             }
-
-/*            override fun onChangeNumberOfItems(
-                documentId: String,
-                currentNumberOfItems: Int,
-                maxNumberOfItems: Int
-            ) {
-                showPickNumberDialog(documentId, currentNumberOfItems, maxNumberOfItems)
-            }*/
-
         })
-
     }
-
-/*    private fun showPickNumberDialog(
-        documentId: String,
-        currentNumberOfItems: Int,
-        maxNumberOfItems: Int
-    ) {
-        PickNumberDialog(currentNumberOfItems, maxNumberOfItems, object : PickNumberDialog.OnChosenNumberListener {
-            override fun onChosenNumber(chosenNumber: Int) {
-                viewModelMainProperties.updateNumberOfProperties(documentId, chosenNumber)
-            }
-        }).show(childFragmentManager, null)
-    }*/
 
     private fun setUpBinding() {
         binding.apply {
@@ -105,13 +83,12 @@ class PropertyFragment : Fragment() {
     private fun setOnAddPropertiesButtonListener() {
         binding.materialButtonAddTools.setOnClickListener {
             SheetPropertiesFragment(
-                receivedPropertiesViewModel.listOfProperties,
-                object : SheetPropertiesFragment.OnGetListOfPickedPropertiesListener {
-                    override fun onGetListOfPickedItems(listOfPickedItems: List<ActiveProperty>) {
-                        viewModelMainProperties.addListOfPickedProperties(listOfPickedItems)
-                    }
-                }
-            ).show(childFragmentManager, null)
+                receivedPropertiesViewModel.listOfProperties
+            ) { listOfPickedItems ->
+                viewModelMainProperties.addListOfPickedProperties(
+                    listOfPickedItems
+                )
+            }.show(childFragmentManager, null)
         }
     }
 
@@ -123,42 +100,3 @@ class PropertyFragment : Fragment() {
         }
     }
 }
-
-
-
-
-
-/*
-    private fun addListOfPickedPropertiesToMainList(listOfPickedItems: List<Boolean>) {
-        val listOfItemRealm = mutableListOf<Item>()
-        val receivedProperties = receivedPropertiesViewModel.listOfProperties
-
-
-        for (index in listOfPickedItems.indices) {
-            if (listOfPickedItems[index]) {
-                val propertyToAdd =
-                    Item(
-                        receivedProperties[index].propertyName,
-                        receivedProperties[index].numberOfProperties
-                    )
-                listOfItemRealm.add(propertyToAdd)
-            }
-        }
-
-        viewModelMainProperties.addListOfPickedProperties(listOfItemRealm)
-    }
-
-private fun changeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
-        val seekingProperty = receivedProperties.find { it.propertyName == itemName }
-        val maxValue: Int = seekingProperty?.numberOfProperties ?: GardenerApp.MAX_NUMBER_OF_MACHINES
-
-        PickNumberDialog(
-            currentValue,
-            maxValue,
-            object :
-                PickNumberDialog.OnChosenNumberListener {
-                override fun onChosenNumber(chosenNumber: Int) {
-                    viewModelMainProperties.updateNumberOfProperties(chosenNumber, position)
-                }
-            }).show(childFragmentManager, null)
-    }*/

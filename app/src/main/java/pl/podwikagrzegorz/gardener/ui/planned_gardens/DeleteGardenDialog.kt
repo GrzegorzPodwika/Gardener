@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.basic_garden
+package pl.podwikagrzegorz.gardener.ui.planned_gardens
 
 import android.app.Dialog
 import android.content.Context
@@ -7,7 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import pl.podwikagrzegorz.gardener.R
 
-class DeleteBasicGardenDialog(
+class DeleteGardenDialog(
     private val ctx: Context,
     private val listener: NoticeDialogListener
 ) : DialogFragment() {

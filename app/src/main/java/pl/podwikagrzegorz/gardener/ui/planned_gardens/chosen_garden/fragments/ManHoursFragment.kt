@@ -11,11 +11,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import pl.podwikagrzegorz.gardener.databinding.ExpandableListsOfManHoursBinding
 import pl.podwikagrzegorz.gardener.extensions.toBundle
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.ExpandableListAdapter
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetAssignWorkerFragment
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetManHoursFragment
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets.SheetAssignWorkerFragment
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets.SheetManHoursFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.ManHoursViewModel
 import pl.podwikagrzegorz.gardener.ui.workers.WorkersViewModel
-import java.util.*
 
 //Class No8 - Man hours
 @AndroidEntryPoint
@@ -52,26 +51,22 @@ class ManHoursFragment : Fragment() {
     private fun setOnAddWorkerButtonListener() {
 
         binding.materialButtonAddWorkers.setOnClickListener {
-            SheetAssignWorkerFragment(
-                workerViewModel.listOfWorkers,
-                object : SheetAssignWorkerFragment.OnGetListOfWorkersFullNameListener {
-                    override fun onGetListOfWorkersFullName(listOfWorkersFullName: List<String>) {
-                        manHoursViewModel.addListOfWorkersFullNames(listOfWorkersFullName)
-                    }
-                }).show(childFragmentManager, null)
+            SheetAssignWorkerFragment(workerViewModel.listOfWorkers) { listOfWorkersFullName ->
+                manHoursViewModel.addListOfWorkersFullNames(
+                    listOfWorkersFullName
+                )
+            }.show(childFragmentManager, null)
         }
     }
 
     private fun setOnAddManHoursButtonListener() {
         binding.materialButtonAddManHours.setOnClickListener {
-            SheetManHoursFragment(manHoursViewModel.workersFullNames,
-                object : SheetManHoursFragment.OnGetListOfWorkedHoursWithPickedDate {
-
-                    override fun onGetListOfWorkedHoursWithPickedDate(listOfWorkedHours: List<Double>, date: Date) {
-                        manHoursViewModel.addListOfWorkedHoursWithPickedDate(listOfWorkedHours, date)
-                    }
-
-                }).show(childFragmentManager, null)
+            SheetManHoursFragment(manHoursViewModel.workersFullNames) { listOfWorkedHours, date ->
+                manHoursViewModel.addListOfWorkedHoursWithPickedDate(
+                    listOfWorkedHours,
+                    date
+                )
+            }.show(childFragmentManager, null)
         }
     }
 
@@ -79,7 +74,12 @@ class ManHoursFragment : Fragment() {
     private fun observeMapOfWorkedHours() {
         manHoursViewModel.mapOfWorkedHours.observe(viewLifecycleOwner,
             Observer { mapOfWorkedHours ->
-                binding.expandableListView.setAdapter(ExpandableListAdapter(requireContext(), mapOfWorkedHours))
+                binding.expandableListView.setAdapter(
+                    ExpandableListAdapter(
+                        requireContext(),
+                        mapOfWorkedHours
+                    )
+                )
             })
     }
 

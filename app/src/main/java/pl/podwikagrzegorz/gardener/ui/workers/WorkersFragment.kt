@@ -17,7 +17,7 @@ import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.OnEditItemL
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
 @AndroidEntryPoint
-class WorkersFragment : Fragment(), AddWorkerDialog.OnInputListener {
+class WorkersFragment : Fragment(){
 
     private lateinit var binding: WorkersFragmentBinding
     private val viewModel: WorkersViewModel by viewModels()
@@ -54,6 +54,10 @@ class WorkersFragment : Fragment(), AddWorkerDialog.OnInputListener {
         })
     }
 
+    private fun deleteWorkerFromDb(workerName: String) {
+        viewModel.deleteWorker(workerName)
+    }
+
     private fun showWorkerDialogWithEditMode(workerToEdit: Worker) {
         AddWorkerDialog(object : AddWorkerDialog.OnInputListener {
             override fun onSendWorkerFullName(workerFullName: String) {
@@ -87,25 +91,16 @@ class WorkersFragment : Fragment(), AddWorkerDialog.OnInputListener {
 
     private fun setOnAddWorkerFabListener() {
         binding.fabAddWorker.setOnClickListener {
-            AddWorkerDialog(this).show(childFragmentManager, "AddWorkerDialog")
+            AddWorkerDialog(object : AddWorkerDialog.OnInputListener {
+                override fun onSendWorkerFullName(workerFullName: String) {
+                    if (workerFullName.isNotEmpty()) {
+                        viewModel.addWorkerIntoDatabase(workerFullName)
+                    } else {
+                        toast(getString(R.string.fill_up_field))
+                    }
+                }
+            }).show(childFragmentManager, "AddWorkerDialog")
         }
-    }
-
-
-    override fun onSendWorkerFullName(workerFullName: String) {
-        if (workerFullName.isNotEmpty()) {
-            addWorkerIntoViewModel(workerFullName)
-        } else {
-            toast(getString(R.string.fill_up_field))
-        }
-    }
-
-    private fun addWorkerIntoViewModel(workerName: String) {
-        viewModel.addWorkerIntoDatabase(workerName)
-    }
-
-    private fun deleteWorkerFromDb(workerName: String) {
-        viewModel.deleteWorker(workerName)
     }
 
     companion object {

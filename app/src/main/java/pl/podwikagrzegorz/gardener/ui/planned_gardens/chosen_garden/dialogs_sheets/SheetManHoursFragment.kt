@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets
 
 import android.app.Dialog
 import android.os.Bundle
@@ -23,7 +23,7 @@ class SheetManHoursFragment(
     private lateinit var binding: BottomSheetManHoursBinding
     private val adapter = SheetManHoursAdapter(workersFullNames)
 
-    interface OnGetListOfWorkedHoursWithPickedDate {
+    fun interface OnGetListOfWorkedHoursWithPickedDate {
         fun onGetListOfWorkedHoursWithPickedDate(listOfWorkedHours: List<Double>, date: Date)
     }
 

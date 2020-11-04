@@ -1,12 +1,10 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
-import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.DialogPickNumberBinding
 
 class PickNumberDialog(
@@ -16,7 +14,7 @@ class PickNumberDialog(
 ) : DialogFragment() {
     private lateinit var binding: DialogPickNumberBinding
 
-    interface OnChosenNumberListener {
+    fun interface OnChosenNumberListener {
         fun onChosenNumber(chosenNumber: Int)
     }
 

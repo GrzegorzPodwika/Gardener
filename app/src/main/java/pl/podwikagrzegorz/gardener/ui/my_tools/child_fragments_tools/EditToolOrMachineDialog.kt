@@ -14,7 +14,7 @@ class EditToolOrMachineDialog(
 ) : DialogFragment() {
     private lateinit var binding: DialogEditItemBinding
 
-    interface OnChangedItemAttributesListener {
+    fun interface OnChangedItemAttributesListener {
         fun onChangedItemAttributes(newItemName: String, newNumberOfItems: Int)
     }
 

@@ -1,10 +1,9 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import pl.podwikagrzegorz.gardener.data.domain.Property
-import pl.podwikagrzegorz.gardener.data.domain.Tool
 import pl.podwikagrzegorz.gardener.databinding.BottomSheetToolCheckboxBinding
 
 class SheetPropertiesAdapter(

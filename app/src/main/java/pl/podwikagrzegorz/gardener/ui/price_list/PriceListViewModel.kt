@@ -19,7 +19,7 @@ class PriceListViewModel @ViewModelInject constructor(
         get() = _eventAddNote
 
     private val _errorEmptyInput = MutableLiveData<Boolean>()
-    val errorEmptyInput : LiveData<Boolean>
+    val errorEmptyInput: LiveData<Boolean>
         get() = _errorEmptyInput
 
     fun onAddNote(service: String, priceOfService: String) {
@@ -46,7 +46,6 @@ class PriceListViewModel @ViewModelInject constructor(
         priceListRepository.update(updatedNote.documentId, updatedNote)
     }
 
-
     fun deleteNote(serviceName: String) = viewModelScope.launch(Dispatchers.IO) {
         priceListRepository.delete(serviceName)
     }
@@ -65,24 +64,3 @@ class PriceListViewModel @ViewModelInject constructor(
 
 
 }
-
-/*        private val noteDAO = NoteDAO().apply { listener = this@PriceListViewModel }
-
-
-override fun onAsyncTransactionSuccess() {
-        fetchFreshData()
-    }
-
-    private fun fetchFreshData() {
-        _priceList.value = noteDAO.getDomainData()
-    }
-
-    override fun onCleared() {
-        noteDAO.closeRealm()
-        super.onCleared()
-        //viewModelJob.cancel()
-    }
-
-    init {
-        _eventAddNote.value = false
-    }*/

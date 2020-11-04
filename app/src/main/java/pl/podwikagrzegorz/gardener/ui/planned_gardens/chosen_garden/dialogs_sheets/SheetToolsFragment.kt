@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets
 
 import android.app.Dialog
 import android.os.Bundle
@@ -9,21 +9,20 @@ import android.widget.FrameLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import pl.podwikagrzegorz.gardener.data.domain.ActiveProperty
 import pl.podwikagrzegorz.gardener.data.domain.Item
-import pl.podwikagrzegorz.gardener.data.domain.Property
+import pl.podwikagrzegorz.gardener.data.domain.Tool
 import pl.podwikagrzegorz.gardener.databinding.BottomSheetAssignWorkerBinding
 
-class SheetPropertiesFragment(
-    private val listOfProperties: List<Property>,
-    private val listener : OnGetListOfPickedPropertiesListener
+class SheetToolsFragment(
+    private val listOfTools: List<Tool>,
+    private val listener : OnGetListOfPickedItemsListener
 ) : BottomSheetDialogFragment() {
 
     private lateinit var binding: BottomSheetAssignWorkerBinding
-    private val adapter = SheetPropertiesAdapter(listOfProperties)
+    private val adapter = SheetToolsAdapter(listOfTools)
 
-    interface OnGetListOfPickedPropertiesListener {
-        fun onGetListOfPickedItems(listOfPickedItems: List<ActiveProperty>)
+    fun interface OnGetListOfPickedItemsListener {
+        fun onGetListOfPickedItems(listOfPickedItems: List<Item>)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -62,13 +61,14 @@ class SheetPropertiesFragment(
 
     private fun setAddToolsButtonListener() {
         binding.materialButtonConfirmAddingWorkers.setOnClickListener {
-            val listOfCheckedTools = adapter.listOfCheckedProperties
-            val listOfPickedItems = mutableListOf<ActiveProperty>()
+            val listOfCheckedTools = adapter.listOfCheckedTools
+            val listOfPickedItems = mutableListOf<Item>()
 
             for (index in listOfCheckedTools.indices) {
                 if (listOfCheckedTools[index]) {
-                    val property = listOfProperties[index]
-                    listOfPickedItems.add(ActiveProperty(property.propertyName, property.amountOfProperties))
+                    val tool = listOfTools[index]
+                    val item = Item(tool.toolName, tool.numberOfTools, tool.numberOfTools)
+                    listOfPickedItems.add(item)
                 }
             }
             listener.onGetListOfPickedItems(listOfPickedItems)

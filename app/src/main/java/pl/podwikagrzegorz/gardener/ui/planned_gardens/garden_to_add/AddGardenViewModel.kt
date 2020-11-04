@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.Bindable
-import androidx.databinding.ObservableBoolean
 import pl.podwikagrzegorz.gardener.BR
 import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
@@ -105,7 +104,6 @@ class AddGardenViewModel : ObservableViewModel() {
         periodAsString = basicGarden.period.periodAsString
     }
 
-
     fun isGivenGardenTitleEmpty(): Boolean {
         return gardenTitle.isNullOrEmpty()
     }
@@ -132,5 +130,7 @@ class AddGardenViewModel : ObservableViewModel() {
             AddGardenFragment.REQUEST_LATITUDE to basicGarden.latitude,
             AddGardenFragment.REQUEST_LONGITUDE to basicGarden.longitude
         )
+
+
 
 }

@@ -13,6 +13,7 @@ import pl.podwikagrzegorz.gardener.data.domain.Tool
 import pl.podwikagrzegorz.gardener.databinding.FragmentChildToolsBinding
 import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
+import pl.podwikagrzegorz.gardener.ui.price_list.OnChangeItemListener
 
 @AndroidEntryPoint
 class ToolsChildFragment : Fragment() {
@@ -44,10 +45,8 @@ class ToolsChildFragment : Fragment() {
             override fun onClickItem(documentId: String) {
                 viewModel.deleteTool(documentId)
             }
-        }, object : OnEditItemListener<Tool> {
-            override fun onEditItem(itemToEdit: Tool) {
-                showEditItemDialog(itemToEdit)
-            }
+        }, OnChangeItemListener { toolToEdit ->
+            showEditItemDialog(toolToEdit)
         })
     }
 

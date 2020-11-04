@@ -6,19 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import pl.podwikagrzegorz.gardener.data.domain.Note
-import pl.podwikagrzegorz.gardener.data.domain.Property
 import pl.podwikagrzegorz.gardener.databinding.DialogEditPropertyBinding
 
 class EditNoteDialog(
     private val noteToEdit: Note,
-    private val listener: OnChangedNoteListener
+    private val listener: OnChangeItemListener<Note>
 ) : DialogFragment() {
 
     private lateinit var binding: DialogEditPropertyBinding
-
-    interface OnChangedNoteListener {
-        fun onChangedNote(updatedNote: Note)
-    }
 
     override fun onStart() {
         super.onStart()
@@ -67,7 +62,8 @@ class EditNoteDialog(
             }
             val updatedNote =
                 Note(newService, newPriceOfService, noteToEdit.timestamp, noteToEdit.documentId)
-            listener.onChangedNote(updatedNote)
+
+            listener.onChangedItem(updatedNote)
             dismiss()
         }
     }

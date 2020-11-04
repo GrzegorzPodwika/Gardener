@@ -1,4 +1,4 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.fragments
+package pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,7 +14,7 @@ class EditActiveStringDialog(
 ) : DialogFragment() {
     private lateinit var binding: DialogEditActiveStringBinding
 
-    interface OnChangedActiveStringListener {
+    fun interface OnChangedActiveStringListener {
         fun onChangedActiveString(newActiveString: ActiveString)
     }
 

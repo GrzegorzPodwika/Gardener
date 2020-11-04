@@ -17,6 +17,7 @@ import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.OnEditItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SingleItemAdapter
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets.EditActiveStringDialog
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.ShoppingViewModel
 
 //Class No7 - Shopping
@@ -63,11 +64,12 @@ class ShoppingFragment : Fragment() {
     }
 
     private fun showEditActiveStringDialog(itemToEdit: ActiveString) {
-        EditActiveStringDialog(itemToEdit, object : EditActiveStringDialog.OnChangedActiveStringListener {
-            override fun onChangedActiveString(newActiveString: ActiveString) {
-                viewModel.updateShoppingNote(newActiveString)
-            }
-        }).show(childFragmentManager, null)
+        EditActiveStringDialog(itemToEdit
+        ) { newActiveString ->
+            viewModel.updateShoppingNote(
+                newActiveString
+            )
+        }.show(childFragmentManager, null)
     }
 
     private fun setUpViewModelWithBinding() {

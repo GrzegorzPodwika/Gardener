@@ -14,7 +14,7 @@ class EditPropertyDialog(
 ) : DialogFragment(){
     private lateinit var binding: DialogEditPropertyBinding
 
-    interface OnChangedPropertyListener {
+    fun interface OnChangedPropertyListener {
         fun onChangedProperty(updatedProperty: Property)
     }
 

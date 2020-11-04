@@ -17,6 +17,7 @@ import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.OnEditItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.SingleItemAdapter
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets.EditActiveStringDialog
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.DescriptionViewModel
 
 @AndroidEntryPoint

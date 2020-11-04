@@ -42,15 +42,10 @@ class ActivePropertyAdapter(
                 listener.onChangeFlagToOpposite(activeProperty.documentId, activeProperty.isActive)
             }
 
-/*            binding.textViewAmountOfProperties.setOnClickListener {
-                listener.onChangeNumberOfItems()
-            }*/
-
             binding.imageButtonPropertyToDelete.setOnClickListener {
                 listener.onClickItem(activeProperty.documentId)
             }
         }
-
 
         companion object {
             fun from(parent: ViewGroup): ActivePropertyHolder {

@@ -12,11 +12,12 @@ import pl.podwikagrzegorz.gardener.databinding.McvSingleMachineBinding
 import pl.podwikagrzegorz.gardener.databinding.McvSinglePropertyBinding
 import pl.podwikagrzegorz.gardener.databinding.McvSingleToolBinding
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
+import pl.podwikagrzegorz.gardener.ui.price_list.OnChangeItemListener
 
 class ToolAdapter(
     options: FirestoreRecyclerOptions<Tool>,
     private val listener: OnClickItemListener,
-    private val editItemListener: OnEditItemListener<Tool>
+    private val changeItemListener: OnChangeItemListener<Tool>
 ) : FirestoreRecyclerAdapter<Tool, ToolAdapter.ToolHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToolHolder {
@@ -24,17 +25,17 @@ class ToolAdapter(
     }
 
     override fun onBindViewHolder(holder: ToolHolder, position: Int, model: Tool) {
-        holder.bind(model, listener, editItemListener)
+        holder.bind(model, listener, changeItemListener)
     }
 
     class ToolHolder private constructor(private val binding: McvSingleToolBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(tool: Tool, listener: OnClickItemListener, editItemListener: OnEditItemListener<Tool>) {
+        fun bind(tool: Tool, listener: OnClickItemListener, changeItemListener: OnChangeItemListener<Tool>) {
             binding.tool = tool
             binding.onCLickListener = listener
             binding.materialCardViewSingleTool.setOnLongClickListener {
-                editItemListener.onEditItem(tool)
+                changeItemListener.onChangedItem(tool)
                 true
             }
             binding.executePendingBindings()
@@ -57,7 +58,7 @@ class ToolAdapter(
 class MachineAdapter(
     options : FirestoreRecyclerOptions<Machine>,
     private val listener: OnClickItemListener,
-    private val editItemListener: OnEditItemListener<Machine>
+    private val changeItemListener: OnChangeItemListener<Machine>
 ) : FirestoreRecyclerAdapter<Machine, MachineAdapter.MachineHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MachineHolder {
@@ -65,17 +66,17 @@ class MachineAdapter(
     }
 
     override fun onBindViewHolder(holder: MachineHolder, position: Int, model: Machine) {
-        holder.bind(model, listener, editItemListener)
+        holder.bind(model, listener, changeItemListener)
     }
 
     class MachineHolder private constructor(private val binding: McvSingleMachineBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(machine: Machine, listener: OnClickItemListener, editItemListener: OnEditItemListener<Machine>) {
+        fun bind(machine: Machine, listener: OnClickItemListener, changeItemListener: OnChangeItemListener<Machine>) {
             binding.machine = machine
             binding.onClickListener = listener
             binding.materialCardViewSingleMachine.setOnLongClickListener {
-                editItemListener.onEditItem(machine)
+                changeItemListener.onChangedItem(machine)
                 true
             }
             binding.executePendingBindings()
@@ -96,7 +97,7 @@ class MachineAdapter(
 class PropertyAdapter(
     options: FirestoreRecyclerOptions<Property>,
     private val listener: OnClickItemListener,
-    private val editItemListener: OnEditItemListener<Property>
+    private val changeItemListener: OnChangeItemListener<Property>
 ) : FirestoreRecyclerAdapter<Property, PropertyAdapter.PropertyHolder>(options) {
 
     override fun onCreateViewHolder(
@@ -107,17 +108,17 @@ class PropertyAdapter(
     }
 
     override fun onBindViewHolder(holder: PropertyHolder, position: Int, model: Property) {
-        holder.bind(model, listener, editItemListener)
+        holder.bind(model, listener, changeItemListener)
     }
 
     class PropertyHolder private constructor(private val binding: McvSinglePropertyBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(property: Property, listener: OnClickItemListener, editItemListener: OnEditItemListener<Property>) {
+        fun bind(property: Property, listener: OnClickItemListener, changeItemListener: OnChangeItemListener<Property>) {
             binding.property = property
             binding.onClickListener = listener
             binding.materialCardViewSingleProperty.setOnLongClickListener {
-                editItemListener.onEditItem(property)
+                changeItemListener.onChangedItem(property)
                 true
             }
             binding.executePendingBindings()

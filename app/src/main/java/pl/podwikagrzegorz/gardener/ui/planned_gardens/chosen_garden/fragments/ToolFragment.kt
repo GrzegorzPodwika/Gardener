@@ -14,8 +14,8 @@ import pl.podwikagrzegorz.gardener.extensions.toBundle
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.ToolsChildViewModel
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.AddedItemAdapter
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.PickNumberDialog
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetToolsFragment
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets.PickNumberDialog
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets.SheetToolsFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.ToolViewModel
 
 //Class No4 - Tools
@@ -69,11 +69,13 @@ class ToolFragment : Fragment() {
     }
 
     private fun showPickNumberDialog(documentId: String, currentNumberOfItems: Int, maxNumberOfItems: Int) {
-        PickNumberDialog(currentNumberOfItems, maxNumberOfItems, object : PickNumberDialog.OnChosenNumberListener {
-            override fun onChosenNumber(chosenNumber: Int) {
-                viewModelMainTools.updateNumberOfTools(childDocumentId =  documentId, chosenNumber)
-            }
-        }).show(childFragmentManager, null)
+        PickNumberDialog(currentNumberOfItems, maxNumberOfItems
+        ) { chosenNumber ->
+            viewModelMainTools.updateNumberOfTools(
+                childDocumentId = documentId,
+                chosenNumber
+            )
+        }.show(childFragmentManager, null)
     }
 
     private fun setUpBinding() {
@@ -85,16 +87,9 @@ class ToolFragment : Fragment() {
 
     private fun setOnAddToolsButtonListener() {
         binding.materialButtonAddTools.setOnClickListener {
-            SheetToolsFragment(
-                receivedToolsViewModel.listOfTools,
-                object : SheetToolsFragment.OnGetListOfPickedItemsListener {
-
-                    override fun onGetListOfPickedItems(listOfPickedItems: List<Item>) {
-                        viewModelMainTools.addListOfPickedTools(listOfPickedItems)
-                    }
-
-                }
-            ).show(childFragmentManager, null)
+            SheetToolsFragment(receivedToolsViewModel.listOfTools) { listOfPickedItems ->
+                viewModelMainTools.addListOfPickedTools(listOfPickedItems)
+            }.show(childFragmentManager, null)
         }
     }
 
@@ -107,32 +102,3 @@ class ToolFragment : Fragment() {
 
     }
 }
-
-
-/*       private fun addListOfPickedToolsToMainList(listOfPickedItems: List<Boolean>) {
-        val listOfItemRealm = mutableListOf<Item>()
-        val receivedTools = receivedToolsViewModel.listOfTools
-
-        for (index in listOfPickedItems.indices) {
-            if (listOfPickedItems[index]) {
-                val toolToAdd = Item(receivedTools[index].toolName, receivedTools[index].numberOfTools)
-                listOfItemRealm.add(toolToAdd)
-            }
-        }
-
-        viewModelMainTools.addListOfPickedTools(listOfItemRealm)
-        }
-private fun changeNumberOfItems(currentValue: Int, position: Int, itemName: String) {
-        val seekingTool = receivedTools.find { it.toolName == itemName }
-        val maxValue: Int = seekingTool?.numberOfTools ?: GardenerApp.MAX_NUMBER_OF_MACHINES
-
-        PickNumberDialog(
-            currentValue,
-            maxValue,
-            object :
-                PickNumberDialog.OnChosenNumberListener {
-                override fun onChosenNumber(chosenNumber: Int) {
-                    viewModelMainTools.updateNumberOfTools(chosenNumber, position)
-                }
-            }).show(childFragmentManager, null)
-    }*/

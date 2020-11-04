@@ -12,8 +12,6 @@ import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.MachinesChi
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.PropertiesChildFragment
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.ToolsChildFragment
 
-//TODO testowac dalej te nacisniete ogrod
-// zmienic wyglad 1 basicgardenfragment
 class MyToolsFragment : Fragment() {
 
     private lateinit var binding: FragmentMyToolsBinding
@@ -24,13 +22,9 @@ class MyToolsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMyToolsBinding.inflate(inflater, container, false)
-
         binding.bottomNavigationTools.setOnNavigationItemSelectedListener(navListener)
 
-        childFragmentManager.beginTransaction()
-            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-            .replace(R.id.tools_fragment_container, ToolsChildFragment())
-            .commit()
+        replaceChildFragment(ToolsChildFragment())
 
         return binding.root
     }
@@ -46,12 +40,15 @@ class MyToolsFragment : Fragment() {
             }
 
             if (selectedFragment != null) {
-
-                childFragmentManager.beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                    .replace(R.id.tools_fragment_container, selectedFragment)
-                    .commit()
+                replaceChildFragment(selectedFragment)
                 true
             } else false
         }
+
+    private fun replaceChildFragment(fragment: Fragment) {
+        childFragmentManager.beginTransaction()
+            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+            .replace(R.id.tools_fragment_container, fragment)
+            .commit()
+    }
 }

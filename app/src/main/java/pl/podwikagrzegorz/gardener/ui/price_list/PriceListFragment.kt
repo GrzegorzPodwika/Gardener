@@ -23,7 +23,6 @@ class PriceListFragment : Fragment() {
 
     private lateinit var noteAdapter: NoteAdapter
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,11 +55,8 @@ class PriceListFragment : Fragment() {
     }
 
     private fun showEditNoteDialog(noteToEdit: Note) {
-        EditNoteDialog(noteToEdit, object : EditNoteDialog.OnChangedNoteListener {
-            override fun onChangedNote(updatedNote: Note) {
-                viewModel.updateNote(updatedNote)
-            }
-        }).show(childFragmentManager, null)
+        EditNoteDialog(noteToEdit) { updatedItem -> viewModel.updateNote(updatedItem) }
+            .show(childFragmentManager, null)
     }
 
     private fun setUpBindingWithViewModel() {
@@ -79,7 +75,7 @@ class PriceListFragment : Fragment() {
     }
 
     private fun observeAddNoteButton() {
-        viewModel.eventAddNote.observe(viewLifecycleOwner,  { hasAdded ->
+        viewModel.eventAddNote.observe(viewLifecycleOwner, { hasAdded ->
             if (hasAdded) {
                 cleanUp()
             }

@@ -8,13 +8,16 @@ import androidx.core.util.Pair
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.FragmentAddGardenBinding
-import pl.podwikagrzegorz.gardener.extensions.*
+import pl.podwikagrzegorz.gardener.extensions.deleteCaptionedImage
+import pl.podwikagrzegorz.gardener.extensions.getAbsoluteFilePath
+import pl.podwikagrzegorz.gardener.extensions.toast
+import pl.podwikagrzegorz.gardener.maps.MapsFragment
 import timber.log.Timber
 
 class AddGardenFragment : Fragment() {
@@ -38,7 +41,7 @@ class AddGardenFragment : Fragment() {
         binding = FragmentAddGardenBinding.inflate(inflater, container, false)
 
         setUpBindingWithViewModel()
-        observeArgsFromMapFragment()
+        setOnFragmentResultListener()
         setOnPhoneNumberTextWatcher()
         setOnPickDatesButtonListener()
         setOnChosenRangeComplete()
@@ -55,17 +58,23 @@ class AddGardenFragment : Fragment() {
         }
     }
 
-    private fun observeArgsFromMapFragment() {
-        getNavigationResult<Double>(KEY_LATITUDE)?.observe(viewLifecycleOwner) { latitude ->
-            viewModel.setLatitude(latitude)
+    private fun setOnFragmentResultListener() {
+        setFragmentResultListener(MapsFragment.KEY_DATA_FROM_MAPS_FRAGMENT) { requestKey, bundle ->
+            if (requestKey == MapsFragment.KEY_DATA_FROM_MAPS_FRAGMENT) {
+                getDataFromMapsFragment(bundle)
+            }
         }
-        getNavigationResult<Double>(KEY_LONGITUDE)?.observe(viewLifecycleOwner) { longitude ->
-            viewModel.setLongitude(longitude)
-        }
-        getNavigationResult<String>(KEY_TAKEN_SNAPSHOT_NAME)?.observe(viewLifecycleOwner) { takenSnapshotName ->
-            isTakenSnapshot = true
-            viewModel.setTakenSnapshotName(takenSnapshotName)
-        }
+    }
+
+    private fun getDataFromMapsFragment(bundle: Bundle) {
+        val latitude = bundle.getDouble(MapsFragment.REQUEST_LATITUDE)
+        val longitude = bundle.getDouble(MapsFragment.REQUEST_LONGITUDE)
+        val takenSnapshotName = bundle.getString(MapsFragment.REQUEST_TAKEN_SNAPSHOT_NAME, "")
+
+        viewModel.setLatitude(latitude)
+        viewModel.setLongitude(longitude)
+        viewModel.setTakenSnapshotName(takenSnapshotName)
+        isTakenSnapshot = true
     }
 
 
@@ -106,13 +115,13 @@ class AddGardenFragment : Fragment() {
 
     private fun setConfirmAddingGardenButtonListener() {
         binding.materialButtonConfirmAddingGarden.setOnClickListener {
-            if (checkViewsAreFilledByUser()) {
+            if (areComponentsFilledByUser()) {
                 setBundleAndNavigateToPreviousFragment()
             }
         }
     }
 
-    private fun checkViewsAreFilledByUser(): Boolean {
+    private fun areComponentsFilledByUser(): Boolean {
 
         if (viewModel.isGivenGardenTitleEmpty()) {
             val toastMessage = getString(R.string.empty_garden_title)
@@ -157,13 +166,7 @@ class AddGardenFragment : Fragment() {
     }
 
     companion object {
-        const val TAG = "IMAGE"
-
-        const val KEY_LATITUDE = "KEY_LATITUDE"
-        const val KEY_LONGITUDE = "KEY_LONGITUDE"
-        const val KEY_TAKEN_SNAPSHOT_NAME = "KEY_TAKEN_SNAPSHOT_NAME"
         const val KEY_DATA_FROM_ADD_GARDEN_FRAGMENT = "KEY_DATA_FROM_ADD_GARDEN_FRAGMENT"
-
         const val REQUEST_GARDEN_TITLE = "REQUEST_GARDEN_TITLE"
         const val REQUEST_PHONE_NUMBER = "REQUEST_PHONE_NUMBER"
         const val REQUEST_PERIOD = "REQUEST_PERIOD"
@@ -171,6 +174,5 @@ class AddGardenFragment : Fragment() {
         const val REQUEST_UNIQUE_SNAPSHOT_NAME = "REQUEST_UNIQUE_SNAPSHOT_NAME"
         const val REQUEST_LATITUDE = "REQUEST_LATITUDE"
         const val REQUEST_LONGITUDE = "REQUEST_LONGITUDE"
-
     }
 }

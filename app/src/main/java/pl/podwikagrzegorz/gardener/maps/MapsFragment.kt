@@ -5,11 +5,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Address
 import android.location.Geocoder
-import android.net.Uri
-import androidx.fragment.app.Fragment
-
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -18,11 +14,11 @@ import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavDirections
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -30,18 +26,16 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.databinding.FragmentMapsBinding
 import pl.podwikagrzegorz.gardener.extensions.getAbsoluteFilePath
-import pl.podwikagrzegorz.gardener.extensions.setNavigationResult
 import pl.podwikagrzegorz.gardener.extensions.snackbar
-import pl.podwikagrzegorz.gardener.extensions.toast
 import pl.podwikagrzegorz.gardener.permissions.PermissionUtils
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.garden_to_add.AddGardenFragment
 import timber.log.Timber
-import java.io.*
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
 
 class MapsFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     ActivityCompat.OnRequestPermissionsResultCallback,
@@ -166,22 +160,25 @@ class MapsFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 io.printStackTrace()
             }
 
-            prepareActionAndNavigateToAddGardenFragment()
+            prepareBundleAndNavigateBackToAddGardenFragment()
         }
     }
 
-    private fun prepareActionAndNavigateToAddGardenFragment() {
+    private fun prepareBundleAndNavigateBackToAddGardenFragment() {
         Timber.i("Snasphot has been taken, name $uniqueSnapshotName")
         if (currentCameraPosition != null && uniqueSnapshotName.isNotEmpty()) {
-            setTakenData()
+            prepareBundle()
             findNavController().popBackStack()
         }
     }
 
-    private fun setTakenData() {
-        setNavigationResult(AddGardenFragment.KEY_LATITUDE, currentCameraPosition!!.target.latitude)
-        setNavigationResult(AddGardenFragment.KEY_LONGITUDE, currentCameraPosition!!.target.longitude)
-        setNavigationResult(AddGardenFragment.KEY_TAKEN_SNAPSHOT_NAME, uniqueSnapshotName)
+    private fun prepareBundle() {
+        val bundle = bundleOf(
+            REQUEST_LATITUDE to currentCameraPosition!!.target.latitude,
+            REQUEST_LONGITUDE to currentCameraPosition!!.target.longitude,
+            REQUEST_TAKEN_SNAPSHOT_NAME to uniqueSnapshotName
+        )
+        setFragmentResult(KEY_DATA_FROM_MAPS_FRAGMENT, bundle)
     }
 
     private fun setOnEditorActionListener() {
@@ -233,5 +230,10 @@ class MapsFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1
         val defaultCoordinates = LatLng(50.064651, 19.944981)
+
+        const val KEY_DATA_FROM_MAPS_FRAGMENT = "KEY_DATA_FROM_MAPS_FRAGMENT"
+        const val REQUEST_LATITUDE = "TAKEN_LATITUDE"
+        const val REQUEST_LONGITUDE = "TAKEN_LONGITUDE"
+        const val REQUEST_TAKEN_SNAPSHOT_NAME = "TAKEN_SNAPSHOT_NAME"
     }
 }

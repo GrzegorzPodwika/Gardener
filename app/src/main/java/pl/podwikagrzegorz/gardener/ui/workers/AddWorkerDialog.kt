@@ -45,12 +45,13 @@ class AddWorkerDialog(
             lifecycleOwner = viewLifecycleOwner
             addWorkerViewModel = viewModel
 
-            workerFullName = if (type == Type.ADD) {
-                ""
-            } else if (type == Type.EDIT){
-                currentWorker!!.name
-            } else {
-                ""
+            workerFullName = when (type) {
+                Type.ADD -> {
+                    ""
+                }
+                Type.EDIT -> {
+                    currentWorker!!.name
+                }
             }
         }
     }

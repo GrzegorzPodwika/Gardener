@@ -45,19 +45,20 @@ class MachinesChildFragment : Fragment() {
             override fun onClickItem(documentId: String) {
                 viewModel.deleteMachine(documentId)
             }
-        }, object : OnEditItemListener<Machine> {
-            override fun onEditItem(itemToEdit: Machine) {
-                showEditItemDialog(itemToEdit)
-            }
-        })
+        }) { machineToEdit: Machine ->
+            showEditItemDialog(machineToEdit)
+        }
     }
 
     private fun showEditItemDialog(machineToEdit: Machine) {
-        EditToolOrMachineDialog(machineToEdit.machineName, machineToEdit.numberOfMachines, object : EditToolOrMachineDialog.OnChangedItemAttributesListener {
-            override fun onChangedItemAttributes(newItemName: String, newNumberOfItems: Int) {
-                viewModel.updateMachine(machineToEdit.documentId, newItemName, newNumberOfItems)
-            }
-        }).show(childFragmentManager, null)
+        EditToolOrMachineDialog(machineToEdit.machineName, machineToEdit.numberOfMachines
+        ) { newItemName, newNumberOfItems ->
+            viewModel.updateMachine(
+                machineToEdit.documentId,
+                newItemName,
+                newNumberOfItems
+            )
+        }.show(childFragmentManager, null)
     }
 
     //private fun getOptionsBaseOnMenuOption(option: MenuOption)

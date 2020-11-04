@@ -1,21 +1,18 @@
-package pl.podwikagrzegorz.gardener.ui.planned_gardens.basic_garden
+package pl.podwikagrzegorz.gardener.ui.planned_gardens
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import pl.podwikagrzegorz.gardener.data.domain.BasicGarden
 
 import pl.podwikagrzegorz.gardener.databinding.McvSingleGardenBinding
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 
-class BasicGardenAdapter(
+class GardenAdapter(
     options: FirestoreRecyclerOptions<BasicGarden>,
     private val listener: OnClickItemListener
-) : FirestoreRecyclerAdapter<BasicGarden, BasicGardenAdapter.BasicGardenHolder>(options) {
+) : FirestoreRecyclerAdapter<BasicGarden, GardenAdapter.BasicGardenHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasicGardenHolder {
         return BasicGardenHolder.from(parent)

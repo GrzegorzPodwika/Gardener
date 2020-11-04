@@ -9,7 +9,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
@@ -20,12 +19,16 @@ import androidx.navigation.ui.navigateUp
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import pl.podwikagrzegorz.gardener.databinding.ActivityMainBinding
 import pl.podwikagrzegorz.gardener.di.GlideApp
 import pl.podwikagrzegorz.gardener.extensions.startLoginActivity
 import pl.podwikagrzegorz.gardener.ui.auth.AuthViewModel
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    private lateinit var binding: ActivityMainBinding
+    private val authViewModel: AuthViewModel by viewModels()
 
     private val navController by lazy { findNavController(R.id.nav_host_fragment) }
     private val appBarConfiguration by lazy {
@@ -34,17 +37,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 R.id.nav_planned_gardens, R.id.nav_my_tools, R.id.nav_calendar,
                 R.id.nav_garden_price_list, R.id.nav_completed_gardens, R.id.nav_workers,
                 R.id.nav_settings, R.id.nav_info
-            ), drawerLayout
+            ), binding.drawerLayout
         )
     }
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navView: NavigationView
-    private val authViewModel: AuthViewModel by viewModels()
+/*    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navView: NavigationView*/
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setupNavigation()
         setupViews()
         setupUserInfoIntoDrawer()
@@ -57,13 +60,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setupNavigation() {
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navView = findViewById(R.id.nav_view)
-
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
+        NavigationUI.setupActionBarWithNavController(this, navController, binding.drawerLayout)
         setupWithNavController(toolbar, navController, appBarConfiguration)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -80,12 +80,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setupViews() {
-        navView.setNavigationItemSelectedListener(this)
+        binding.navView.setNavigationItemSelectedListener(this)
     }
 
     private fun setupUserInfoIntoDrawer() {
         authViewModel.user?.apply {
-            val headerLayout = navView.getHeaderView(0)
+            val headerLayout = binding.navView.getHeaderView(0)
 
             val userPhotoIV = headerLayout.findViewById(R.id.imageView_user_photo) as ImageView
             GlideApp.with(userPhotoIV.context)
@@ -107,8 +107,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
         }
@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 logout()
             }
         }
-        drawerLayout.closeDrawer(GravityCompat.START)
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
@@ -159,6 +159,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         authViewModel.logout()
         startLoginActivity()
     }
-
-
+    
 }

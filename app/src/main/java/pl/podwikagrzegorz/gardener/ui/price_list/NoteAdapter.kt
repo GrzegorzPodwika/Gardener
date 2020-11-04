@@ -30,7 +30,11 @@ class NoteAdapter(
     class NoteHolder(private val binding: McvNotePriceListBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(note: Note, listener: OnClickItemListener, editItemListener: OnEditItemListener<Note>) {
+        fun bind(
+            note: Note,
+            listener: OnClickItemListener,
+            editItemListener: OnEditItemListener<Note>
+        ) {
             binding.note = note
             binding.clickListener = listener
             binding.root.setOnLongClickListener {

@@ -6,5 +6,4 @@ interface OnClickItemListener {
 
     fun onChangeFlagToOpposite(documentId: String, isActive: Boolean) {}
     fun onChangeNumberOfItems(documentId: String, currentNumberOfItems: Int, maxNumberOfItems: Int) {}
-    //fun onChangeNumberOfItems(currentValue: Int, position: Int, itemName: String){}
 }

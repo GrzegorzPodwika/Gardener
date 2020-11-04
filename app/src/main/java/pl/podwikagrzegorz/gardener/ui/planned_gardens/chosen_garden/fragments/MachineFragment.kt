@@ -17,9 +17,8 @@ import pl.podwikagrzegorz.gardener.extensions.toBundle
 import pl.podwikagrzegorz.gardener.ui.my_tools.child_fragments_tools.MachinesChildViewModel
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.OnClickItemListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.AddedItemAdapter
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.PickNumberDialog
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetMachinesFragment
-import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.bottom_sheets.SheetToolsFragment
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets.PickNumberDialog
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets.SheetMachinesFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.MachineViewModel
 
 //Class No5 - Machines
@@ -79,11 +78,13 @@ class MachineFragment : Fragment() {
         currentNumberOfItems: Int,
         maxNumberOfItems: Int
     ) {
-        PickNumberDialog(currentNumberOfItems, maxNumberOfItems, object : PickNumberDialog.OnChosenNumberListener {
-            override fun onChosenNumber(chosenNumber: Int) {
-                viewModelMainMachines.updateNumberOfMachines(documentId, chosenNumber)
-            }
-        }).show(childFragmentManager, null)
+        PickNumberDialog(currentNumberOfItems, maxNumberOfItems
+        ) { chosenNumber ->
+            viewModelMainMachines.updateNumberOfMachines(
+                documentId,
+                chosenNumber
+            )
+        }.show(childFragmentManager, null)
     }
 
     private fun setUpBinding() {
