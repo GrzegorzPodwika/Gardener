@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/keyline_3">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textView_manhours_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:inputType="textCapSentences|textMultiLine"
+            android:paddingStart="@dimen/keyline_1"
+            app:layout_constraintEnd_toStartOf="@id/editText_number_of_hours"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Shovels" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText_number_of_hours"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:inputType="numberDecimal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="14" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:barrierMargin="@dimen/keyline_2"
+            app:constraint_referenced_ids="textView_manhours_date, editText_number_of_hours" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/materialButton_cancel_editing_hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="16dp"
+            android:text="@string/cancel"
+            app:icon="@drawable/ic_cancel"
+            app:iconGravity="end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barrier_hours" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/materialButton_confirm_editing_hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="16dp"
+            android:text="@string/confirm"
+            app:icon="@drawable/ic_confirm"
+            app:iconGravity="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barrier_hours" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

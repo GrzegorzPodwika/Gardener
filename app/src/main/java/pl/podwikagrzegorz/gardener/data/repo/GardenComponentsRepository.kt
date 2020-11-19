@@ -1,7 +1,6 @@
 package pl.podwikagrzegorz.gardener.data.repo
 
 import android.net.Uri
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.toObject
@@ -12,6 +11,7 @@ import kotlinx.coroutines.withContext
 import pl.podwikagrzegorz.gardener.data.domain.*
 import pl.podwikagrzegorz.gardener.extensions.Constants
 import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_DESCRIPTIONS
+import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_MAN_HOURS
 import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_MAP_OF_MAN_HOURS
 import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_NOTES
 import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_SHOPPING
@@ -19,7 +19,6 @@ import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_TAKEN_MACHINES
 import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_TAKEN_PICTURES
 import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_TAKEN_PROPERTIES
 import pl.podwikagrzegorz.gardener.extensions.Constants.FIREBASE_TAKEN_TOOLS
-import pl.podwikagrzegorz.gardener.data.domain.FirebaseSource
 import pl.podwikagrzegorz.gardener.extensions.deleteCaptionedImage
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.OnProgressListener
 import timber.log.Timber
@@ -406,17 +405,20 @@ class GardenComponentsRepository @Inject constructor(
     /**
      * 7. Map of manHours
      */
-    suspend fun addListOfPickedWorkers(documentId: String, listOfWorkerNames: List<String>) {
+    suspend fun addListOfPickedWorkers(documentId: String, listOfPickedWorkers: List<Worker>) {
         try {
             val collRef =
                 gardenCollectionRef.document(documentId).collection(FIREBASE_MAP_OF_MAN_HOURS)
 
-            for (name in listOfWorkerNames) {
-                val searchingQuery = collRef.whereEqualTo(FIELD_WORKER_NAME, name).get().await()
+            for (worker in listOfPickedWorkers) {
+                val searchQuery = collRef.whereEqualTo(FIELD_NAME, worker.name).get().await()
 
-                if (searchingQuery.documents.isEmpty()) {
-                    collRef.add(ManHoursMap(name)).await()
+                if (searchQuery.isEmpty) {
+                    collRef.add(worker).await()
+
                 }
+                //Timber.i("Worker = ${worker.name} documentId ${worker.documentId}")
+
             }
 
             listener?.onTransactionSuccess()
@@ -433,8 +435,8 @@ class GardenComponentsRepository @Inject constructor(
             val collRef =
                 gardenCollectionRef.document(documentId).collection(FIREBASE_MAP_OF_MAN_HOURS)
             for ((childDocumentId, workedHours) in mapOfManHours) {
-                collRef.document(childDocumentId)
-                    .update(FIELD_LIST_OF_WORKED_HOURS, FieldValue.arrayUnion(workedHours)).await()
+                collRef.document(childDocumentId).collection(FIREBASE_MAN_HOURS)
+                    .add(workedHours).await()
             }
             listener?.onTransactionSuccess()
         } catch (e: Exception) {
@@ -442,23 +444,97 @@ class GardenComponentsRepository @Inject constructor(
         }
     }
 
+    suspend fun updateNumberOfManHours(
+        documentId: String,
+        workerDocumentId: String,
+        manHoursDocumentId: String,
+        updatedManHours: ManHours
+    ) {
+        try {
+            val collRef =
+                gardenCollectionRef.document(documentId).collection(FIREBASE_MAP_OF_MAN_HOURS)
+                    .document(workerDocumentId).collection(FIREBASE_MAN_HOURS)
+
+            collRef.document(manHoursDocumentId)
+                .set(updatedManHours, SetOptions.merge()).await()
+            Timber.i("Update of concrete man-hours has been successfully performed.")
+
+            listener?.onTransactionSuccess()
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
+    suspend fun deleteParentWorkerWithManHours(documentId: String, parentWorkerDocumentId: String) {
+        try {
+            val collRef = gardenCollectionRef.document(documentId).collection(FIREBASE_MAP_OF_MAN_HOURS)
+                .document(parentWorkerDocumentId).collection(FIREBASE_MAN_HOURS)
+
+            //delete whole subcollection
+            val allManHoursQuery = collRef.get().await()
+            for (manHours in allManHoursQuery) {
+                val manHoursObject = manHours.toObject<ManHours>()
+                collRef.document(manHoursObject.documentId).delete().await()
+            }
+
+            //at the end delete document
+            gardenCollectionRef.document(documentId).collection(FIREBASE_MAP_OF_MAN_HOURS)
+                .document(parentWorkerDocumentId).delete().await()
+
+            listener?.onTransactionSuccess()
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
+    suspend fun deleteConcreteManHours(
+        documentId: String,
+        workerDocumentId: String,
+        manHoursDocumentId: String,
+    ) {
+        try {
+            val collRef =
+                gardenCollectionRef.document(documentId).collection(FIREBASE_MAP_OF_MAN_HOURS)
+                    .document(workerDocumentId).collection(FIREBASE_MAN_HOURS)
+
+            collRef.document(manHoursDocumentId)
+                .delete().await()
+            Timber.i("Delete of concrete man-hours has been successfully performed.")
+
+            listener?.onTransactionSuccess()
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
+
     suspend fun getMapOfManHours(documentId: String): List<ManHoursMap> {
         return withContext(Dispatchers.IO) {
-            val listOfManHours = mutableListOf<ManHoursMap>()
+            val listOfManHoursMap = mutableListOf<ManHoursMap>()
+            //val listOfWorkers = mutableListOf<Worker>()
 
             try {
                 val querySnapshot =
                     gardenCollectionRef.document(documentId).collection(FIREBASE_MAP_OF_MAN_HOURS)
                         .orderBy(FIELD_TIMESTAMP).get().await()
 
-                for (manHoursMap in querySnapshot) {
-                    listOfManHours.add(manHoursMap.toObject<ManHoursMap>())
+                for (workerQuery in querySnapshot) {
+                    val worker = workerQuery.toObject<Worker>()
+                    val listOfManHours = mutableListOf<ManHours>()
+                    val manHoursSnapshot =
+                        gardenCollectionRef.document(documentId).collection(FIREBASE_MAP_OF_MAN_HOURS)
+                            .document(worker.documentId).collection(FIREBASE_MAN_HOURS).get().await()
+                    manHoursSnapshot.forEach{ manHoursQuery->
+                        listOfManHours.add(manHoursQuery.toObject())
+                    }
+
+                    listOfManHoursMap.add(ManHoursMap(worker, listOfManHours))
                 }
             } catch (e: Exception) {
                 Timber.e(e)
             }
 
-            listOfManHours
+            listOfManHoursMap
         }
     }
 
@@ -491,7 +567,11 @@ class GardenComponentsRepository @Inject constructor(
         }
     }
 
-    suspend fun updateShoppingNote(documentId: String, childDocumentId: String, newShoppingNote: ActiveString) {
+    suspend fun updateShoppingNote(
+        documentId: String,
+        childDocumentId: String,
+        newShoppingNote: ActiveString
+    ) {
         try {
             gardenCollectionRef.document(documentId)
                 .collection(FIREBASE_SHOPPING).document(childDocumentId)
@@ -578,11 +658,13 @@ class GardenComponentsRepository @Inject constructor(
         gardenCollectionRef.document(documentId).collection(FIREBASE_TAKEN_PICTURES)
             .orderBy(FIELD_TIMESTAMP)
 
+
     companion object {
         private const val FIELD_GARDEN_TITLE = "gardenTitle"
         private const val FIELD_TIMESTAMP = "timestamp"
         private const val FIELD_LIST_OF_WORKED_HOURS = "listOfManHours"
         private const val FIELD_WORKER_NAME = "workerFullName"
+        private const val FIELD_NAME = "name"
 
         private const val FIELD_IS_ACTIVE = "active"
         private const val FIELD_NUMBER_OF_ITEMS = "numberOfItems"

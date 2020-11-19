@@ -8,9 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
+import pl.podwikagrzegorz.gardener.data.domain.ManHours
 import pl.podwikagrzegorz.gardener.databinding.ExpandableListsOfManHoursBinding
 import pl.podwikagrzegorz.gardener.extensions.toBundle
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.EditDeleteWorkedHoursListener
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.adapters.ExpandableListAdapter
+import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets.EditManHoursDialog
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets.SheetAssignWorkerFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.dialogs_sheets.SheetManHoursFragment
 import pl.podwikagrzegorz.gardener.ui.planned_gardens.chosen_garden.viewmodels.ManHoursViewModel
@@ -22,8 +25,34 @@ class ManHoursFragment : Fragment() {
 
     private lateinit var binding: ExpandableListsOfManHoursBinding
     private val manHoursViewModel: ManHoursViewModel by viewModels()
-
     private val workerViewModel: WorkersViewModel by viewModels()
+    private val editDeleteWorkedHoursListener = object: EditDeleteWorkedHoursListener {
+        override fun onEditClick(
+            manHours: ManHours,
+            workerDocumentId: String,
+            manHoursDocumentId: String
+        ) {
+            showEditManHoursDialog(manHours, workerDocumentId, manHoursDocumentId)
+        }
+
+        override fun onDeleteClick(
+            workerDocumentId: String,
+            manHoursDocumentId: String
+        ) {
+            manHoursViewModel.deleteManHours(workerDocumentId, manHoursDocumentId)
+        }
+
+    }
+
+    private fun showEditManHoursDialog(
+        manHours: ManHours,
+        workerDocumentId: String,
+        manHoursDocumentId: String
+    ) {
+        EditManHoursDialog(manHours) {updatedManHours ->
+            manHoursViewModel.updateManHours(updatedManHours, workerDocumentId, manHoursDocumentId)
+        }.show(childFragmentManager, null)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,10 +80,8 @@ class ManHoursFragment : Fragment() {
     private fun setOnAddWorkerButtonListener() {
 
         binding.materialButtonAddWorkers.setOnClickListener {
-            SheetAssignWorkerFragment(workerViewModel.listOfWorkers) { listOfWorkersFullName ->
-                manHoursViewModel.addListOfWorkersFullNames(
-                    listOfWorkersFullName
-                )
+            SheetAssignWorkerFragment(workerViewModel.listOfWorkers) { listOfPickedWorkers ->
+                manHoursViewModel.addListOfPickedWorkers(listOfPickedWorkers)
             }.show(childFragmentManager, null)
         }
     }
@@ -77,8 +104,11 @@ class ManHoursFragment : Fragment() {
                 binding.expandableListView.setAdapter(
                     ExpandableListAdapter(
                         requireContext(),
-                        mapOfWorkedHours
-                    )
+                        mapOfWorkedHours,
+                        editDeleteWorkedHoursListener
+                    ) { parentWorkerDocumentId ->
+                        manHoursViewModel.deleteParentWorker(parentWorkerDocumentId)
+                    }
                 )
             })
     }

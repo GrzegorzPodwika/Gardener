@@ -26,16 +26,16 @@ class SheetAssignWorkerAdapter(
         }
     }
 
-    fun getListOfWorkersFullName(): List<String> {
-        val workersFullName = mutableListOf<String>()
+    fun getListOfPickedWorkers(): List<Worker> {
+        val pickedWorkers = mutableListOf<Worker>()
 
         for (i in listOfCheckedWorkers.indices) {
             if (listOfCheckedWorkers[i]) {
-                workersFullName.add(workersList[i].name)
+                pickedWorkers.add(workersList[i])
             }
         }
 
-        return workersFullName
+        return pickedWorkers
     }
 
     class WorkerHolder private constructor(val binding: BottomSheetWorkerCheckboxBinding) :

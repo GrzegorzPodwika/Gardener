@@ -3,8 +3,10 @@ package pl.podwikagrzegorz.gardener.extensions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.view.View
 import android.widget.DatePicker
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -113,4 +115,10 @@ fun toBundle(gardenTitle: String) : Bundle {
 
 fun fromBundle(bundle: Bundle) : String {
     return bundle.getString(FIREBASE_DOCUMENT_ID)!!
+}
+
+fun EditText.setReadOnly(value: Boolean, inputType: Int = InputType.TYPE_NULL) {
+    isFocusable = !value
+    isFocusableInTouchMode = !value
+    this.inputType = inputType
 }

@@ -52,7 +52,7 @@ class ShoppingViewModel @ViewModelInject constructor(
 
     fun updateShoppingNote(newShoppingNote: ActiveString)  =
         viewModelScope.launch(Dispatchers.IO) {
-            gardenComponentsRepository.updateNote(documentId, newShoppingNote.documentId, newShoppingNote)
+            gardenComponentsRepository.updateShoppingNote(documentId, newShoppingNote.documentId, newShoppingNote)
         }
 
     fun deleteShoppingNoteFromList(childDocumentId: String) =

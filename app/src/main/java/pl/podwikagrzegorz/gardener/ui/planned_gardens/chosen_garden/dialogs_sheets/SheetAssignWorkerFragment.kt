@@ -13,15 +13,15 @@ import pl.podwikagrzegorz.gardener.data.domain.Worker
 import pl.podwikagrzegorz.gardener.databinding.BottomSheetAssignWorkerBinding
 
 class SheetAssignWorkerFragment(
-    private val workersList: List<Worker>,
-    private val listener: OnGetListOfWorkersFullNameListener
+    workersList: List<Worker>,
+    private val pickedWorkersListener: GetListOfPickedWorkersListener
 ) : BottomSheetDialogFragment() {
 
     private lateinit var binding: BottomSheetAssignWorkerBinding
     private val workerAdapter = SheetAssignWorkerAdapter(workersList)
 
-    fun interface OnGetListOfWorkersFullNameListener {
-        fun onGetListOfWorkersFullName(listOfWorkersFullName: List<String>)
+    fun interface GetListOfPickedWorkersListener {
+        fun onGetListOfPickedWorkers(listOfPickedWorkers: List<Worker>)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -63,8 +63,8 @@ class SheetAssignWorkerFragment(
 
     private fun setAddWorkersButton() {
         binding.materialButtonConfirmAddingWorkers.setOnClickListener {
-            val listOfWorkersFullName = workerAdapter.getListOfWorkersFullName()
-            listener.onGetListOfWorkersFullName(listOfWorkersFullName)
+            val listOfWorkersFullName = workerAdapter.getListOfPickedWorkers()
+            pickedWorkersListener.onGetListOfPickedWorkers(listOfWorkersFullName)
             dismiss()
         }
     }

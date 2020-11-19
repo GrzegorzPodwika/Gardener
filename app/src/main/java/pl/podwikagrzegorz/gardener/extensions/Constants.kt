@@ -11,6 +11,7 @@ object Constants {
     const val FIREBASE_TAKEN_MACHINES = "takenMachines"
     const val FIREBASE_TAKEN_PROPERTIES = "takenProperties"
     const val FIREBASE_MAP_OF_MAN_HOURS = "mapOfManHours"
+    const val FIREBASE_MAN_HOURS = "manHours"
     const val FIREBASE_SHOPPING = "shopping"
     const val FIREBASE_TAKEN_PICTURES = "takenPictures"
 

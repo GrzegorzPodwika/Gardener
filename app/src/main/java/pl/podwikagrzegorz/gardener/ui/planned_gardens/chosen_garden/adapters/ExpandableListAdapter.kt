@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import androidx.databinding.DataBindingUtil
+import com.chauthai.swipereveallayout.ViewBinderHelper
 import pl.podwikagrzegorz.gardener.GardenerApp
 import pl.podwikagrzegorz.gardener.R
 import pl.podwikagrzegorz.gardener.data.domain.ManHours
@@ -16,8 +17,15 @@ import pl.podwikagrzegorz.gardener.extensions.toSimpleFormat
 
 class ExpandableListAdapter internal constructor(
     private val context: Context,
-    private val manHoursMap: List<ManHoursMap>
+    private val manHoursMap: List<ManHoursMap>,
+    private val editDeleteWorkedHoursListener: EditDeleteWorkedHoursListener,
+    private val deleteParentWorkerListener: DeleteParentWorkerListener
 ) : BaseExpandableListAdapter() {
+    private val viewBinderHelper = ViewBinderHelper()
+
+    fun interface DeleteParentWorkerListener {
+        fun onDeleteWorker(workerDocumentId: String)
+    }
 
     override fun getChild(parentPosition: Int, childPosition: Int): ManHours =
         manHoursMap[parentPosition].listOfManHours[childPosition]
@@ -31,7 +39,7 @@ class ExpandableListAdapter internal constructor(
         convertView: View?,
         parent: ViewGroup?
     ): View {
-        var manHoursRealm: ManHours? = null
+        var manHours: ManHours? = null
 
         val sumAsString  = GardenerApp.res.getString(R.string.sum_of_hours)
         var sumOfWorkedHours = 0.0
@@ -39,7 +47,7 @@ class ExpandableListAdapter internal constructor(
         if (childPosition == getChildrenCount(parentPosition) - 1) {
             sumOfWorkedHours = getSumOfWorkedHoursFor(parentPosition)
         } else {
-            manHoursRealm = getChild(parentPosition, childPosition)
+            manHours = getChild(parentPosition, childPosition)
         }
 
 
@@ -59,9 +67,22 @@ class ExpandableListAdapter internal constructor(
             DataBindingUtil.bind(convertView)!!
         }
 
-        if (manHoursRealm != null){
-            binding.expandedListDate.text = manHoursRealm.date.toSimpleFormat()
-            binding.expandedListHours.text = manHoursRealm.numberOfWorkedHours.toString()
+        if (manHours != null){
+            val concreteWorkerParentId = manHoursMap[parentPosition].worker.documentId
+            val concreteManHoursId = manHoursMap[parentPosition].listOfManHours[childPosition].documentId
+
+            viewBinderHelper.setOpenOnlyOne(true)
+            viewBinderHelper.bind(binding.swipeLayout, concreteManHoursId)
+            viewBinderHelper.closeLayout(concreteManHoursId)
+
+            binding.expandedListDate.text = manHours.date.toSimpleFormat()
+            binding.expandedListHours.text = manHours.numberOfWorkedHours.toString()
+            binding.txtEdit.setOnClickListener {
+                editDeleteWorkedHoursListener.onEditClick(manHours, concreteWorkerParentId, concreteManHoursId)
+            }
+            binding.txtDelete.setOnClickListener {
+                editDeleteWorkedHoursListener.onDeleteClick(concreteWorkerParentId, concreteManHoursId)
+            }
         } else {
             binding.expandedListDate.text = sumAsString
             binding.expandedListHours.text = sumOfWorkedHours.toString()
@@ -69,6 +90,7 @@ class ExpandableListAdapter internal constructor(
 
         return binding.root
     }
+
 
     private fun getSumOfWorkedHoursFor(parentPosition: Int): Double {
         var sumOfWorkedHours = 0.0
@@ -87,7 +109,7 @@ class ExpandableListAdapter internal constructor(
         manHoursMap[parentPosition].listOfManHours.size + 1
 
     override fun getGroup(parentPosition: Int): String =
-        manHoursMap[parentPosition].workerFullName
+        manHoursMap[parentPosition].worker.name
 
     override fun getGroupCount(): Int =
         manHoursMap.size
@@ -103,7 +125,7 @@ class ExpandableListAdapter internal constructor(
         parent: ViewGroup?
     ): View {
         val workerFullName: String = getGroup(parentPosition)
-
+        val parentDocumentId = manHoursMap[parentPosition].worker.documentId
         val binding: ExpandableListGroupBinding
 
         binding = if (convertView == null) {
@@ -120,6 +142,15 @@ class ExpandableListAdapter internal constructor(
         } else {
             DataBindingUtil.bind(convertView)!!
         }
+
+        viewBinderHelper.setOpenOnlyOne(true)
+        viewBinderHelper.bind(binding.swipeLayoutWorkers, parentDocumentId)
+        viewBinderHelper.closeLayout(parentDocumentId)
+
+        binding.textViewDeleteWorker.setOnClickListener {
+            deleteParentWorkerListener.onDeleteWorker(parentDocumentId)
+        }
+
         binding.listTitle.text = workerFullName
 
         return binding.root
